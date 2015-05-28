@@ -173,14 +173,14 @@ static const uint64_t snow_pattern[16] = {
 };
 
 static const uint64_t meander_pattern[8] = {
-    010100000001,
-    010111111101,
-    010000000101,
-    010111110101,
-    010100010101,
-    010101110101,
-    010101000101,
-    010101111101
+    01010000000100000,
+    01011111110100000,
+    01000000010100000,
+    01011111010100000,
+    01010001010100000,
+    01010111010100000,
+    01010100010100000,
+    01010111110100000
 };
 
 
@@ -712,7 +712,7 @@ int put_Meander(int position, const LED_colorT front_color, const LED_colorT bac
 			return pos;
 		}
 		display[sur][win].dotmatrix[pos]  = (meander_pattern[column] * front_color) |
-											((~(meander_pattern[column]) & 077777777) * back_color);
+											((~(meander_pattern[column]) & 01111111111100000) * back_color);
 		pos++;
 	}
 	display[sur][win].length = pos;
@@ -875,16 +875,16 @@ void images_Init() {
 	// 12: meander yellow
 	clear_display(TOPSIDE, BLING);
 	position = put_Meander(0, YELLOW, BLACK, TOPSIDE, BLING);
-	image_bufferP->length = position + 2;
+	image_bufferP->length = position;
 	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
-	save_Image(11);
+	save_Image(12);
 
 	// 13: meander green red
 	clear_display(TOPSIDE, BLING);
 	position = put_Meander(0, GREEN, RED, TOPSIDE, BLING);
-	image_bufferP->length = position + 2;
+	image_bufferP->length = position;
 	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
-	save_Image(11);
+	save_Image(13);
 
 
 	// 20: germany spyr.ch swisscross
