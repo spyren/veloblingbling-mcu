@@ -50,6 +50,10 @@
  *		show|set string upper|lower   anystring
  *		show|set image upper|lower|bling number
  *      
+ *      ble reset
+ *      ble command
+ *      ble transparent
+ *
  *      log start                      [yyyymmddhhmmss]
  *      log stop
  *		
@@ -76,7 +80,7 @@
  *  @remark     
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      $Id: cli.c,v 3.6 2015/03/25 20:28:17 psi Exp psi $ 
+ *      Version 3.7RC5, 2015/06/25
  */
 
 /**
@@ -86,7 +90,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 3.7RC4, 2015/05/27, Copyright Peter Schmid\n\n";
+		"Version 3.7RC5, 2015/06/25, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -226,6 +230,7 @@ static const char cliHelpBle[] =
         "ble\n"
 		"ble reset\n"
 		"ble command <command> <parameter>\n"
+		"ble transparent\n"
         "\n"
         "BLE commands over UART.\n";
 
@@ -326,6 +331,8 @@ static const char blk_s[]             = "blk";
 static const char all_s[]             = "all";
 static const char ble_s[]             = "ble";
 static const char command_s[]         = "command";
+static const char transparent_s[]     = "transparent";
+static const char trans_s[]           = "trans";
 static const char battery_s[]         = "battery";
 static const char bat_s[]             = "bat";
 static const char energy_s[]          = "energy";
@@ -405,7 +412,7 @@ static const char patternError_s[]   = "Pattern Error\n";
 // ****************
 int TimeOut = 6000;
 bool wheelDetection = TRUE;
-
+bool bleTransparent = FALSE;
 
 
 operating_modeT operating_mode = NORMAL;
@@ -1889,6 +1896,10 @@ static int cli_parse(char * line, channelT ch) {
 		case 1:
 			if (! strcmp(p[0], reset_s) ) {
 				ble_reset();
+			} else if (! strcmp(p[0], transparent_s) || ! strcmp(p[0], trans_s)) {
+				if (ch == USB_CHANNEL) {
+					bleTransparent = TRUE;
+				}
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1960,6 +1971,8 @@ static int cli_parse(char * line, channelT ch) {
 /* ===================================================================*/
 void cli_usb() {
 	char line[100];
+	word count = 0;
+	word charsInBuffer;
 	
 	operating_mode = INTERACTIVE_USB;
 	clear_leds(TOPSIDE);
@@ -1990,6 +2003,34 @@ void cli_usb() {
 		} else {
 			// pattern
 			pattern_parse(line, USB_CHANNEL);
+		}
+
+		if (bleTransparent) {
+			// transparent mode (like terminal)
+			usb_puts("transparent mode, ^D to terminate\n");
+			int C = ' ';
+			while(1) {
+				// ^D terminates the transparent mode
+				C = usb_getc(5);
+				if (C == 4) {
+					bleTransparent = FALSE;
+					break;
+				} else if (C != ERR_TIMEOUT) {
+					// character received
+					usb_putc(C);  // local echo
+					line[0] = C;
+					line[1] = 0;
+					ble_puts(line);
+				}
+				charsInBuffer = BL600_GetCharsInRxBuf();
+				if (charsInBuffer > 0) {
+					// there is something to echo
+					BL600_RecvBlock((BL600_TComData*) line, charsInBuffer, &count);
+					line[count] = 0;
+					usb_puts(line);
+				}
+			}
+			continue;
 		}
 
 		Cpu_SetOperationMode(DOM_WAIT, NULL, NULL);

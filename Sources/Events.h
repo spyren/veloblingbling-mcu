@@ -483,6 +483,92 @@ void LEDspi_OnBlockReceived(LDD_TUserData *UserDataPtr);
 /* ===================================================================*/
 void AccInt_OnInterrupt(LDD_TUserData *UserDataPtr);
 
+/*
+** ===================================================================
+**     Event       :  I2C0_OnSlaveBlockSent (module Events)
+**
+**     Component   :  I2C0 [I2C_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when I2C in slave mode finishes the
+**         transmission of the data successfully. This event is not
+**         available for the MASTER mode and if SlaveSendBlock is
+**         disabled.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. This pointer is passed
+**                           as the parameter of Init method.
+*/
+/* ===================================================================*/
+void I2C0_OnSlaveBlockSent(LDD_TUserData *UserDataPtr);
+
+/*
+** ===================================================================
+**     Event       :  I2C0_OnSlaveBlockReceived (module Events)
+**
+**     Component   :  I2C0 [I2C_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when I2C in slave mode finishes the
+**         reception of the data successfully. This event is not
+**         available for the MASTER mode and if SlaveReceiveBlock is
+**         disabled.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. This pointer is passed
+**                           as the parameter of Init method.
+*/
+/* ===================================================================*/
+void I2C0_OnSlaveBlockReceived(LDD_TUserData *UserDataPtr);
+
+/*
+** ===================================================================
+**     Event       :  I2C0_OnSlaveRxRequest (module Events)
+**
+**     Component   :  I2C0 [I2C_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when its own specific address is
+**         matched with the calling address and the value of the R/W
+**         command bit of the calling address is set to 0, i.e., the
+**         Master requests writing to the slave (the slave will be
+**         receiving). After the return from the event call the first
+**         data byte receiving starts. This event is not available for
+**         the MASTER mode.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. This pointer is passed
+**                           as the parameter of Init method.
+*/
+/* ===================================================================*/
+void I2C0_OnSlaveRxRequest(LDD_TUserData *UserDataPtr);
+
+/*
+** ===================================================================
+**     Event       :  I2C0_OnSlaveTxRequest (module Events)
+**
+**     Component   :  I2C0 [I2C_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when its own specific address is
+**         matched with the calling address and the value of the R/W
+**         command bit of the calling address is set to 1, i.e., the
+**         Master requests reading from slave (the slave will be
+**         sending). After the return from the event call the first
+**         data byte sending will start. This event is not available
+**         for the MASTER mode.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. This pointer is passed
+**                           as the parameter of Init method.
+*/
+/* ===================================================================*/
+void I2C0_OnSlaveTxRequest(LDD_TUserData *UserDataPtr);
+
 /* END Events */
 
 #ifdef __cplusplus

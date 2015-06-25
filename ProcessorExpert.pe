@@ -3,8 +3,8 @@
   <Header>
     <Name>veloblingbling</Name>
     <SavedBy>psi</SavedBy>
-    <ModificationStamp>46</ModificationStamp>
-    <Date>2015-05-28</Date>
+    <ModificationStamp>47</ModificationStamp>
+    <Date>2015-06-25</Date>
     <IDE>Eclipse IDE</IDE>
     <PEversion>1.10.1.RT6_b1444-1070</PEversion>
   </Header>
@@ -15027,8 +15027,8 @@
         <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Index>1</Index>
-        <EnumSymbVal>MASTER</EnumSymbVal>
+        <Index>0</Index>
+        <EnumSymbVal>MASTER - SLAVE</EnumSymbVal>
       </ItemState>
       <ItemState>
         <ItemSymbol>MasterModeGrp</ItemSymbol>
@@ -15061,8 +15061,8 @@
       <ItemState>
         <ItemSymbol>SlaveModeGrp</ItemSymbol>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Value>false</Value>
-        <Expanded>false</Expanded>
+        <Value>true</Value>
+        <Expanded>true</Expanded>
       </ItemState>
       <ItemState>
         <ItemSymbol>AddressModeSlave</ItemSymbol>
@@ -15074,7 +15074,7 @@
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveAddr</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Value>0</Value>
@@ -15099,7 +15099,7 @@
       </ItemState>
       <ItemState>
         <ItemSymbol>EOF</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Value>0</Value>
@@ -15466,16 +15466,16 @@
         <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Index>1</Index>
-        <Value>false</Value>
+        <Index>0</Index>
+        <Value>true</Value>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveBlockReceivedInitState</ItemSymbol>
         <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Index>1</Index>
-        <Value>false</Value>
+        <Index>0</Index>
+        <Value>true</Value>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveByteReceivedInitState</ItemSymbol>
@@ -15490,16 +15490,16 @@
         <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Index>1</Index>
-        <Value>false</Value>
+        <Index>0</Index>
+        <Value>true</Value>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveTxRequestInitState</ItemSymbol>
         <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Index>1</Index>
-        <Value>false</Value>
+        <Index>0</Index>
+        <Value>true</Value>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveGeneralCallAddrInitState</ItemSymbol>
@@ -15785,101 +15785,101 @@
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveSendBlock</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Index>1</Index>
-        <Value>false</Value>
+        <Index>0</Index>
+        <Value>true</Value>
         <LastSelection>true</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>yes</LastUserSel>
         <UsrMethodName>SlaveSendBlock</UsrMethodName>
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveGetBlockSentStatus</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Index>1</Index>
         <Value>false</Value>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>no</LastUserSel>
         <UsrMethodName>SlaveGetBlockSentStatus</UsrMethodName>
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveGetSentDataNum</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Index>1</Index>
         <Value>false</Value>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>no</LastUserSel>
         <UsrMethodName>SlaveGetSentDataNum</UsrMethodName>
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveCancelTransmissionBlock</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Index>1</Index>
         <Value>false</Value>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>no</LastUserSel>
         <UsrMethodName>SlaveCancelTransmissionBlock</UsrMethodName>
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveReceiveBlock</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Index>1</Index>
-        <Value>false</Value>
+        <Index>0</Index>
+        <Value>true</Value>
         <LastSelection>true</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>yes</LastUserSel>
         <UsrMethodName>SlaveReceiveBlock</UsrMethodName>
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveGetBlockReceivedStatus</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Index>1</Index>
         <Value>false</Value>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>no</LastUserSel>
         <UsrMethodName>SlaveGetBlockReceivedStatus</UsrMethodName>
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveGetReceivedDataNum</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Index>1</Index>
         <Value>false</Value>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>no</LastUserSel>
         <UsrMethodName>SlaveGetReceivedDataNum</UsrMethodName>
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveUpdateReceiveBlockSize</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Index>1</Index>
         <Value>false</Value>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>no</LastUserSel>
         <UsrMethodName>SlaveUpdateReceiveBlockSize</UsrMethodName>
       </ItemState>
       <ItemState>
         <ItemSymbol>SlaveCancelReceptionBlock</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Index>1</Index>
         <Value>false</Value>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>no</LastUserSel>
         <UsrMethodName>SlaveCancelReceptionBlock</UsrMethodName>
       </ItemState>
       <ItemState>
@@ -16066,13 +16066,13 @@
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveBlockSent</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Value>false</Value>
-        <Expanded>false</Expanded>
+        <Value>true</Value>
+        <Expanded>true</Expanded>
         <LastSelection>true</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>yes</LastUserSel>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveBlockSentName</ItemSymbol>
@@ -16082,13 +16082,13 @@
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveBlockReceived</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Value>false</Value>
-        <Expanded>false</Expanded>
+        <Value>true</Value>
+        <Expanded>true</Expanded>
         <LastSelection>true</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>yes</LastUserSel>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveBlockReceivedName</ItemSymbol>
@@ -16098,13 +16098,13 @@
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveByteReceived</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <Value>false</Value>
         <Expanded>false</Expanded>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>no</LastUserSel>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveByteReceivedName</ItemSymbol>
@@ -16114,13 +16114,13 @@
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveRxRequest</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Value>false</Value>
+        <Value>true</Value>
         <Expanded>false</Expanded>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>yes</LastUserSel>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveRxRequestName</ItemSymbol>
@@ -16130,13 +16130,13 @@
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveTxRequest</ItemSymbol>
-        <ReadOnly>true</ReadOnly>
+        <ReadOnly>false</ReadOnly>
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-        <Value>false</Value>
+        <Value>true</Value>
         <Expanded>false</Expanded>
         <LastSelection>false</LastSelection>
-        <LastUserSel>never</LastUserSel>
+        <LastUserSel>yes</LastUserSel>
       </ItemState>
       <ItemState>
         <ItemSymbol>OnSlaveTxRequestName</ItemSymbol>
