@@ -118,18 +118,18 @@
 
 // application include files
 // *************************
-#include "led.h"
 #include "powermgr.h"
-#include "operation.h"
-#include "cli.h"
-#include "usb.h"
-#include "wheelsensor.h"
-#include "parameter.h"
-#include "bling.h"
-#include "pmeter.h"
-#include "ble.h"
-#include "watch.h"
-#include "display.h"
+#include "driver/parameter.h"
+#include "driver/pmeter.h"
+#include "visual/led.h"
+#include "visual/display.h"
+#include "hmi/cli.h"
+#include "hmi/button.h"
+#include "comm/usb.h"
+#include "comm/ble.h"
+#include "motion/wheelsensor.h"
+#include "motion/bling.h"
+#include "cyclo/watch.h"
 
 /*lint -save  -e970 Disable MISRA rule (6.3) checking. */
 int main(void)
@@ -162,7 +162,24 @@ int main(void)
 
 
   while(1) {
-	  operation();
+	  usb_puts("Normal operation mode (automatically), hit ESC for command line interface (interactive mode)\n");
+	  sleep_wakeup = TRUE;
+
+	  ButtonPressed = FALSE;
+	  ButtonLongPressed = FALSE;
+
+	  while (1) {
+		  if (usb_getc(2) == A_ESC) {
+			  break;
+		  }
+		  // timeout 20 ms
+		  cli_ble();
+		  if (ButtonPressed) {
+			  set_Mode();
+		  }
+		  powermgr_DeepSleep();
+	  }
+
 	  cli_usb();
   }
 

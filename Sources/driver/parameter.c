@@ -46,14 +46,14 @@
 // application include files
 // *************************
 #include "parameter.h"
-#include "wheelsensor.h"
-#include "cyclocomputer.h"
-#include "watch.h"
-#include "usb.h"
-#include "display.h"
-#include "mode.h"
-#include "button.h"
-#include "led.h"
+#include "motion/wheelsensor.h"
+#include "cyclo/cyclocomputer.h"
+#include "cyclo/watch.h"
+#include "comm/usb.h"
+#include "visual/led.h"
+#include "visual/display.h"
+#include "hmi/mode.h"
+#include "hmi/button.h"
 
 
 #define EEPROM_BASE	0x14000000

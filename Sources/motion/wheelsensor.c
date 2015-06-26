@@ -76,11 +76,11 @@
 // *************************
 #include "definitions.h"
 #include "wheelsensor.h"
-#include "cyclocomputer.h"
-#include "mode.h"
-#include "led.h"
-#include "display.h"
-#include "usb.h"
+#include "cyclo/cyclocomputer.h"
+#include "hmi/mode.h"
+#include "visual/led.h"
+#include "visual/display.h"
+#include "comm/usb.h"
 #include "bling.h"
 #include "powermgr.h"
 

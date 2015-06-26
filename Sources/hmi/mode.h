@@ -17,8 +17,8 @@
 #ifndef MODE_H_
 #define MODE_H_
 
-#include "display.h"
-#include "cyclocomputer.h"
+#include "visual/display.h"
+#include "cyclo/cyclocomputer.h"
 
 extern Display_modeT displayMode[BOTTOMSIDE+1][BLING+1];
 extern Cyclo_modeT cycloMode[BOTTOMSIDE+1][BLING+1];

@@ -27,8 +27,8 @@
 #define PARAMETER_H_
 
 #include "definitions.h"
-#include "display.h"
-#include "cyclocomputer.h"
+#include "visual/display.h"
+#include "cyclo/cyclocomputer.h"
 
 /**
 **  @addtogroup parameter_module

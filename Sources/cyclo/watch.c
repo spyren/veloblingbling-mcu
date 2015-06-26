@@ -41,16 +41,16 @@
 // application include files
 // *************************
 #include "definitions.h"
-#include "watch.h"
-#include "usb.h"
-#include "wheelsensor.h"
-#include "display.h"
-#include "cyclocomputer.h"
-#include "pmeter.h"
 #include "powermgr.h"
-#include "cli.h"
-#include "charger.h"
-#include "ble.h"
+#include "watch.h"
+#include "cyclocomputer.h"
+#include "comm/usb.h"
+#include "comm/ble.h"
+#include "motion/wheelsensor.h"
+#include "visual/display.h"
+#include "hmi/cli.h"
+#include "driver/charger.h"
+#include "driver/pmeter.h"
 
 
 // Global Variables

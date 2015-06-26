@@ -48,9 +48,9 @@
 // *************************
 #include "definitions.h"
 #include "cyclocomputer.h"
-#include "usb.h"
-#include "wheelsensor.h"
 #include "watch.h"
+#include "comm/usb.h"
+#include "motion/wheelsensor.h"
 
 // Global Variables
 // ****************

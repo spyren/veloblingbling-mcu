@@ -111,22 +111,22 @@ const char helloMessage[] =
 // *************************
 #include "definitions.h"
 #include "cli.h"
-#include "led.h"
+#include "visual/led.h"
+#include "visual/display.h"
 #include "powermgr.h"
-#include "usb.h"
+#include "comm/usb.h"
 #include "test.h"
 #include "mode.h"
-#include "display.h"
-#include "wheelsensor.h"
-#include "cyclocomputer.h"
-#include "datalogger.h"
-#include "watch.h"
+#include "motion/wheelsensor.h"
+#include "cyclo/cyclocomputer.h"
+#include "cyclo/datalogger.h"
+#include "cyclo/watch.h"
 #include "parameter.h"
-#include "bling.h"
-#include "pmeter.h"
-#include "ble.h"
-#include "charger.h"
-#include "ameter.h"
+#include "motion/bling.h"
+#include "driver/pmeter.h"
+#include "comm/ble.h"
+#include "driver/charger.h"
+#include "driver/ameter.h"
 
 
 // types
@@ -2017,7 +2017,7 @@ void cli_usb() {
 					break;
 				} else if (C != ERR_TIMEOUT) {
 					// character received
-					usb_putc(C);  // local echo
+					// usb_putc(C);  // local echo
 					line[0] = C;
 					line[1] = 0;
 					ble_puts(line);

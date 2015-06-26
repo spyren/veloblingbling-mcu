@@ -28,6 +28,7 @@
 #define AMETER_ADR 0x1C		// 7 bit I2C address
 
 extern LDD_TDeviceData* AccIntPtr;
+extern char I2C_Slave_Buffer[];
 
 
 /*

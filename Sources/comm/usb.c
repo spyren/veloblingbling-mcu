@@ -42,7 +42,7 @@
 #include "definitions.h"
 #include "usb.h"
 #include "powermgr.h"
-#include "led.h"
+#include "visual/led.h"
 
 
 // Local Types

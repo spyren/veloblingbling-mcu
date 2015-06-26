@@ -49,9 +49,9 @@
 // application include files
 // *************************
 #include "definitions.h"
-#include "led.h"
+#include "visual/led.h"
 #include "powermgr.h"
-#include "usb.h"
+#include "comm/usb.h"
 
 
 #define VOLTAGE_DIVIDER		(12.2/2.2)

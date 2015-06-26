@@ -3,8 +3,7 @@
  *      Interface to the blue tooth low energy module BL600.
  *      
  *      The UART0 (Resource BL600) is used for communication, default baud rate is 9600. 
- *      The MKL25Z does not have HW support for CTS/RTS, 
- *      handshaking is SW emulated (not implemented yet).
+ *      The MK22DX does have HW support for CTS/RTS.
  *      Input Buffer size is limited to 100 chars
  *      Output buffer size is limited to 200 chars
  *      
@@ -49,7 +48,7 @@
 #include "ble.h"
 #include "powermgr.h"
 #include "usb.h"
-#include "led.h"
+#include "visual/led.h"
 
 
 // Global Variables

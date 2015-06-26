@@ -89,22 +89,24 @@
 
 #include "Cpu.h"
 #include "Events.h"
+#include "I2C0.h"
 
 // application include files
 // *************************
 #include "powermgr.h"
-#include "led.h"
-#include "usb.h"
-#include "button.h"
-#include "cli.h"
-#include "wheelsensor.h"
-#include "watch.h"
-#include "mode.h"
-#include "bling.h"
-#include "pmeter.h"
-#include "ble.h"
 #include "parameter.h"
-#include "charger.h"
+#include "visual/led.h"
+#include "comm/usb.h"
+#include "comm/ble.h"
+#include "hmi/button.h"
+#include "hmi/cli.h"
+#include "hmi/mode.h"
+#include "motion/wheelsensor.h"
+#include "motion/bling.h"
+#include "cyclo/watch.h"
+#include "driver/ameter.h"
+#include "driver/pmeter.h"
+#include "driver/charger.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -634,7 +636,9 @@ void AccInt_OnInterrupt(LDD_TUserData *UserDataPtr)
 /* ===================================================================*/
 void I2C0_OnSlaveBlockSent(LDD_TUserData *UserDataPtr)
 {
-  /* Write your code here ... */
+	LDD_I2C_TSize Count;
+
+	Count = I2C0_SlaveGetSentDataNum(AccIntPtr);
 }
 
 /*
@@ -657,7 +661,9 @@ void I2C0_OnSlaveBlockSent(LDD_TUserData *UserDataPtr)
 /* ===================================================================*/
 void I2C0_OnSlaveBlockReceived(LDD_TUserData *UserDataPtr)
 {
-  /* Write your code here ... */
+	LDD_I2C_TSize Count;
+
+	Count = I2C0_SlaveGetReceivedDataNum(AccIntPtr);
 }
 
 /*
@@ -683,7 +689,9 @@ void I2C0_OnSlaveBlockReceived(LDD_TUserData *UserDataPtr)
 /* ===================================================================*/
 void I2C0_OnSlaveRxRequest(LDD_TUserData *UserDataPtr)
 {
-  /* Write your code here ... */
+	// it receives a 1 byte block for register address or a
+	// 5 byte block 1 byte address and 4 bytes data
+	I2C0_SlaveReceiveBlock(AccIntPtr, I2C_Slave_Buffer, 5);
 }
 
 /*
@@ -709,7 +717,8 @@ void I2C0_OnSlaveRxRequest(LDD_TUserData *UserDataPtr)
 /* ===================================================================*/
 void I2C0_OnSlaveTxRequest(LDD_TUserData *UserDataPtr)
 {
-  /* Write your code here ... */
+	// Slave sends always a 4 byte block
+	I2C0_SlaveSendBlock(AccIntPtr, I2C_Slave_Buffer+1, 4);
 }
 
 /* END Events */

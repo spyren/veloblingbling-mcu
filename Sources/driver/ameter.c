@@ -39,14 +39,14 @@
 // ****************
 #include "I2C0.h"
 #include "PE_Types.h"
+#include "AccInt.h"
 
 // application include files
 // *************************
 #include "definitions.h"
 #include "ameter.h"
-#include "usb.h"
+#include "comm/usb.h"
 #include "pmeter.h"
-#include "AccInt.h"
 
 
 /* Data register addresses */
@@ -182,6 +182,7 @@
 // Global Variables
 // ****************
 LDD_TDeviceData* AccIntPtr;
+char I2C_Slave_Buffer[5];
 
 /*
 ** ===================================================================

@@ -55,11 +55,11 @@
 #include "7x12b_vertikal_MSB_1.h"
 #include "8x12_vertikal_MSB_1.h"
 #include "12x16_vertikal_MSB_1.h"
-#include "mode.h"
-#include "bling.h"
+#include "hmi/mode.h"
+#include "motion/bling.h"
 #include "parameter.h"
-#include "usb.h"
-#include "wheelsensor.h"
+#include "comm/usb.h"
+#include "motion/wheelsensor.h"
 
 
 #define WHITE_COLUMN ((uint64_t)07777777777777777)

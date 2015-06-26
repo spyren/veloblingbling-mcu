@@ -47,8 +47,8 @@
 #include "definitions.h"
 #include "pmeter.h"
 #include "powermgr.h"
-#include "usb.h"
-#include "cyclocomputer.h"
+#include "comm/usb.h"
+#include "cyclo/cyclocomputer.h"
 
 
 // Data register addresses

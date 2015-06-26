@@ -39,11 +39,11 @@
 // application include files
 // *************************
 #include "definitions.h"
-#include "usb.h"
-#include "mode.h"
+#include "comm/usb.h"
+#include "hmi/mode.h"
 #include "wheelsensor.h"
-#include "display.h"
-#include "led.h"
+#include "visual/display.h"
+#include "visual/led.h"
 
 
 #define TIMER_TICK (1.0/375000.0)	/* counter frequency is 375 kHz -> tick 2.667 us */ 

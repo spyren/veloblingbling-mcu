@@ -47,8 +47,8 @@
 // application include files
 // *************************
 #include "definitions.h"
-#include "usb.h"
-#include "wheelsensor.h"
+#include "comm/usb.h"
+#include "motion/wheelsensor.h"
 
 // Global Variables
 // ****************

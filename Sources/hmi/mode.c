@@ -29,17 +29,17 @@
 // application include files
 // *************************
 #include "definitions.h"
-#include "led.h"
+#include "visual/led.h"
+#include "visual/display.h"
 #include "powermgr.h"
 #include "button.h"
-#include "usb.h"
-#include "display.h"
-#include "cyclocomputer.h"
-#include "watch.h"
-#include "wheelsensor.h"
-#include "bling.h"
+#include "comm/usb.h"
+#include "cyclo/cyclocomputer.h"
+#include "cyclo/watch.h"
+#include "motion/wheelsensor.h"
+#include "motion/bling.h"
 #include "parameter.h"
-#include "cli.h"
+#include "hmi/cli.h"
 
 #define MODE_STEPS 12
 #define COLOR_STEPS 7
