@@ -33,11 +33,11 @@
 // application include files
 // *************************
 #include "definitions.h"
-#include "cli.h"
-#include "led.h"
 #include "powermgr.h"
-#include "usb.h"
-#include "button.h"
+#include "hmi/cli.h"
+#include "hmi/button.h"
+#include "visual/led.h"
+#include "comm/usb.h"
 
 
 #define TEST_STEPS 96

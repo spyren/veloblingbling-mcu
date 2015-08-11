@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+  Copyright : 2012 Freescale, Inc. All Rights Reserved.
+
+  This configuration file is a standard interchange file that's format is maintained
+  by Freescale, Inc. The configuration file is a derivative work
+  of the Processor Expert Software technology licensed for use by customers
+  as defined as SOFTWARE in the product's End User License Agreement. This file
+  and format are free to use and distribute for read-only purposes. You do not have
+  the right to create these files or modify this format or use for any purposes other
+  than interchange with the Processor Expert Software technology.
+
+  THIS SOFTWARE IS PROVIDED "AS IS".
+
+  NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT
+  LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE APPLY TO THIS SOFTWARE. IN NO EVENT WILL FREESCALE BE LIABLE, WHETHER
+  IN CONTRACT, TORT, OR OTHERWISE, FOR ANY INCIDENTAL, SPECIAL, INDIRECT,
+  CONSEQUENTIAL OR PUNITIVE DAMAGES, INCLUDING, BUT NOT LIMITED TO, DAMAGES FOR
+  ANY LOSS OF USE, LOSS OF TIME, INCONVENIENCE, COMMERCIAL LOSS, OR LOST PROFITS,
+  SAVINGS, OR REVENUES TO THE FULL EXTENT SUCH MAY BE DISCLAIMED BY LAW.
+
+-->
+<export xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ProjectInfoDescription.xsd">
+  <PROCESSOR>
+    <DeviceID>MK22DX256xxx5</DeviceID>
+    <CoreNum>1</CoreNum>
+    <Cores>
+      <Core>
+        <CoreSet>Cortex-M4</CoreSet>
+      </Core>
+    </Cores>
+    <SRAMsize>32k</SRAMsize>
+    <FLASHsize>256k</FLASHsize>
+  </PROCESSOR>
+  <PATHS>
+    <LinkerCommandFile>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Project_Settings/Linker_Files/ProcessorExpert.ld</LinkerCommandFile>
+    <IncludePaths>
+      <Path>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/</Path>
+      <Path>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/iofiles/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/</Path>
+    </IncludePaths>
+    <SourceCodePaths>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Project_Settings/Startup_Code/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/comm/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/cyclo/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/</Path>
+      <Path>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/</Path>
+    </SourceCodePaths>
+  </PATHS>
+  <FILES>
+    <GeneratedCs>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ADC.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ASerialLdd1.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/AccInt.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/AdcLdd1.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/BL600.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/BLlink.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/BLreset.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ButtonInt.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ChargeStat.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/Cpu.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/FlashMem.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/HallVCC.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/I2C0.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/IntFlashLdd1.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDoe.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDreset.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDspi.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ModeButton.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/PE_LDD.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/PTC.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/RTC1.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ReedContact.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ReedInt.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/RotTimer.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/TU1.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/TU2.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/TU3.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/Tick.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/USB_LDD.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/USBpoll.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/UsbSupply.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/VAdisable.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/VREF.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/Vectors.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/Wakeup.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_cdc.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_cdc_pstn.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_class.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_dci.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_descriptor.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_device.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_driver.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_framework.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Project_Settings/Startup_Code/startup.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/Events.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/comm/ble.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/comm/usb.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/cyclo/cyclocomputer.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/cyclo/datalogger.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/cyclo/watch.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/ameter.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/charger.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/parameter.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/pmeter.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/button.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/cli.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/mode.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/main.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/bling.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/wheelsensor.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/powermgr.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/test.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/display.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/led.c</PathName>
+    </GeneratedCs>
+    <GeneratedHs>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ADC.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ASerialLdd1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/AccInt.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/AdcLdd1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/BL600.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/BLlink.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/BLreset.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ButtonInt.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ChargeStat.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/Cpu.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/FlashMem.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/HallVCC.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/I2C0.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/IO_Map.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/IntFlashLdd1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDoe.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDreset.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDspi.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ModeButton.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/PE_Const.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/PE_Error.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/PE_LDD.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/PE_Types.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/PTC.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/RTC1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ReedContact.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ReedInt.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/RotTimer.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/TU1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/TU2.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/TU3.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/Tick.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/USB_LDD.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/USBpoll.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/UsbSupply.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/VAdisable.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/VREF.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/Wakeup.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/types.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_cdc.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_cdc_pstn.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_class.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_dci.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_dciapi.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_descriptor.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_devapi.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_device.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/usb_framework.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/Events.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/comm/ble.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/comm/usb.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/cyclo/cyclocomputer.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/cyclo/datalogger.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/cyclo/watch.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/definitions.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/ameter.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/charger.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/parameter.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/driver/pmeter.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/button.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/cli.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/mode.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/bling.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/wheelsensor.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/powermgr.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/test.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/12x16_vertikal_MSB_1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/5x12_vertikal_MSB_1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/6x8_vertikal_MSB_1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/7x12_vertikal_MSB_1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/7x12b_vertikal_MSB_1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/8x12_vertikal_MSB_1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/display.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/led.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/iofiles/MK22D5.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/ADC_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/CMP_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/CMT_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/CRC_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/DMAMUX_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/DMA_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/EWM_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/FMC_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/FTFL_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/FTM_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/GPIO_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/I2C_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/LPTMR_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/MCM_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/PDB_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/PDD_Types.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/PIT_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/PORT_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/RTC_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/SAI_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/SIM_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/SPI_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/SysTick_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/UART_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/USBDCD_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/USB_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/VREF_PDD.h</PathName>
+      <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/WDOG_PDD.h</PathName>
+    </GeneratedHs>
+  </FILES>
+  <OPTIONS>
+  </OPTIONS>
+</export>

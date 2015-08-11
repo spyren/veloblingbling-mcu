@@ -173,14 +173,8 @@ void wheel_Synch() {
 
 	trip_timeout = 0;
 
-	if (low_energy) {
-		// do not wake up
-		cyclo_Information();
-		return;
-	}
-
 	sleep_wakeup = TRUE;
-	
+
 	if (rotating) {
 		rotationTimeU = (uint32_t) RotTimer_GetCounterValue(RotTimerPtr);
 		rotationTimeU = rotationTimeU + ((uint32_t) timerTurns << 16);
@@ -188,8 +182,22 @@ void wheel_Synch() {
 			return;
 		}
 
+		// restart rotation timer
+		timerTurns = 0;
+		// RotTimer_Disable(RotTimerPtr);
+		RotTimer_ResetCounter(RotTimerPtr);
+		// RotTimer_GetEventStatus(RotTimerPtr);
+		// RotTimer_Enable(RotTimerPtr);
+
+		/* calculate rotation time */
+		rotationTime = rotationTimeU * TIMER_TICK;
+
 		/* valid rotation for cyclocomputer */
 		cyclo_Information(); 		
+
+		if (low_energy) {
+			return;
+		}
 
 		if ( (rotationTimeU < T_MIN) || (rotationTimeU > T_MAX) ) {
 			/* to fast or to slow */
@@ -199,11 +207,7 @@ void wheel_Synch() {
 			enable_bling[TOPSIDE] = FALSE;
 			enable_bling[BOTTOMSIDE] = FALSE;
 			bling_StopTimer();
-			rotationTime = rotationTimeU * TIMER_TICK;;
 		} else {
-			/* calculate rotation time */
-			rotationTime = rotationTimeU * TIMER_TICK;
-
 			/* start timer for first window */
 			wait_mode = TO_FIRST;
 			if (front) {
@@ -220,12 +224,6 @@ void wheel_Synch() {
 				}	
 			}
 			
-			// restart rotation timer
-			timerTurns = 0;
-			RotTimer_Disable(RotTimerPtr);
-			RotTimer_ResetCounter(RotTimerPtr);
-			RotTimer_GetEventStatus(RotTimerPtr);
-			RotTimer_Enable(RotTimerPtr);
 
 			// set time (delay) for the first window
 			uint16_t periodTicks = (rotationTime * (delay / 360.0)) / TIMER_TICK;
@@ -244,21 +242,24 @@ void wheel_Synch() {
 		// not rotating -> start measurement
 		if (!standby) {
 			timerTurns = 0;
-			RotTimer_Disable(RotTimerPtr);
+			// RotTimer_Disable(RotTimerPtr);
 			RotTimer_ResetCounter(RotTimerPtr);
-			RotTimer_GetEventStatus(RotTimerPtr);
+			// RotTimer_GetEventStatus(RotTimerPtr);
 			RotTimer_Enable(RotTimerPtr);
 			rotating = TRUE;
 			bling_StopTimer();
 		}
+		rotationTime = -1.0;
 		
 		/* valid rotation for cyclocomputer */
 		cyclo_Information(); 	
 		
-		// show reed contact closed
-		set_led(TOPSIDE, LED16, GREEN);
-		write_ledColumn(TOPSIDE);
-		reed_closed = TRUE;
+		if (!low_energy) {
+			// show reed contact closed
+			set_led(TOPSIDE, LED16, GREEN);
+			write_ledColumn(TOPSIDE);
+			reed_closed = TRUE;
+		}
 
 	}
 }
@@ -281,7 +282,7 @@ void wheel_TimerOverrun() {
 		wait_mode = NOT_WAITING;
 		RotTimer_Disable(RotTimerPtr);
 		bling_StopTimer();
-		rotationTime = 1.0;
+		rotationTime = -1.0;
 		enable_bling[TOPSIDE] = FALSE;
 		enable_bling[BOTTOMSIDE] = FALSE;
 	}

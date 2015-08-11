@@ -2,7 +2,7 @@
  *  @brief
  *      Pressure sensor meter over I2C Interface
  *      
- *      The I2C interface is also used for the accelerometer MMA8451QR1.
+ *      The I2C master interface is also used for the accelerometer MMA8451QR1.
  *
  *      The pressure sensor Xtrinsic MPL3115A2 is used for measuring the altitude and temperature.
  *      I2C address for pressure sensor is 0x60 (7 bit address), CSL clock 75 kHz.
@@ -49,6 +49,7 @@
 #include "powermgr.h"
 #include "comm/usb.h"
 #include "cyclo/cyclocomputer.h"
+#include "comm/ble.h"
 
 
 // Data register addresses
@@ -285,6 +286,14 @@ void pmeter_Init() {
 
 	I2C_DeviceData = I2C0_Init(&DataState);
 	
+	// prepare slave for send and receive
+	if (I2C0_SlaveSendBlock(I2C_DeviceData, I2C_Slave_TxBuffer+1, 4)) {
+		usb_puts("I2C Slave Tx Block: can't init\n");
+	}
+	if (I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 5)) {
+		usb_puts("I2C Slave Rx Block: can't init\n");
+	}
+
 	// test read
 	if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
 		usb_puts("Initialise pressure sensor: can't read pressure sensor\n");

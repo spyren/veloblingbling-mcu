@@ -70,6 +70,9 @@ double temperature = 20.0;		/**< [°C] degrees centigrade */
 double cadence = 0.0;			/**< cadence (not implemented yet) [s^-1] */
 double altimeterOffset = 0.0;	/**< altimeter offset [m] */
 
+uint32_t wheelRevo = 0;			/**< cumulative wheel revolutions (unitless) */
+uint16_t wheelTime = 0;			/**< last wheel event time (1/1024 s) */
+
 Trip_ModeT tripMode = TRIP_STOPPED; 
 Trip_ModeT chronoMode = TRIP_STOPPED; 
 volatile uint8_t trip_timeout = 0;
@@ -92,10 +95,14 @@ uint8_t timeIndex = 0;
 /* ===================================================================*/
 void cyclo_Information() {
 	
+	wheelRevo++;
+
 	// current speed calculation
 	if (rotationTime < 0.0) {
 		currSpeed = 0.0;
+		wheelTime = wheelTime + 20000;
 	} else {
+		wheelTime = wheelTime + rotationTime * 1024;
 		timeArray[timeIndex++] = rotationTime;
 		if (timeIndex >= 4) {
 			timeIndex = 0;

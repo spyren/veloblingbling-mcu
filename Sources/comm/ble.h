@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Interface to the blue tooth low energy module BL600.
+ *      Interface to the bluetooth low energy module BL600.
  *      
  *      The UART0 (Resource BL600) is used for communication, default baud rate is 9600. 
  *      The MK22DX does have HW support for CTS/RTS.
@@ -29,6 +29,30 @@
 
 #define BLE_INPUT_BUFFER_SIZE	100
 #define BLE_OUTPUT_BUFFER_SIZE	200
+
+#define BLE_LINK_STATE_BIT 0x01
+
+#define SLAVE_ADDRESS		0	// I2C address
+
+#define STATE_REG			0	// state register
+#define WHEEL_REVO_REG		4	// wheelRevo register
+#define WHEEL_TIME_REG		8	// wheelTime register
+#define DISPLAY_MODE_REG	12	// displayMode register
+#define CYCLE_MODE_REG		16	// cycleMode register
+#define DISPLAY_COLOR_REG	20	// displayColor register
+#define DISPLAY_IMAGE_REG	24	// displayImage register
+
+#define DISPLAY_MODE_MOD	1	// displayMode modified
+#define CYCLE_MODE_MOD		2	// cycleMode modified
+#define DISPLAY_COLOR_MOD	4	// displayColor modified
+#define DISPLAY_IMAGE_MOD	8	// displayImage modified
+
+
+// Global Variables
+// ****************
+extern char I2C_Slave_TxBuffer[];
+extern char I2C_Slave_RxBuffer[];
+extern bool ble_LinkState;
 
 /*
  ** ===================================================================
@@ -116,18 +140,6 @@ int ble_puts(const char *s);
 
 /*
  ** ===================================================================
- **  Method      :  ble_link
- */
-/**     
- *  @brief
- *      Event handler, called when Bluetooth link is established
- *      
- */
-/* ===================================================================*/
-void ble_link();
-
-/*
- ** ===================================================================
  **  Method      :  ble_show_state
  */
 /**     
@@ -137,5 +149,18 @@ void ble_link();
  */
 /* ===================================================================*/
 void ble_show_state();
+
+/*
+ ** ===================================================================
+ **  Method      :  ble_I2CblockReceived
+ */
+/**
+ *  @brief
+ *      Called by event I2C0_OnSlaveBlockReceived.
+ *      If it is only one byte -> register address for sending data
+ *      If it is 5 bytes -> register address and 4 data bytes
+ */
+/* ===================================================================*/
+void ble_I2CblockReceived();
 
 #endif /* BLE_H_ */

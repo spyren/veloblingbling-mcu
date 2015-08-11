@@ -1,6 +1,8 @@
 /**
  *  @brief
- *      Interface to the blue tooth low energy module BL600.
+ *      Interface to the bluetooth low energy module BL600.
+ *      The command line interface use the UART / vSP bridge mode.
+ *      The BLE profiles are accessed through the I2C slave interface.
  *      
  *      The UART0 (Resource BL600) is used for communication, default baud rate is 9600. 
  *      The MK22DX does have HW support for CTS/RTS.
@@ -11,6 +13,40 @@
  *      
  *      nAutoRun is GND -> autorun activated
  *      
+ *      I2C Communication between BL600 and Bling Bling MCU
+ *		The BL600 is Master
+ *		High to low transition: Data ready for read
+ *		All registers are 32 bit
+ *		A write with only 8 bit data sets the register address
+ *
+ *
+ *		Reg
+ *	 	-  address	  8bit wr  bit7: auto increment
+ *	 	0  state        32bit wr  bit0: BLE link established
+ *	 	4  wheelRevo    32bit rd  see CSC measurement
+ *	 	8  wheelTime    32bit rd  see CSC measurement
+ *	 	12 displayMode  32bit wr
+ *	 					   bit0-3   UPPER TOPSIDE
+ *		     	           bit4-7   LOWER TOPSIDE
+ *				           bit8-11  BLING TOPSIDE
+ *				           bit12-15
+ *			    	       bit16-19 UPPER BOTTOMSIDE
+ *			        	   bit20-23 LOWER BOTTOMSIDE
+ *			        	   bit24-27 BLING BOTTOMSIDE
+ *			        	   bit28-31
+ *	      0  CYCLOCOMPUTER, 1 STRING, 2 IMAGE, 3 LIGHT, 4 BLANK
+ *	 	16 cycleMode    32bit wr
+ *	 					   bit0-3   UPPER TOPSIDE
+ *		     	           bit4-7   LOWER TOPSIDE
+ *				           bit8-11  BLING TOPSIDE
+ *				           bit12-15
+ *			    	       bit16-19 UPPER BOTTOMSIDE
+ *			        	   bit20-23 LOWER BOTTOMSIDE
+ *			        	   bit24-27 BLING BOTTOMSIDE
+ *			        	   bit28-31
+ *	 	24 displayColor 32bit wr
+ *	 	28 displayImage 32bit wr
+ *
  *  @file
  *      ble.c
  *  @copyright
@@ -41,6 +77,7 @@
 #include "BLreset.h"
 #include "BLlink.h"
 #include "BL600.h"
+#include "I2C0.h"
 
 // application include files
 // *************************
@@ -49,10 +86,17 @@
 #include "powermgr.h"
 #include "usb.h"
 #include "visual/led.h"
+#include "hmi/mode.h"
+#include "visual/display.h"
+#include "driver/pmeter.h"
+#include "cyclo/cyclocomputer.h"
 
 
 // Global Variables
 // ****************
+char I2C_Slave_TxBuffer[5] = {0x00, 0x12, 0x34, 0x56, 0x78};
+char I2C_Slave_RxBuffer[5] = {0x00, 0x12, 0x34, 0x56, 0x78};
+bool ble_LinkState = FALSE;
 
 // Local Variables
 // ***************
@@ -80,10 +124,6 @@ int ble_Init() {
 	
 	ble_reset();
 	
-	// UART_RTS_PutVal(NULL, FALSE);	// hardware handshake, ready to receive data
-	
-	// error = ble_command("ati 3\r", answer, sizeof(answer));
-	// error = ble_command("ati 49406\r", answer, sizeof(answer));
 	error = ble_command(run_bling_s, answer, sizeof(answer));
 	if (strstr(answer, "OK") == NULL) {
 		error = -3;
@@ -225,19 +265,6 @@ int ble_puts(const char *s) {
 }
 
 
-/*
- ** ===================================================================
- **  Method      :  ble_link
- */
-/**     
- *  @brief
- *      Event handler, called when Bluetooth link is established
- *      
- */
-/* ===================================================================*/
-void ble_link() {
-	sleep_wakeup = TRUE;
-}
 
 /*
  ** ===================================================================
@@ -250,10 +277,96 @@ void ble_link() {
  */
 /* ===================================================================*/
 void ble_show_state() {
-	if (BLlink_GetVal(NULL)) {
-		set_led(TOPSIDE, LED15, BLACK);
+//	if (ble_LinkState) {
+//		set_led(TOPSIDE, LED15, BLUE);
+//		sleep_wakeup = TRUE;
+//	} else {
+//		set_led(TOPSIDE, LED15, BLACK);
+//	}
+
+    if (BLlink_GetVal(NULL)) {
+    	set_led(TOPSIDE, LED15, BLACK);
+    } else {
+        set_led(TOPSIDE, LED15, BLUE);
+        sleep_wakeup = TRUE;
+    }
+
+
+}
+
+
+/*
+ ** ===================================================================
+ **  Method      :  ble_I2CblockReceived
+ */
+/**
+ *  @brief
+ *      Called by event I2C0_OnSlaveBlockReceived.
+ *      If it is only one byte -> register address for sending data
+ *      If it is 5 bytes -> register address and 4 data bytes
+ */
+/* ===================================================================*/
+void ble_I2CblockReceived() {
+	LDD_I2C_TSize Count;
+
+	Count = I2C0_SlaveGetReceivedDataNum(I2C_DeviceData);
+	if (Count == 1) {
+		// register address for block to send
+		// the register address is in I2C_Slave_RxBuffer[0]
+		// prepare data to send
+		switch (I2C_Slave_RxBuffer[0]) {
+		case STATE_REG:
+			// read only
+			break;
+		case WHEEL_REVO_REG:
+			I2C_Slave_TxBuffer[1] =  wheelRevo & 0x000000FF;
+			I2C_Slave_TxBuffer[2] = (wheelRevo & 0x0000FF00) >> 8;
+			I2C_Slave_TxBuffer[3] = (wheelRevo & 0x00FF0000) >> 16;
+			I2C_Slave_TxBuffer[4] = (wheelRevo & 0xFF000000) >> 24;
+		case WHEEL_TIME_REG:
+			I2C_Slave_TxBuffer[1] =  wheelTime & 0x000000FF;
+			I2C_Slave_TxBuffer[2] = (wheelTime & 0x0000FF00) >> 8;
+			I2C_Slave_TxBuffer[3] = 0;
+			I2C_Slave_TxBuffer[4] = 0;
+			break;
+		case DISPLAY_MODE_REG:
+			I2C_Slave_TxBuffer[1] = displayMode[TOPSIDE][UPPER]    + (displayMode[TOPSIDE][LOWER]    << 4);
+			I2C_Slave_TxBuffer[2] = displayMode[TOPSIDE][BLING];
+			I2C_Slave_TxBuffer[3] = displayMode[BOTTOMSIDE][UPPER] + (displayMode[BOTTOMSIDE][LOWER] << 4);
+			I2C_Slave_TxBuffer[4] = displayMode[BOTTOMSIDE][BLING];
+			break;
+		}
+
+	} else if (Count == 5) {
+		// register address and 4 bytes data
+		switch (I2C_Slave_RxBuffer[0]) {
+		case STATE_REG:
+			ble_LinkState = (I2C_Slave_RxBuffer[1] & BLE_LINK_STATE_BIT) == BLE_LINK_STATE_BIT;
+			break;
+		case WHEEL_REVO_REG:
+			wheelRevo = I2C_Slave_RxBuffer[1]       + I2C_Slave_RxBuffer[2] << 8 +
+				        I2C_Slave_RxBuffer[2] << 16 + I2C_Slave_RxBuffer[2] << 24;
+			break;
+		case WHEEL_TIME_REG:
+			wheelTime = I2C_Slave_RxBuffer[1] + I2C_Slave_RxBuffer[2] << 8;
+			break;
+		case DISPLAY_MODE_REG:
+			displayMode[TOPSIDE][UPPER] =     I2C_Slave_RxBuffer[1] & 0x0F;
+			displayMode[TOPSIDE][LOWER] =    (I2C_Slave_RxBuffer[1] & 0xF0) >> 4;
+			displayMode[TOPSIDE][BLING] =     I2C_Slave_RxBuffer[2] & 0x0F;
+			displayMode[BOTTOMSIDE][UPPER] =  I2C_Slave_RxBuffer[3] & 0x0F;
+			displayMode[BOTTOMSIDE][LOWER] = (I2C_Slave_RxBuffer[3] & 0xF0) >> 4;
+			displayMode[BOTTOMSIDE][BLING] =  I2C_Slave_RxBuffer[4] & 0x0F;
+			break;
+		}
 	} else {
-		set_led(TOPSIDE, LED15, BLUE);
-		sleep_wakeup = TRUE;
+		// not valid
 	}
+
+	// prepare slave for receive
+	if (I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 5)) {
+		usb_puts("I2C Slave Rx Block: can't set buffer\n");;
+	}
+
+
 }

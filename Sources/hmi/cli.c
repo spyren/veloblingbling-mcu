@@ -80,7 +80,7 @@
  *  @remark     
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 3.7RC5, 2015/06/25
+ *      Version 3.7, 2015/08/11
  */
 
 /**
@@ -90,7 +90,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 3.7RC5, 2015/06/25, Copyright Peter Schmid\n\n";
+		"Version 3.7, 2015/08/11, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -121,7 +121,7 @@ const char helloMessage[] =
 #include "cyclo/cyclocomputer.h"
 #include "cyclo/datalogger.h"
 #include "cyclo/watch.h"
-#include "parameter.h"
+#include "driver/parameter.h"
 #include "motion/bling.h"
 #include "driver/pmeter.h"
 #include "comm/ble.h"
@@ -204,7 +204,7 @@ static const char cliHelpSet[] =
 		"set wheel front|rear\n"
 		"set energy low|standard"
 		"set surface top|bottom\n"
-		"set upper|lower speed|max|avg|trip|tot|alt|inc|temp|cad|watch|time|stop|string|blk|img|light\n"
+		"set upper|lower speed|max|avg|trip|tot|alt|inc|temp|cad|watch|time|chro|string|blk|img|light\n"
 		"set bling blk|img\n"
 		"set string upper|lower|bling <string>\n"
 		"set image upper|lower|bling <number>\n"

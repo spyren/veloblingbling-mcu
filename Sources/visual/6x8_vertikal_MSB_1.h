@@ -1,6 +1,7 @@
 /**
  *  @brief
  *      One character is 6x8 pixel
+ *      Something is wrong
  *
  *  @file
  *      6x8_vertikal_MSB_1.h

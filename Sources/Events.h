@@ -56,7 +56,6 @@
 #include "usb_cdc.h"
 #include "FlashMem.h"
 #include "IntFlashLdd1.h"
-#include "BLlinkInt.h"
 #include "ADC.h"
 #include "AdcLdd1.h"
 #include "VREF.h"

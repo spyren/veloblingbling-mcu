@@ -10,12 +10,16 @@
  *			INT_UART0_ERR				high, 5
  *		BL600_OnRxChar
  *		BL600_OnTxChar
- *			INT_UART0_RX_TX				high, 5
  *		BL600_OnFullRxBuf
  *		BL600_OnFreeTxBuf
+  *			INT_UART0_RX_TX				high, 5
  *
  *		I2C0_OnMasterBlockSent
  *		I2C0_OnMasterBlockReceived
+ *		I2C0_OnSlaveBlockSent
+ *		I2C0_OnSlaveBlockReceived
+ *		I2C0_OnSlaveRxRequest
+ *		I2C0_OnSlaveTxRequest
  *			INT_I2C0					high, 5			SCL 75 kHz
  *
  *		ButtonInt_OnInterrupt
@@ -94,7 +98,6 @@
 // application include files
 // *************************
 #include "powermgr.h"
-#include "parameter.h"
 #include "visual/led.h"
 #include "comm/usb.h"
 #include "comm/ble.h"
@@ -107,6 +110,7 @@
 #include "driver/ameter.h"
 #include "driver/pmeter.h"
 #include "driver/charger.h"
+#include "driver/parameter.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -638,7 +642,9 @@ void I2C0_OnSlaveBlockSent(LDD_TUserData *UserDataPtr)
 {
 	LDD_I2C_TSize Count;
 
-	Count = I2C0_SlaveGetSentDataNum(AccIntPtr);
+	Count = I2C0_SlaveGetSentDataNum(I2C_DeviceData);
+	// prepare slave for send
+	// I2C0_SlaveSendBlock(I2C_DeviceData, I2C_Slave_TxBuffer+1, 4);
 }
 
 /*
@@ -661,9 +667,7 @@ void I2C0_OnSlaveBlockSent(LDD_TUserData *UserDataPtr)
 /* ===================================================================*/
 void I2C0_OnSlaveBlockReceived(LDD_TUserData *UserDataPtr)
 {
-	LDD_I2C_TSize Count;
-
-	Count = I2C0_SlaveGetReceivedDataNum(AccIntPtr);
+	ble_I2CblockReceived();
 }
 
 /*
@@ -690,8 +694,8 @@ void I2C0_OnSlaveBlockReceived(LDD_TUserData *UserDataPtr)
 void I2C0_OnSlaveRxRequest(LDD_TUserData *UserDataPtr)
 {
 	// it receives a 1 byte block for register address or a
-	// 5 byte block 1 byte address and 4 bytes data
-	I2C0_SlaveReceiveBlock(AccIntPtr, I2C_Slave_Buffer, 5);
+	// 5 byte block 1 byte register address and 4 bytes data
+	// I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 5);
 }
 
 /*
@@ -718,7 +722,9 @@ void I2C0_OnSlaveRxRequest(LDD_TUserData *UserDataPtr)
 void I2C0_OnSlaveTxRequest(LDD_TUserData *UserDataPtr)
 {
 	// Slave sends always a 4 byte block
-	I2C0_SlaveSendBlock(AccIntPtr, I2C_Slave_Buffer+1, 4);
+	// I2C0_SlaveSendBlock(I2C_DeviceData, I2C_Slave_TxBuffer+1, 4);
+	// prepare data in the transmit buffer
+
 }
 
 /* END Events */

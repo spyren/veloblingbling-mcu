@@ -217,6 +217,8 @@ void watch_Synch() {
 	}
 	
 	if (! standby) {
+		// BLlink_ClrVal(NULL); // ready for I2C slave
+
 		if (!watchBlocked) {
 			RTC1_GetTime(watchPtr, &watchTime);
 		}
@@ -243,6 +245,8 @@ void watch_Synch() {
 		if (batteryVoltage < 3.0) {
 			// low_energy = TRUE;
 		}
+
+		// BLlink_SetVal(NULL);
 
 	}
 }

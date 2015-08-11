@@ -52,6 +52,9 @@ extern double cadence;				/** [s^-1] */
 
 extern double altimeterOffset;		/**< altimeter offset [m] */
 
+extern uint32_t wheelRevo;			/**< cumulative wheel revolutions (unitless) */
+extern uint16_t wheelTime;			/**< last wheel event time (1/1024 s) */
+
 extern Trip_ModeT tripMode;
 extern Trip_ModeT chronoMode;
 extern volatile uint8_t trip_timeout;

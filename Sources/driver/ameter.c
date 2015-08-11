@@ -1,6 +1,6 @@
 /**
  *  @brief
- *      Accelerometer over I2C Interface
+ *      Accelerometer over I2C Master Interface
  *
  *      The accelerometer MMA8451QR1 is used for wake up from deep sleep by
  *      automatic motion detection.
@@ -182,7 +182,6 @@
 // Global Variables
 // ****************
 LDD_TDeviceData* AccIntPtr;
-char I2C_Slave_Buffer[5];
 
 /*
 ** ===================================================================

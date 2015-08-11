@@ -1,7 +1,7 @@
 /**
  *  @brief
  *      LED lights for bicycles wheels.
- *      16 multi color LEDs on each side (top- and bottom side).
+ *      16 multi color LEDs on each side (PCB top- and bottom side).
  *      There are two windows (upper and lower) on each side.
  *      The windows are 100 x 16 pixels.
  *      The space between the windows can be filled with a pattern (blingbling)
@@ -9,7 +9,7 @@
  *      cyclocomputer functions
  *        speed
  *        maximum speed
- *        average spee
+ *        average speed
  *        trip distance
  *        total distance
  *        altitude
@@ -96,7 +96,6 @@
 #include "usb_cdc.h"
 #include "FlashMem.h"
 #include "IntFlashLdd1.h"
-#include "BLlinkInt.h"
 #include "ADC.h"
 #include "AdcLdd1.h"
 #include "VREF.h"
@@ -170,11 +169,13 @@ int main(void)
 
 	  while (1) {
 		  if (usb_getc(2) == A_ESC) {
+			  // ESC from USB console -> leave for USB command line
 			  break;
 		  }
 		  // timeout 20 ms
-		  cli_ble();
+		  cli_ble(); // check for Bluetooth command line
 		  if (ButtonPressed) {
+			  // local key pressed
 			  set_Mode();
 		  }
 		  powermgr_DeepSleep();

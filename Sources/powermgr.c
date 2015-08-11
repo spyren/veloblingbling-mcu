@@ -39,11 +39,11 @@
 #include "definitions.h"
 #include "powermgr.h"
 #include "visual/led.h"
-#include "pmeter.h"
-#include "usb.h"
-#include "ble.h"
-#include "charger.h"
-#include "ameter.h"
+#include "comm/usb.h"
+#include "comm/ble.h"
+#include "driver/charger.h"
+#include "driver/ameter.h"
+#include "driver/pmeter.h"
 
 #define MAX_SLEEP 60			// if there is no action for 60s go to deep sleep
 #define MAX_HIBERNATION (60*60)	// after 1 h (60 * 60 = 3600) standby go for hibernation
@@ -134,33 +134,18 @@ void wait_10ms(int time) {
  *      Stops the CPU if there is no wheel turn or no Mode button event for more than MAX_SLEEP s. 
  *      CPU goes into Stop mode.
  *      
- *      Called every 10 ms by operation.
- *      Interrupts from BTN1 (Mode Button), ReedInt, BLlinkInt and RTC1 can wake up the CPU. 
+ *      Called every 20 ms by main loop.
+ *      Interrupts from BTN1 (Mode Button), ReedInt, and RTC1 can wake up the CPU.
  *      Wakeup Interrupt Controller (WIC) is used to wake from interruptions
  *      
  */
 /* ===================================================================*/
 void powermgr_DeepSleep() {
 	if (sleep_wakeup) {
-		// wake up by mode button or wheel turn -> wakeup
+		// wake up by mode button or wheel turn -> reset timeouts
 		sleep_timeout = 0;
 		sleep_wakeup = FALSE;
-		standby = FALSE;
-		pmeter_setActive();
-		enable_BatMeasure();
-		USBpoll_Enable(usb_TimerPtr);
-#ifdef ACCELEROMETER
-		if (hibernation_timeout >= MAX_HIBERNATION) {
-			// wake up BLE
-#ifdef HALL_SENSOR
-			HallVCC_SetVal(NULL); // switch on Hall sensor
-#endif
-			BL600_Enable();
-			ble_Init();
-			AccInt_Disable(AccIntPtr);
-		}
 		hibernation_timeout = 0;
-#endif
 
 	} else {
 		if (sleep_timeout >= MAX_SLEEP) {
@@ -175,6 +160,7 @@ void powermgr_DeepSleep() {
 				Cpu_VLPModeEnable();
 				Cpu_SetOperationMode(DOM_SLEEP, NULL, NULL);
 				// enter deep sleep mode -> exit by any enabled interrupt
+				// wake up by RTC every second
 
 #ifdef ACCELEROMETER
 				if (hibernation_timeout == MAX_HIBERNATION) {
@@ -196,10 +182,31 @@ void powermgr_DeepSleep() {
 				}
 #endif
 			}
-			// after interrupt
+			// after wakeup
 			Cpu_VLPModeDisable();
 			Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_0);
-		} 
+
+
+			pmeter_setActive();
+			enable_BatMeasure();
+			USBpoll_Enable(usb_TimerPtr);
+#ifdef ACCELEROMETER
+			if (hibernation_timeout >= MAX_HIBERNATION) {
+				// wake up BLE
+#ifdef HALL_SENSOR
+				HallVCC_SetVal(NULL); // switch on Hall sensor
+#endif
+				BL600_Enable();
+				ble_Init();
+				AccInt_Disable(AccIntPtr);
+			}
+#endif
+			sleep_wakeup = FALSE;
+			sleep_timeout = 0;
+			hibernation_timeout = 0;
+			standby = FALSE;
+		}
+
 	}
 }
 

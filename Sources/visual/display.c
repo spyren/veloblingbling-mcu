@@ -57,7 +57,7 @@
 #include "12x16_vertikal_MSB_1.h"
 #include "hmi/mode.h"
 #include "motion/bling.h"
-#include "parameter.h"
+#include "driver/parameter.h"
 #include "comm/usb.h"
 #include "motion/wheelsensor.h"
 
@@ -886,6 +886,12 @@ void images_Init() {
 	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
 	save_Image(13);
 
+	// 15: ParisBrestParis
+	clear_display(TOPSIDE, BLING);
+	position = put_str("\\s01Paris\\c07Brest\\c01Paris", DOS5x12, BLUE, 0, TOPSIDE, BLING);
+	image_bufferP->length = position;
+	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
+	save_Image(15);
 
 	// 20: germany spyr.ch swisscross
 	clear_display(TOPSIDE, BLING);
@@ -928,7 +934,7 @@ void images_Init() {
 	
 	// 24: veloblingbling
 	clear_display(TOPSIDE, BLING);
-	position = put_str("\\s01velo\\c07bling\\c01bling", DOS7x12, BLUE, 0, TOPSIDE, BLING);
+	position = put_str("\\s01velo\\c07bling\\c01bling", DOS7x12b, BLUE, 0, TOPSIDE, BLING);
 	image_bufferP->length = position;
 	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
 	save_Image(24);

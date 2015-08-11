@@ -38,7 +38,7 @@
 #include "cyclo/watch.h"
 #include "motion/wheelsensor.h"
 #include "motion/bling.h"
-#include "parameter.h"
+#include "driver/parameter.h"
 #include "hmi/cli.h"
 
 #define MODE_STEPS 12
@@ -55,7 +55,7 @@ const static const struct mode_step_s mode_step[MODE_STEPS] = {
 		{LED2,  CYCLOCOMPUTER, TRIPDISTANCE},		// 1
 		{LED3,  CYCLOCOMPUTER, TOTALDISTANCE},		// 2
 		{LED4,  CYCLOCOMPUTER, CURRENTALTITUDE},	// 3
-		{LED5,  CYCLOCOMPUTER, TRIPELEVATIONGAIN},		// 4
+		{LED5,  CYCLOCOMPUTER, TRIPELEVATIONGAIN},	// 4
 		{LED6,  CYCLOCOMPUTER, CURRENTTIME},		// 5
 		{LED7,  CYCLOCOMPUTER, TRIPTIME},			// 6
 		{LED8,  CYCLOCOMPUTER, CHRONOTIME},			// 7
@@ -79,7 +79,7 @@ char displayString[BOTTOMSIDE+1][BLING+1][40] =
 //	{{"  & ein gutes", "neues Jahr!", "spyr.ch"}, {"& ein gutes", "neues Jahr!", "spyr.ch"}};
 
 LED_colorT displayColor[BOTTOMSIDE+1][BLING+1] = 
-	{{GREEN, RED, RED}, {BLUE, RED, RED}};	
+	{{GREEN, RED, RED}, {GREEN, RED, RED}};
 
 int displayImage[BOTTOMSIDE+1][BLING+1] = 
 	{{20, 24, 0}, {20, 24, 0}};
@@ -117,81 +117,100 @@ void set_Mode() {
 	}
 
 	if (ButtonLongPressed) {
-		// change mode
-		for (win = UPPER; win <= BLING; win++) {
-			set_led(TOPSIDE, win+LED13, WHITE);
-			set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
-			write_ledColumn(TOPSIDE);
-			wait_ledColumn();
+//		// change mode
+//		for (win = UPPER; win <= BLING; win++) {
+//			set_led(TOPSIDE, win+LED13, WHITE);
+//			set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
+//			write_ledColumn(TOPSIDE);
+//			wait_ledColumn();
+//
+//			while (! ButtonReleased) {
+//				// wait till button released
+//				wait_10ms(2);
+//			}
+//			ButtonPressed = FALSE;
+//			ButtonReleased = FALSE;
+//			ButtonLongPressed = FALSE;
+//
+//			while(1) {
+//				// choose mode for win
+//				wait_10ms(20);
+//				if (ButtonLongPressed) {
+//					// mode choosen
+//					ButtonLongPressed = FALSE;
+//					break;
+//				} else if (ButtonReleased) {
+//					// next mode step
+//					ButtonReleased = FALSE;
+//					if (++currModeStep[win] == MODE_STEPS) {
+//						currModeStep[win] = 0;
+//					}
+//					clear_leds(TOPSIDE);
+//					set_led(TOPSIDE, win+LED13, WHITE);
+//					set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
+//					write_ledColumn(TOPSIDE);
+//					displayMode[TOPSIDE][win] = mode_step[currModeStep[win]].display_mode;
+//					cycloMode[TOPSIDE][win] = mode_step[currModeStep[win]].cyclo_mode;
+//				}
+//			}
+//
+//			clear_leds(TOPSIDE);
+//			write_ledColumn(TOPSIDE);
+//			while (! ButtonReleased) {
+//				// wait till button released
+//				wait_10ms(2);
+//			}
+//			ButtonPressed = FALSE;
+//			ButtonReleased = FALSE;
+//			ButtonLongPressed = FALSE;
+//
+//			set_led(TOPSIDE, win+LED13, WHITE);
+//			set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
+//			write_ledColumn(TOPSIDE);
+//
+//			while(1) {
+//				// choose color for win
+//				wait_10ms(2);
+//				if (ButtonLongPressed) {
+//					// mode choosen
+//					ButtonLongPressed = FALSE;
+//					break;
+//				} else if (ButtonReleased) {
+//					// next mode step
+//					ButtonReleased = FALSE;
+//					if (++displayColor[TOPSIDE][win] == (WHITE+1)) {
+//						displayColor[TOPSIDE][win] = RED;
+//					}
+//					set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
+//					write_ledColumn(TOPSIDE);
+//				}
+//			}
+//			clear_leds(TOPSIDE);
+//			write_ledColumn(TOPSIDE);
+//		} /* for */
+//		while (! ButtonReleased) {
+//			// wait till button released
+//			wait_10ms(2);
+//		}
+//		ButtonReleased = FALSE;
+//		ButtonPressed = FALSE;
+//		ButtonLongPressed = FALSE;
 
-			while (! ButtonReleased) {
-				// wait till button released
-				wait_10ms(2);
-			}
-			ButtonPressed = FALSE;
-			ButtonReleased = FALSE;
-			ButtonLongPressed = FALSE;
 
-			while(1) {
-				// choose mode for win
-				wait_10ms(20);
-				if (ButtonLongPressed) {
-					// mode choosen
-					ButtonLongPressed = FALSE;
-					break;
-				} else if (ButtonReleased) {
-					// next mode step
-					ButtonReleased = FALSE;
-					if (++currModeStep[win] == MODE_STEPS) {
-						currModeStep[win] = 0;
-					}
-					clear_leds(TOPSIDE);
-					set_led(TOPSIDE, win+LED13, WHITE);
-					set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
-					write_ledColumn(TOPSIDE);
-					displayMode[TOPSIDE][win] = mode_step[currModeStep[win]].display_mode;
-					cycloMode[TOPSIDE][win] = mode_step[currModeStep[win]].cyclo_mode;
-				}
-			}
-
-			clear_leds(TOPSIDE);
-			write_ledColumn(TOPSIDE);
-			while (! ButtonReleased) {
-				// wait till button released
-				wait_10ms(2);
-			}
-			ButtonPressed = FALSE;
-			ButtonReleased = FALSE;
-			ButtonLongPressed = FALSE;
-
-			set_led(TOPSIDE, win+LED13, WHITE);
-			set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
-			write_ledColumn(TOPSIDE);
-			
-			while(1) {
-				// choose color for win
-				wait_10ms(2);
-				if (ButtonLongPressed) {
-					// mode choosen
-					ButtonLongPressed = FALSE;
-					break;
-				} else if (ButtonReleased) {
-					// next mode step
-					ButtonReleased = FALSE;
-					if (++displayColor[TOPSIDE][win] == (WHITE+1)) {
-						displayColor[TOPSIDE][win] = RED;
-					}
-					set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
-					write_ledColumn(TOPSIDE);
-				}
-			}
-			clear_leds(TOPSIDE);
-			write_ledColumn(TOPSIDE);
-		} /* for */
-		while (! ButtonReleased) {
-			// wait till button released
-			wait_10ms(2);
+		// toggle low energy mode
+		if (low_energy) {
+			low_energy = FALSE;
+			set_led(TOPSIDE, LED1, WHITE);
+		} else {
+			low_energy = TRUE;
+			set_led(TOPSIDE, LED1, YELLOW);
 		}
+		write_ledColumn(TOPSIDE);
+		wait_10ms(100);
+		clear_leds(TOPSIDE);
+		write_ledColumn(TOPSIDE);
+		wait_ledColumn();
+
 		ButtonReleased = FALSE;
 		ButtonPressed = FALSE;
 		ButtonLongPressed = FALSE;		
@@ -206,7 +225,6 @@ void set_Mode() {
 			tripMode = TRIP_STARTED;
 			chronoMode = TRIP_STARTED;
 			set_led(TOPSIDE, LED1, GREEN);
-			low_energy = FALSE;
 		} else {
 			// started (or paused) -> stop trip
 			tripMode = TRIP_STOPPED;
@@ -215,7 +233,6 @@ void set_Mode() {
 			// save the configuration and data
 			set_params();
 			save_params();
-			low_energy = TRUE;
 		}
 		write_ledColumn(TOPSIDE);
 		
@@ -261,8 +278,8 @@ static void time2str(double time, char* str) {
 	int days, rest, hours, minutes, seconds;
 	char s[20];
 	
-	days = tripTime / (24 * 60 * 60);
-	rest = fmod(tripTime, 24 * 60 * 60);
+	days = time / (24 * 60 * 60);
+	rest = fmod(time, 24 * 60 * 60);
 	hours = rest / (60 * 60);
 	rest = rest % (60 * 60);
 	minutes = rest / 60;
@@ -578,18 +595,18 @@ void mode_Update() {
 					break;
 				} // switch
 				break;
-				case STRING: 
-					put_str(displayString[sur][win], DOS7x12b, displayColor[sur][win], 0, sur, win);
-					break;
-				case IMAGE:
-					put_Image(displayImage[sur][win], 0, sur, win);
-					break;
-				case LIGHT:
-					// puts_12x16("\333\333\333\333\333\333\333\333", front ? WHITE : RED, 0, sur, win);
-					break;
-				case BLANK:
-					put_str(".", DOS5x12, displayColor[sur][win], 0, sur, win);
-					break;
+			case STRING:
+				put_str(displayString[sur][win], DOS7x12b, displayColor[sur][win], 0, sur, win);
+				break;
+			case IMAGE:
+				put_Image(displayImage[sur][win], 0, sur, win);
+				break;
+			case LIGHT:
+				// puts_12x16("\333\333\333\333\333\333\333\333", front ? WHITE : RED, 0, sur, win);
+				break;
+			case BLANK:
+				put_str(".", DOS5x12, displayColor[sur][win], 0, sur, win);
+				break;
 			} // switch
 		} // for
 
