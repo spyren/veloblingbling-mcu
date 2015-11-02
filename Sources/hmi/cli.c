@@ -90,7 +90,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 3.7, 2015/08/11, Copyright Peter Schmid\n\n";
+		"Version 3.8RC1, 2015/09/02, Copyright Peter Schmid\n\n";
 
 
 // system include files

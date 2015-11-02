@@ -49,6 +49,7 @@
 // application include files
 // *************************
 #include "definitions.h"
+#include "charger.h"
 #include "visual/led.h"
 #include "powermgr.h"
 #include "comm/usb.h"
@@ -76,8 +77,9 @@ volatile double batteryVoltage;
  *  
  */
 /* ===================================================================*/
-void init_Charger() {
+void charger_Init() {
 	// ChargeInh_Init();
+	enable_BatMeasure();
 }
 
 
@@ -222,28 +224,6 @@ void charger_show_state() {
 	}
 }
 
-//	static bool LastCharging = TRUE; // for the hysteresis
-//	float ChargingLimit = 4.05;
-//	if (ChargeStat_GetVal(NULL)) {
-//		// not charging
-//		set_led(TOPSIDE, LED15, BLACK);
-//		LastCharging = FALSE;
-//	} else {
-//		// charging
-//		sleep_wakeup = TRUE;
-//		if (LastCharging) {
-//			// last time it was charging -> add threshold
-//			ChargingLimit = 4.05 + 0.05;
-//		}
-//		if (batteryVoltage > ChargingLimit) {
-//			set_led(TOPSIDE, LED15, BLACK);
-//			LastCharging = FALSE;
-//		} else {
-//			set_led(TOPSIDE, LED15, RED);
-//			LastCharging = TRUE;
-//		}
-//	}
-//}
 
 /**
  ** @}

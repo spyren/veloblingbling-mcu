@@ -120,6 +120,7 @@
 #include "powermgr.h"
 #include "driver/parameter.h"
 #include "driver/pmeter.h"
+#include "driver/charger.h"
 #include "visual/led.h"
 #include "visual/display.h"
 #include "hmi/cli.h"
@@ -152,6 +153,7 @@ int main(void)
   usb_puts(helloMessage);
   pmeter_Init();
   ameter_Init();
+  charger_Init();
   ble_Init();
 
   flash_Init();

@@ -3,6 +3,7 @@
  *      Pressure sensor meter over I2C Interface
  *      
  *      The I2C master interface is also used for the accelerometer MMA8451QR1.
+ *      The I2C interface is initialized here.
  *
  *      The pressure sensor Xtrinsic MPL3115A2 is used for measuring the altitude and temperature.
  *      I2C address for pressure sensor is 0x60 (7 bit address), CSL clock 75 kHz.
@@ -153,6 +154,49 @@ static float Temperature = 0.0;
 LDD_TDeviceData *I2C_DeviceData = NULL;
 TDataState DataState;
 
+
+/*
+** ===================================================================
+**  Method      :  pmeter_Init
+*/
+/**
+ *  @brief
+ *  	Initialises the pressure sensor (MPL3115A2) and the
+ *  	I2C0 interface.
+ *
+ */
+/* ===================================================================*/
+void pmeter_Init() {
+	uint8_t Data;
+
+	I2C_DeviceData = I2C0_Init(&DataState);
+
+	// prepare slave for send and receive
+	if (I2C0_SlaveSendBlock(I2C_DeviceData, I2C_Slave_TxBuffer+1, 4)) {
+		usb_puts("I2C Slave Tx Block: can't init\n");
+	}
+	if (I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 5)) {
+		usb_puts("I2C Slave Rx Block: can't init\n");
+	}
+
+	// test read
+	if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
+		usb_puts("Initialise pressure sensor: can't read pressure sensor\n");
+		return;
+	}
+
+	pmeter_setStandby();
+
+	// enable data flags for pressure and temperature
+	Data = DREM_MASK | PDEFE_MASK | TDEFE_MASK;
+	if (WriteRegs(I2C_DeviceData, &DataState, PT_DATA_CFG, REGISTER_SIZE, &Data)) {
+		usb_puts("Initialise pressure sensor: can't write PT_DATA_CFG\n");
+		return;
+	}
+
+	pmeter_setActive();
+}
+
 /*
 ** ===================================================================
 **  Method      :  ReadRegs
@@ -267,49 +311,6 @@ int WriteRegs(LDD_TDeviceData *I2CPtr,
 		return -3;
 	}
 	return 0;
-}
-
-
-
-/*
-** ===================================================================
-**  Method      :  pmeter_Init
-*/
-/**
- *  @brief
- *  	Initialises the pressure sensor (MPL3115A2) and I2C0
- *  	
- */
-/* ===================================================================*/
-void pmeter_Init() {
-	uint8_t Data;
-
-	I2C_DeviceData = I2C0_Init(&DataState);
-	
-	// prepare slave for send and receive
-	if (I2C0_SlaveSendBlock(I2C_DeviceData, I2C_Slave_TxBuffer+1, 4)) {
-		usb_puts("I2C Slave Tx Block: can't init\n");
-	}
-	if (I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 5)) {
-		usb_puts("I2C Slave Rx Block: can't init\n");
-	}
-
-	// test read
-	if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
-		usb_puts("Initialise pressure sensor: can't read pressure sensor\n");
-		return;
-	}
-		
-	pmeter_setStandby();
-
-	// enable data flags for pressure and temperature
-	Data = DREM_MASK | PDEFE_MASK | TDEFE_MASK;
-	if (WriteRegs(I2C_DeviceData, &DataState, PT_DATA_CFG, REGISTER_SIZE, &Data)) {
-		usb_puts("Initialise pressure sensor: can't write PT_DATA_CFG\n");
-		return;
-	}
-
-	pmeter_setActive();
 }
 
 

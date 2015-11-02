@@ -98,8 +98,8 @@ void watch_Init() {
  */
 /**
  *  @brief
- *  	calculates altitude, trip altitude, maximum altitude, incline, and
- *  	temperature.
+ *  	calculates altitude, elevation gain/loss, maximum altitude, incline,
+ *  	and temperature.
  *  	Called every second by watch.
  */
 /* ===================================================================*/
@@ -114,8 +114,8 @@ static void calc_Altitude() {
 		// valid data
 		if (firstTime) {
 			firstTime = FALSE;
-			currAltitude = pmeter_getAltitude();
-			lastAltitude = currAltitude;
+			currAltitude = pmeter_getAltitudeWO();
+			lastAltitude = round(currAltitude);
 			// fill the buffer
 			altArray[0] = currAltitude;
 			altArray[1] = currAltitude;
@@ -126,40 +126,50 @@ static void calc_Altitude() {
 			if (altIndex >= 4) {
 				altIndex = 0;
 			}
+			// oversampling altitude
 			currAltitude = (altArray[0] + altArray[1] + altArray[2] + altArray[3]) / 4.0  ; // averaging altitude
 
-			if ((currAltitude - lastAltitude) > 2.0 ) {
-				// elevation gain
-				if (tripMode == TRIP_STARTED) {
-					tripElevationGain = tripElevationGain + currAltitude - lastAltitude;
+			if (tripMode == TRIP_STARTED) {
+				// calculate elevation gain/loss, maximum altitude, and incline
+				if ((round(currAltitude) - lastAltitude) > 0.5) {
+					// elevation gain
+					tripElevationGain = tripElevationGain + round(currAltitude)
+							- lastAltitude;
+					totalElevationGain = totalElevationGain + round(currAltitude)
+							- lastAltitude;
+					// incline
+					if (totalDistance - lastDistance >= 0) {
+
+						incline = 100 * (currAltitude - lastAltitude)
+								/ (totalDistance - lastDistance);
+					}
+					lastDistance = totalDistance;
+					lastAltitude = round(currAltitude);
+				} else if ((lastAltitude - round(currAltitude)) > 0.5) {
+					// elevation loss
+					tripElevationLoss = tripElevationLoss + round(currAltitude)
+							- lastAltitude;
+					totalElevationLoss = totalElevationLoss + round(currAltitude)
+							- lastAltitude;
+					if (totalDistance - lastDistance >= 0) {
+						incline = 100 * (currAltitude - lastAltitude)
+								/ (totalDistance - lastDistance);
+					}
+					lastDistance = totalDistance;
+					lastAltitude = round(currAltitude);
 				}
-				totalElevationGain = totalElevationGain + currAltitude - lastAltitude;
-				if (totalDistance - lastDistance >= 0) {
-					incline = 100 * (currAltitude - lastAltitude) / (totalDistance - lastDistance);
+
+				if (totalDistance - lastDistance > 200.0) {
+					// incline < 1 %
+					incline = 0.0;
 				}
-				lastDistance = totalDistance;
-				lastAltitude = currAltitude;
-			} else if ((lastAltitude - currAltitude) > 2.0 ) {
-				// elevation loss
-				if (tripMode == TRIP_STARTED) {
-					tripElevationLoss = tripElevationLoss + currAltitude - lastAltitude;
+
+				// maximum altitude
+				if (currAltitude > maxAltitude) {
+					maxAltitude = currAltitude;
 				}
-				totalElevationLoss = totalElevationLoss + currAltitude - lastAltitude;
-				if (totalDistance - lastDistance >= 0) {
-					incline = 100 * (currAltitude - lastAltitude) / (totalDistance - lastDistance);
-				}
-				lastDistance = totalDistance;
-				lastAltitude = currAltitude;
 			}
 
-			if (totalDistance - lastDistance > 200.0) {
-				// incline < 1 %
-				incline = 0.0;
-			}
-
-			if (currAltitude > maxAltitude) {
-				maxAltitude = currAltitude;
-			}
 		}
 
 		// temperature
@@ -197,8 +207,6 @@ void watch_Synch() {
 			trip_timeout++;
 			tripTime = tripTime + 1.0;
 			totalTime = totalTime + 1.0;
-			// altitude, trip elevation gain, maximum altitude, and temperature
-			calc_Altitude();
 		}
 	}
 
@@ -242,9 +250,14 @@ void watch_Synch() {
 		// battery voltage
 		start_BatMeasure();
 
-		if (batteryVoltage < 3.0) {
+		if (batteryVoltage < 2.9) {
 			// low_energy = TRUE;
+			clear_leds(TOPSIDE);
+			write_ledColumn(BOTTOMSIDE);
 		}
+
+		// altitude, trip elevation gain, maximum altitude, and temperature
+		calc_Altitude();
 
 		// BLlink_SetVal(NULL);
 

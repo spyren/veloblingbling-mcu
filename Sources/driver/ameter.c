@@ -7,6 +7,7 @@
  *
  *      I2C address is 0x1C (7 bit address), CSL clock 75 kHz.
  *      Output INT1 is used for wakeup over AccInt (PTA1, Pin 18).
+ *      The I2C interface is initialized in pmeter_Init().
  *
  *      Y axis changes if the wheel rotates.
  *
@@ -165,7 +166,9 @@
 #define THRESHOLD_2G 32
 #define THRESHOLD_3G 48
 
-#define DBCNTM 0x80		// Debounce counter mode selection, 0: increments or decrements debounce, 1: increments or clears counter
+#define DBCNTM 0x80		// Debounce counter mode selection,
+						// 0: increments or decrements debounce,
+						// 1: increments or clears counter
 
 /* Debounce counter register address */
 #define FF_MT_COUNT 0x18
@@ -181,7 +184,7 @@
 
 // Global Variables
 // ****************
-LDD_TDeviceData* AccIntPtr;
+LDD_TDeviceData* AccIntPtr;		// accelerometer interrupt (wake up from sleep)
 
 /*
 ** ===================================================================
@@ -189,7 +192,8 @@ LDD_TDeviceData* AccIntPtr;
 */
 /**
  *  @brief
- *  	Initialises the accelerometer (MMA8451Q)
+ *  	Initialises the accelerometer (MMA8451Q) and the accelerometer
+ *  	wake up interrupt.
  *
  */
 /* ===================================================================*/
@@ -197,10 +201,10 @@ void ameter_Init() {
 #ifdef ACCELEROMETER
 	uint8_t Data;
 
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-
 	AccIntPtr = AccInt_Init(NULL);
 	// AccInt_Enable(AccIntPtr);
+
+	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
 
 	// test read
 	if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, ACC_REG_SIZE, &Data)) {

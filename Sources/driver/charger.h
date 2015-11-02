@@ -32,7 +32,7 @@ volatile double batteryVoltage;
 
 /*
  ** ===================================================================
- **  Method      :  init_Charger
+ **  Method      :  charger_Init
  */
 /**
  *  @brief
@@ -40,7 +40,7 @@ volatile double batteryVoltage;
  *  
  */
 /* ===================================================================*/
-void init_Charger();
+void charger_Init();
 
 /*
  ** ===================================================================
