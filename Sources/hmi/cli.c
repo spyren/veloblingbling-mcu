@@ -47,6 +47,13 @@
  *		rrrrrwwrrrrr    
  *		rrrrrrrrrrrr    
  *		.
+ *
+ *		show|set script               number
+ *		command
+ *		command
+ *		..
+ *		;
+ *
  *		show|set string upper|lower   anystring
  *		show|set image upper|lower|bling number
  *      
@@ -90,7 +97,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 3.8RC1, 2015/09/02, Copyright Peter Schmid\n\n";
+		"Version 3.8RC2, 2016/01/03, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -111,6 +118,7 @@ const char helloMessage[] =
 // *************************
 #include "definitions.h"
 #include "cli.h"
+#include "script.h"
 #include "visual/led.h"
 #include "visual/display.h"
 #include "powermgr.h"
@@ -129,16 +137,12 @@ const char helloMessage[] =
 #include "driver/ameter.h"
 
 
-// types
-// *****
-typedef enum {USB_CHANNEL, BLE_CHANNEL} channelT;
-
-
 // strings
 // *******
 
 static const char cli_prompt_s[] = "CLI> ";
 static const char pattern_prompt_s[] = "PAT> ";
+static const char script_prompt_s[] = "SCR> ";
 
 
 // help strings
@@ -155,6 +159,7 @@ static const char cliHelpFull[] =
         "save\n"
 		"trip\n"
 		"ble\n"
+		"script\n"
         "uptime\n"
         "test\n"
         "fault\n"       
@@ -184,6 +189,7 @@ static const char cliHelpShow[] =
 		"show circumference|unit|stretch|side|wheel|logintervall\n"
 		"show top|lower|bling\n"
 		"show image|string\n"
+		"show script\n"
 		"show pattern\n"
 		"show acceleration\n"
 		"show battery|energy\n"
@@ -209,6 +215,9 @@ static const char cliHelpSet[] =
 		"set string upper|lower|bling <string>\n"
 		"set image upper|lower|bling <number>\n"
 		"set color upper|lower|bling red|green|yellow|blue|magenta|cyan|white\n"
+		"set script <number>\n"
+		"commands..\n"
+		";\n"
 		"set pattern <number>\n"
 		"drgbymcwdrgbymcw\n"
 		"...\n"
@@ -342,6 +351,8 @@ static const char standard_s[]        = "standard";
 static const char std_s[]             = "std";
 static const char acceleration_s[]    = "acceleration";
 static const char acc_s[]             = "acc";
+static const char script_s[]          = "script";
+static const char sc_s[]              = "sc";
 
 static const char red_s[]             = "red";
 static const char rd_s[]              = "rd";
@@ -448,13 +459,16 @@ static void cause_hard_fault(void) {
  *      Write a string s to the serial channel
  */
 /* ===================================================================*/
-static void puts_ch(const char *s, channelT ch){
+void puts_ch(const char *s, channelT ch) {
 	switch (ch) {
 	case USB_CHANNEL:
 		usb_puts(s);
 		break;
 	case BLE_CHANNEL:
 		ble_puts(s);
+		break;
+	case SCRIPT_CHANNEL:
+		// no output
 		break;
 	default:
 		break;
@@ -1100,6 +1114,33 @@ static void showEnergy(channelT ch) {
 
 /*
  ** ===================================================================
+ **  Method      :  showScript
+ */
+/**
+ *  @brief
+ *      Prints the script number
+ */
+/* ===================================================================*/
+static void showScript(channelT ch) {
+	char str[60];
+	char number_s[20];
+
+	strcpy(str, script_s);
+	if (scriptExecution) {
+		ltoa(currScript, number_s);
+		strcat(str, " ");
+		strcat(str, number_s);
+	} else {
+		strcpy(str, script_s);
+		strcat(str, " stopped");
+	}
+	strcat(str, lf_s);
+	puts_ch(str, ch);
+}
+
+
+/*
+ ** ===================================================================
  **  Method      :  showAll
  */
 /**
@@ -1590,8 +1631,8 @@ static void pattern_parse(const char line[], channelT ch) {
  *  @brief
  *      Command line interface
  *
- *  Command line interface. Reads the ch and interprets the
- *  commands. With command 'exit' the function returns.
+ *  Command line interface. Reads the line and interprets the
+ *  command. With command 'exit' the function returns 1, otherwise 0.
  *  - exit<br>
  *  - test<br>
  *  - show
@@ -1609,7 +1650,7 @@ static void pattern_parse(const char line[], channelT ch) {
  *    
  */
 /* ===================================================================*/
-static int cli_parse(char * line, channelT ch) {
+int cli_parse(char* line, channelT ch) {
 	char out_str[100];
 	static char answer[100];
 	char *command;
@@ -1713,6 +1754,8 @@ static int cli_parse(char * line, channelT ch) {
 				setImage(p[2], windowStr2Enum(p[1]), ch);
 			} else if (! strcmp(p[0], pattern_s) || ! strcmp(p[0], pat_s) ) {
 				setPattern(p[1], ch);
+			} else if (! strcmp(p[0], script_s) || ! strcmp(p[0], sc_s) ) {
+				script_Set(p[1], ch);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1789,6 +1832,8 @@ static int cli_parse(char * line, channelT ch) {
 				showWindow(BLING, ch);
 			} else if (! strcmp(p[0], all_s) ) {
 				showAll(ch);
+			} else if (! strcmp(p[0], script_s) || ! strcmp(p[0], sc_s) ) {
+				showScript(ch);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1802,6 +1847,10 @@ static int cli_parse(char * line, channelT ch) {
 				showImage(windowStr2Enum(p[1]), ch);
 			} else if (! strcmp(p[0], pattern_s) || ! strcmp(p[0], pat_s) ) {
 				showPattern(p[1], ch);
+			} else if (! strcmp(p[0], script_s) || ! strcmp(p[0], sc_s) ) {
+				script_Show(p[1], ch);
+			} else {
+				puts_ch(syntaxError_s, ch);
 			}
 			break;
 		default:
@@ -1838,27 +1887,20 @@ static int cli_parse(char * line, channelT ch) {
 			puts_ch(syntaxError_s, ch);
 			break;
 		}
-	} else if (! strcmp(command, trip_s)) {
+	} else if (! strcmp(command, script_s) || ! strcmp(command, sc_s)) {
 		switch (i) {
 		case 1:
+			if (! strcmp(p[0], stop_s) ) {
+				script_Stop(ch);
+			} else {
+				puts_ch(syntaxError_s, ch);
+			}
+			break;
+		case 2:
 			if (!        strcmp(p[0], start_s) ) {
-				maxSpeed = 0.0;
-				avgSpeed = 0.0;
-				tripDistance = 0.0;
-				tripElevationGain = 0.0;
-				maxAltitude = 0.0;
-				tripTime = 0.0;
-				tripMode = TRIP_STARTED;
-			} else if (! strcmp(p[0], stop_s) ) {
-				tripMode = TRIP_STOPPED;
-			} else if (! strcmp(p[0], pause_s) ) {
-				tripMode = TRIP_PAUSED;
-			} else if (! strcmp(p[0], resume_s) ) {
-				if (tripMode == TRIP_PAUSED) {
-					tripMode = TRIP_STARTED;
-				}        			
-			} else if (! strcmp(p[0], mode_s) ) {
-				showTripMode(ch);
+				script_Start(p[1], ch);
+			} else if (! strcmp(p[0], test_s) ) {
+				script_Test(p[1], ch);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1980,10 +2022,14 @@ void cli_usb() {
 
 	usb_puts(cliHelp);
 	while (1) {
-		if (pattern_number < 0) {
+		if (pattern_number < 0 && !script_set) {
 			usb_puts(cli_prompt_s); 
 		} else {
-			usb_puts(pattern_prompt_s);
+			if (script_set) {
+				usb_puts(script_prompt_s);
+			} else {
+				usb_puts(pattern_prompt_s);
+			}
 		}
 		if (usb_readline(line, sizeof(line), TimeOut) == ERR_TIMEOUT) {
 			// timeout
@@ -1993,7 +2039,7 @@ void cli_usb() {
 		}
 		usb_puts(lf_s);
 
-		if (pattern_number < 0) {
+		if (pattern_number < 0 && ! script_set) {
 			// command line
 			if (cli_parse(line, USB_CHANNEL) == 1) {
 				// exit
@@ -2001,8 +2047,12 @@ void cli_usb() {
 				return;
 			}
 		} else {
-			// pattern
-			pattern_parse(line, USB_CHANNEL);
+			// pattern or script
+			if (pattern_number >= 0) {
+				pattern_parse(line, USB_CHANNEL);
+			} else {
+				script_Line(line, USB_CHANNEL);
+			}
 		}
 
 		if (bleTransparent) {
@@ -2065,12 +2115,16 @@ void cli_ble() {
 	
 	operating_mode = INTERACTIVE_BLE;
 	if (first) {
-		if (pattern_number < 0) {
+		if (pattern_number < 0 && !script_set) {
 			ble_puts("\n");
 			ble_puts(cli_prompt_s); 
 		} else {
 			ble_puts("\n");
-			ble_puts(pattern_prompt_s); 
+			if (script_set) {
+				ble_puts(script_prompt_s);
+			} else {
+				ble_puts(pattern_prompt_s);
+			}
 		}
 		//ble_puts("\r");				// BL600 Serial app needs a CR
 		line[0] = 0;
@@ -2089,14 +2143,17 @@ void cli_ble() {
 				// end of line
 				ble_puts("\n");
 				line[strlen(line)-1] = 0;
-				if (pattern_number < 0) {
-					cli_parse(line, BLE_CHANNEL);
+				cli_parse(line, BLE_CHANNEL);
+				if (pattern_number < 0 && ! script_set) {
 					// ble_puts("\n");
 					ble_puts(cli_prompt_s);
 				} else {
-					pattern_parse(line, BLE_CHANNEL);
 					// ble_puts("\n");
-					ble_puts(pattern_prompt_s);
+					if (script_set) {
+						ble_puts(script_prompt_s);
+					} else {
+						ble_puts(pattern_prompt_s);
+					}
 				}
 				// ble_puts("\n");		// BL600 Serial app needs a CR
 				line[0] = 0;

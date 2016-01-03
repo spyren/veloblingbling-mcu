@@ -49,6 +49,7 @@
 #include "motion/wheelsensor.h"
 #include "visual/display.h"
 #include "hmi/cli.h"
+#include "hmi/script.h"
 #include "driver/charger.h"
 #include "driver/pmeter.h"
 
@@ -258,6 +259,11 @@ void watch_Synch() {
 
 		// altitude, trip elevation gain, maximum altitude, and temperature
 		calc_Altitude();
+
+		// script
+		if (scriptExecution && (operating_mode == NORMAL)) {
+			script_Interpreter();
+		}
 
 		// BLlink_SetVal(NULL);
 

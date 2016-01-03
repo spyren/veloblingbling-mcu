@@ -24,11 +24,18 @@
 // Timeout 60 s
 #define CLI_TIMEOUT 60000
 
+
+// types
+// *****
+
 /* Operating Mode */
 /******************/
 
 /** the system can be only in these operating modes */
 typedef enum {NORMAL, INTERACTIVE_USB, INTERACTIVE_BLE, TESTING, MODE_BUTTON} operating_modeT;
+
+typedef enum {USB_CHANNEL, BLE_CHANNEL, SCRIPT_CHANNEL} channelT;
+
 
 extern operating_modeT operating_mode;
 
@@ -36,6 +43,45 @@ extern int TimeOut;
 extern bool wheelDetection;
 
 extern const char helloMessage[];
+
+/*  ===================================================================
+ *     Method      :  puts_ch
+ */
+/**
+ *  @brief
+ *      Write a string s to the serial channel
+ */
+/* ===================================================================*/
+void puts_ch(const char *s, channelT ch);
+
+/*
+ ** ===================================================================
+ **  Method      :  cli_parse
+ */
+/**
+ *  @brief
+ *      Command line interface
+ *
+ *  Command line interface. Reads the line and interprets the
+ *  command. With command 'exit' the function returns 1, otherwise 0.
+ *  - exit<br>
+ *  - test<br>
+ *  - show
+ *  - set
+ *  - uptime<br>
+ *  - fault<br>
+ *  - reset<br>
+ *  - help [<command>]
+ *  @param
+ *  	line	command line
+ *  	ch		output channel (USB or BLE)
+ *  @return
+ *  	0	OK
+ *  	1	Exit command
+ *
+ */
+/* ===================================================================*/
+int cli_parse(char * line, channelT ch);
 
 /*
  ** ===================================================================
