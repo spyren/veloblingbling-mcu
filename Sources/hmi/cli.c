@@ -97,7 +97,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 3.8RC2, 2016/01/03, Copyright Peter Schmid\n\n";
+		"Version 3.8, 2016/01/17, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -2143,15 +2143,17 @@ void cli_ble() {
 				// end of line
 				ble_puts("\n");
 				line[strlen(line)-1] = 0;
-				cli_parse(line, BLE_CHANNEL);
 				if (pattern_number < 0 && ! script_set) {
+					cli_parse(line, BLE_CHANNEL);
 					// ble_puts("\n");
 					ble_puts(cli_prompt_s);
 				} else {
 					// ble_puts("\n");
 					if (script_set) {
+						script_Line(line, BLE_CHANNEL);
 						ble_puts(script_prompt_s);
 					} else {
+						pattern_parse(line, BLE_CHANNEL);
 						ble_puts(pattern_prompt_s);
 					}
 				}

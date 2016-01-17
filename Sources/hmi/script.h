@@ -1,9 +1,8 @@
 /**
- *  @brief
- *      Very simple script interpreter. Every line will be interpreted by
+ *      Very simple script interpreter. Every line is interpreted by
  *      CLI except lines beginning with : (colon) or ; (semicolon). After
  *      reading a semicolon the script restarts from the beginning.
- *      A line has to <= 80 chars long.
+ *      A line has to be <= 80 chars long.
  *
  *      The script buffer is 800 bytes and shares the same memory for the
  *      images (dotmatrix). That means one buffer has room for about 50
@@ -46,8 +45,6 @@
  *      2016-01-02
  *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
- *  @version
- *      Version 3.7, 2015/08/11
  */
 
 #ifndef SCRIPT_H_
