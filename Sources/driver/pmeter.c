@@ -205,7 +205,8 @@ void pmeter_Init() {
  *  @brief
  *  	Reads the I2C registers.
  *  	For pressure sensor (MPL3115) and accelerometer (MMA8451QR1).
- *  	For accelerometer set device address (SelectSlaveDevice)
+ *  	For accelerometer set device address (SelectSlaveDevice).
+ *  	Synchronous/blocking I/O operation.
  *  	
  *  @param
  *  	I2CPtr		Device Data
@@ -268,7 +269,8 @@ int ReadRegs(LDD_TDeviceData *I2CPtr,
  *  @brief
  *  	Writes the I2C registers.
  *  	For pressure sensor (MPL3115) and accelerometer (MMA8451QR1).
- *  	For accelerometer set device address (SelectSlaveDevice)
+ *  	For accelerometer set device address (SelectSlaveDevice).
+ *  	Synchronous/blocking I/O operation.
  *  	
  *  @param
  *  	I2CPtr		Device Data

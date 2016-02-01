@@ -226,8 +226,6 @@ void watch_Synch() {
 	}
 	
 	if (! standby) {
-		// BLlink_ClrVal(NULL); // ready for I2C slave
-
 		if (!watchBlocked) {
 			RTC1_GetTime(watchPtr, &watchTime);
 		}
@@ -265,7 +263,10 @@ void watch_Synch() {
 			script_Interpreter();
 		}
 
-		// BLlink_SetVal(NULL);
+		// falling edge for I2C master (BL600)
+		BLlink_ClrVal(NULL);
+		BLlink_SetVal(NULL);
+
 
 	}
 }

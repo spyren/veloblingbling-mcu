@@ -30,7 +30,7 @@
 extern volatile bool sleep_wakeup;
 extern volatile bool standby;
 extern volatile bool low_energy;
-extern volatile int waitTimeout;
+extern volatile uint8_t waitTimeout;
 
 
 /*
@@ -114,6 +114,7 @@ void powermgr_Second();
  */
 /* ===================================================================*/
 void busywait_timeout();
+
 
 #endif /* POWERMGR_H_ */
 

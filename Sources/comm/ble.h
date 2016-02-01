@@ -41,6 +41,10 @@
 #define CYCLE_MODE_REG		16	// cycleMode register
 #define DISPLAY_COLOR_REG	20	// displayColor register
 #define DISPLAY_IMAGE_REG	24	// displayImage register
+#define SPEED_REG			32	// Instantaneous Speed
+#define DISTANCE_REG		40	// Total Distance
+#define ELEVATION_REG		48	// Elevation
+#define ROLLING_TIME_REG	56	// Rolling Time
 
 #define DISPLAY_MODE_MOD	1	// displayMode modified
 #define CYCLE_MODE_MOD		2	// cycleMode modified

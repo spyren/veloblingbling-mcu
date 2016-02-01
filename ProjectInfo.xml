@@ -113,6 +113,7 @@
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/button.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/cli.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/mode.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/script.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/main.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/bling.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/wheelsensor.c</PathName>
@@ -184,6 +185,7 @@
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/button.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/cli.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/mode.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/hmi/script.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/bling.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/motion/wheelsensor.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/powermgr.h</PathName>

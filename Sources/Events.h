@@ -143,23 +143,6 @@ void ADC_OnCalibrationEnd(void);
 
 /*
 ** ===================================================================
-**     Event       :  BLlinkInt_OnInterrupt (module Events)
-**
-**     Component   :  BLlinkInt [ExtInt_LDD]
-*/
-/*!
-**     @brief
-**         This event is called when an active signal edge/level has
-**         occurred.
-**     @param
-**         UserDataPtr     - Pointer to RTOS device
-**                           data structure pointer.
-*/
-/* ===================================================================*/
-void BLlinkInt_OnInterrupt(LDD_TUserData *UserDataPtr);
-
-/*
-** ===================================================================
 **     Event       :  RTC1_OnSecond (module Events)
 **
 **     Component   :  RTC1 [RTC_LDD]
@@ -567,6 +550,44 @@ void I2C0_OnSlaveRxRequest(LDD_TUserData *UserDataPtr);
 */
 /* ===================================================================*/
 void I2C0_OnSlaveTxRequest(LDD_TUserData *UserDataPtr);
+
+/*
+** ===================================================================
+**     Event       :  I2C0_OnError (module Events)
+**
+**     Component   :  I2C0 [I2C_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when an error (e.g. Arbitration lost)
+**         occurs. The errors can be read with GetError method.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. This pointer is passed
+**                           as the parameter of Init method.
+*/
+/* ===================================================================*/
+void I2C0_OnError(LDD_TUserData *UserDataPtr);
+
+/*
+** ===================================================================
+**     Event       :  I2C0_OnSlaveByteReceived (module Events)
+**
+**     Component   :  I2C0 [I2C_LDD]
+*/
+/*!
+**     @brief
+**         This event is called when I2C is in slave mode and finishes
+**         the reception of the byte successfully. This event is not
+**         available for the MASTER mode and if SlaveReceiveBlock is
+**         disabled.
+**     @param
+**         UserDataPtr     - Pointer to the user or
+**                           RTOS specific data. This pointer is passed
+**                           as the parameter of Init method.
+*/
+/* ===================================================================*/
+void I2C0_OnSlaveByteReceived(LDD_TUserData *UserDataPtr);
 
 /* END Events */
 

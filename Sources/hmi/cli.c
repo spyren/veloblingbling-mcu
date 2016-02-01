@@ -97,7 +97,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 3.8, 2016/01/17, Copyright Peter Schmid\n\n";
+		"Version 4.1, 2016/02/01, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -2035,6 +2035,9 @@ void cli_usb() {
 			// timeout
 			usb_puts("\ntimeout!\n");
 			operating_mode = NORMAL;
+			// cancel pattern and script mode
+			pattern_number = -1;
+			script_set = FALSE;
 			return;
 		}
 		usb_puts(lf_s);
@@ -2109,57 +2112,65 @@ void cli_ble() {
 	byte error = ERR_RXEMPTY;
 	word count = 0;
 	word charsInBuffer;
-	// BL600_TComData data;
-	// char c;
-	static bool first = TRUE;
+
+//	static bool first = TRUE;
 	
-	operating_mode = INTERACTIVE_BLE;
-	if (first) {
-		if (pattern_number < 0 && !script_set) {
-			ble_puts("\n");
-			ble_puts(cli_prompt_s); 
-		} else {
-			ble_puts("\n");
-			if (script_set) {
-				ble_puts(script_prompt_s);
-			} else {
-				ble_puts(pattern_prompt_s);
-			}
-		}
-		//ble_puts("\r");				// BL600 Serial app needs a CR
-		line[0] = 0;
-		first = FALSE;
-	}
+//	operating_mode = INTERACTIVE_BLE;
+//	if (first) {
+//		if (pattern_number < 0 && !script_set) {
+//			ble_puts("\n");
+//			ble_puts(cli_prompt_s);
+//		} else {
+//			ble_puts("\n");
+//			if (script_set) {
+//				ble_puts(script_prompt_s);
+//			} else {
+//				ble_puts(pattern_prompt_s);
+//			}
+//		}
+//		//ble_puts("\r");				// BL600 Serial app needs a CR
+//		line[0] = 0;
+//		first = FALSE;
+//	}
 	
 	charsInBuffer = BL600_GetCharsInRxBuf();
 	if (charsInBuffer > 0) {
+		if (charsInBuffer > 50) {
+			charsInBuffer = 50;
+		}
 		error = BL600_RecvBlock((BL600_TComData*) buffer, charsInBuffer, &count);
 		switch (error) {
 		case ERR_OK:
 			// block received
 			buffer[count] = 0; 
-			strcat(line, buffer);
-			if (line[strlen(line)-1] == '\r') {
-				// end of line
-				ble_puts("\n");
-				line[strlen(line)-1] = 0;
-				if (pattern_number < 0 && ! script_set) {
-					cli_parse(line, BLE_CHANNEL);
-					// ble_puts("\n");
-					ble_puts(cli_prompt_s);
-				} else {
-					// ble_puts("\n");
-					if (script_set) {
-						script_Line(line, BLE_CHANNEL);
-						ble_puts(script_prompt_s);
-					} else {
-						pattern_parse(line, BLE_CHANNEL);
-						ble_puts(pattern_prompt_s);
-					}
-				}
-				// ble_puts("\n");		// BL600 Serial app needs a CR
+			if (strlen(buffer) + strlen(line) >= sizeof(line)) {
+				// string to long -> throw away
 				line[0] = 0;
-			}
+			} else {
+				// append received chars to line
+				strcat(line, buffer);
+				if (line[strlen(line)-1] == '\r') {
+					// EOL -> parse line
+					ble_puts("\n");
+					line[strlen(line)-1] = 0;
+					if (pattern_number < 0 && ! script_set) {
+						cli_parse(line, BLE_CHANNEL);
+						// ble_puts("\n");
+						ble_puts(cli_prompt_s);
+					} else {
+						// ble_puts("\n");
+						if (script_set) {
+							script_Line(line, BLE_CHANNEL);
+							ble_puts(script_prompt_s);
+						} else {
+							pattern_parse(line, BLE_CHANNEL);
+							ble_puts(pattern_prompt_s);
+						}
+					}
+					// ble_puts("\n");		// BL600 Serial app needs a CR
+					line[0] = 0;
+				}
+		}
 			break;
 		default:
 			// error

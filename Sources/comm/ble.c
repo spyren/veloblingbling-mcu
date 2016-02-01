@@ -14,17 +14,20 @@
  *      nAutoRun is GND -> autorun activated
  *      
  *      I2C Communication between BL600 and Bling Bling MCU
- *		The BL600 is Master
- *		High to low transition: Data ready for read
- *		All registers are 32 bit
- *		A write with only 8 bit data sets the register address
+ *		The BL600 is Master :-( BL600 can only be the single master)
+ *		High to low transition on BLlink: Data ready for read.
+ *		Only after this event the BL600 acts as master.
+ *		All registers are 32 bit.
+ *		A write with only 8 bit data sets the register address.
  *
  *
  *		Reg
- *	 	-  address	  8bit wr  bit7: auto increment
- *	 	0  state        32bit wr  bit0: BLE link established
- *	 	4  wheelRevo    32bit rd  see CSC measurement
- *	 	8  wheelTime    32bit rd  see CSC measurement
+ *	 	0  state        32bit wr
+ *	 	                   bit0: BLE link established
+ *	 	4  wheelRevo    32bit rd
+ *	 	                   see BLE CSC profile (cumulative wheel revolutions (unitless))
+ *	 	8  wheelTime    32bit rd
+ *	 	                   see BLE CSC profile (last wheel event time (1/1024 s))
  *	 	12 displayMode  32bit wr
  *	 					   bit0-3   UPPER TOPSIDE
  *		     	           bit4-7   LOWER TOPSIDE
@@ -44,8 +47,8 @@
  *			        	   bit20-23 LOWER BOTTOMSIDE
  *			        	   bit24-27 BLING BOTTOMSIDE
  *			        	   bit28-31
- *	 	24 displayColor 32bit wr
- *	 	28 displayImage 32bit wr
+ *	 	20 displayColor 32bit wr
+ *	 	24 displayImage 32bit wr
  *
  *  @file
  *      ble.c
@@ -277,19 +280,19 @@ int ble_puts(const char *s) {
  */
 /* ===================================================================*/
 void ble_show_state() {
-//	if (ble_LinkState) {
-//		set_led(TOPSIDE, LED15, BLUE);
-//		sleep_wakeup = TRUE;
-//	} else {
-//		set_led(TOPSIDE, LED15, BLACK);
-//	}
+	if (ble_LinkState) {
+		set_led(TOPSIDE, LED15, BLUE);
+		sleep_wakeup = TRUE;
+	} else {
+		set_led(TOPSIDE, LED15, BLACK);
+	}
 
-    if (BLlink_GetVal(NULL)) {
-    	set_led(TOPSIDE, LED15, BLACK);
-    } else {
-        set_led(TOPSIDE, LED15, BLUE);
-        sleep_wakeup = TRUE;
-    }
+//    if (BLlink_GetVal(NULL)) {
+//    	set_led(TOPSIDE, LED15, BLACK);
+//    } else {
+//        set_led(TOPSIDE, LED15, BLUE);
+//        sleep_wakeup = TRUE;
+//    }
 
 
 }
@@ -308,47 +311,65 @@ void ble_show_state() {
 /* ===================================================================*/
 void ble_I2CblockReceived() {
 	LDD_I2C_TSize Count;
+	static int rxCount=0;
+	LDD_TError err;
 
+	rxCount++;
 	Count = I2C0_SlaveGetReceivedDataNum(I2C_DeviceData);
 	if (Count == 1) {
 		// register address for block to send
 		// the register address is in I2C_Slave_RxBuffer[0]
 		// prepare data to send
 		switch (I2C_Slave_RxBuffer[0]) {
-		case STATE_REG:
-			// read only
-			break;
 		case WHEEL_REVO_REG:
 			I2C_Slave_TxBuffer[1] =  wheelRevo & 0x000000FF;
 			I2C_Slave_TxBuffer[2] = (wheelRevo & 0x0000FF00) >> 8;
 			I2C_Slave_TxBuffer[3] = (wheelRevo & 0x00FF0000) >> 16;
 			I2C_Slave_TxBuffer[4] = (wheelRevo & 0xFF000000) >> 24;
+			// prepare slave for next receive (1 register)
+			err = I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 1);
+			if (err != ERR_OK) {
+				; // I2C error
+			}
+			// Slave sends always a 4 byte block
+			err = I2C0_SlaveSendBlock(I2C_DeviceData, I2C_Slave_TxBuffer+1, 4);
+			if (err != ERR_OK) {
+				; // I2C error
+			}
+
+			break;
 		case WHEEL_TIME_REG:
 			I2C_Slave_TxBuffer[1] =  wheelTime & 0x000000FF;
 			I2C_Slave_TxBuffer[2] = (wheelTime & 0x0000FF00) >> 8;
 			I2C_Slave_TxBuffer[3] = 0;
 			I2C_Slave_TxBuffer[4] = 0;
+			// prepare slave for next receive (1 register and 4 data bytes)
+			err = I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 5);
+			if (err != ERR_OK) {
+				; // I2C error
+			}
+			// Slave sends always a 4 byte block
+			err = I2C0_SlaveSendBlock(I2C_DeviceData, I2C_Slave_TxBuffer+1, 4);
+			if (err != ERR_OK) {
+				; // I2C error
+			}
+
 			break;
-		case DISPLAY_MODE_REG:
-			I2C_Slave_TxBuffer[1] = displayMode[TOPSIDE][UPPER]    + (displayMode[TOPSIDE][LOWER]    << 4);
-			I2C_Slave_TxBuffer[2] = displayMode[TOPSIDE][BLING];
-			I2C_Slave_TxBuffer[3] = displayMode[BOTTOMSIDE][UPPER] + (displayMode[BOTTOMSIDE][LOWER] << 4);
-			I2C_Slave_TxBuffer[4] = displayMode[BOTTOMSIDE][BLING];
+		default:
+
 			break;
 		}
-
 	} else if (Count == 5) {
 		// register address and 4 bytes data
 		switch (I2C_Slave_RxBuffer[0]) {
 		case STATE_REG:
 			ble_LinkState = (I2C_Slave_RxBuffer[1] & BLE_LINK_STATE_BIT) == BLE_LINK_STATE_BIT;
-			break;
-		case WHEEL_REVO_REG:
-			wheelRevo = I2C_Slave_RxBuffer[1]       + I2C_Slave_RxBuffer[2] << 8 +
-				        I2C_Slave_RxBuffer[2] << 16 + I2C_Slave_RxBuffer[2] << 24;
-			break;
-		case WHEEL_TIME_REG:
-			wheelTime = I2C_Slave_RxBuffer[1] + I2C_Slave_RxBuffer[2] << 8;
+			// prepare slave for next receive (1 register)
+			if (I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 1) != ERR_OK) {
+				; // I2C error
+			}
+
+
 			break;
 		case DISPLAY_MODE_REG:
 			displayMode[TOPSIDE][UPPER] =     I2C_Slave_RxBuffer[1] & 0x0F;
@@ -358,15 +379,15 @@ void ble_I2CblockReceived() {
 			displayMode[BOTTOMSIDE][LOWER] = (I2C_Slave_RxBuffer[3] & 0xF0) >> 4;
 			displayMode[BOTTOMSIDE][BLING] =  I2C_Slave_RxBuffer[4] & 0x0F;
 			break;
+		case CYCLE_MODE_REG:
+			break;
+		case DISPLAY_COLOR_REG:
+			break;
+		case DISPLAY_IMAGE_REG:
+			break;
 		}
 	} else {
 		// not valid
 	}
-
-	// prepare slave for receive
-	if (I2C0_SlaveReceiveBlock(I2C_DeviceData, I2C_Slave_RxBuffer, 5)) {
-		usb_puts("I2C Slave Rx Block: can't set buffer\n");;
-	}
-
 
 }

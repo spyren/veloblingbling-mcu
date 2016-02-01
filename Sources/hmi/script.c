@@ -85,7 +85,7 @@ bool script_set = FALSE;
 
 // Local Variables
 // ***************
-char *charP;
+char *charP;			// points to the image buffer
 uint8_t waitTime = 0;
 
 
@@ -96,7 +96,7 @@ uint8_t waitTime = 0;
  */
 /**
  *  @brief
- *      Very simple script interpreter. Every line will be interpreted by
+ *      Very simple script interpreter. Every line is interpreted by
  *      CLI except lines beginning with : (colon) or ; (semicolon). After
  *      reading a semicolon the script restarts from the beginning.
  *

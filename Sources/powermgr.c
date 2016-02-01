@@ -53,7 +53,7 @@
 volatile bool sleep_wakeup = FALSE;
 volatile bool standby = FALSE;
 volatile bool low_energy = FALSE;
-volatile int waitTimeout = 0;
+volatile uint8_t waitTimeout = 0;
 
 // Local Variables
 // ***************
