@@ -223,7 +223,8 @@ void wheel_Synch() {
 			enable_bling[TOPSIDE] = FALSE;
 			enable_bling[BOTTOMSIDE] = FALSE;
 			bling_StopTimer();
-		} else 	if (!low_energy) {
+//		} else 	if (!low_energy) {
+		} else  {
 			// start timer for first window
 			right_rotating = TRUE;
 			wait_mode = TO_FIRST;
@@ -287,7 +288,8 @@ void wheel_TimerOverrun() {
 		rotating = FALSE;
 		rotationTime = MAX_ROTATION_TIME;
 		RotTimer_Disable(RotTimerPtr);
-	} else if (timerTurns >= MAX_TURNS_RIGHT) {
+	}
+	if (timerTurns >= MAX_TURNS_RIGHT) {
 		// to slow for bling bling
 		right_rotating = FALSE;
 		wait_mode = NOT_WAITING;

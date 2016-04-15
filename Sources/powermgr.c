@@ -56,6 +56,7 @@
 #include "driver/charger.h"
 #include "driver/ameter.h"
 #include "driver/pmeter.h"
+#include "motion/wheelsensor.h"
 
 #define MAX_SLEEP 60			// if there is no action for 60s go to deep sleep
 #define MAX_HIBERNATION (60*60)	// after 1 h (60 * 60 = 3600) standby go for hibernation
@@ -158,6 +159,7 @@ void powermgr_DeepSleep() {
 		sleep_timeout = 0;
 		sleep_wakeup = FALSE;
 		hibernation_timeout = 0;
+		rotating = FALSE;
 
 	} else {
 		if (sleep_timeout >= MAX_SLEEP) {
@@ -165,6 +167,7 @@ void powermgr_DeepSleep() {
 			pmeter_setStandby();
 			disable_BatMeasure();
 			USBpoll_Disable(usb_TimerPtr); // no interruption from USB
+			rotating = FALSE;
 			standby = TRUE;
 			// ble_reset(); 
 			Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_1);
