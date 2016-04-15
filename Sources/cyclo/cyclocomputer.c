@@ -17,14 +17,29 @@
  *      
  *  @file
  *      cyclocomputer.c
- *  @copyright
- *      Peter Schmid, Switzerland
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
  *      2014-02-10
  *  @remark     
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This file is part of "Velo Bling-Bling" main MCU firmware.
+ *
+ *		"Velo Bling-Bling" firmware is free software: you can redistribute it
+ *		and/or modify it under the terms of the GNU General Public License as
+ *		published by the Free Software Foundation, either version 3 of the
+ *		License, or (at your option) any later version.
+ *
+ *		"Velo Bling-Bling" is distributed in the hope that it will be useful,
+ *		but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *		GNU General Public License for more details.
+ *
+ *		You should have received a copy of the GNU General Public License along
+ *		with "Velo Bling-Bling". If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -50,6 +65,7 @@
 #include "cyclocomputer.h"
 #include "watch.h"
 #include "comm/usb.h"
+#include "comm/ble.h"
 #include "motion/wheelsensor.h"
 
 // Global Variables
@@ -80,7 +96,7 @@ volatile uint8_t trip_timeout = 0;
 
 // Local Variables
 // ***************
-double timeArray[4] = {0.0, 0.0, 0.0, 0.0};	/* for averaging the speed */
+double timeArray[4] = {MAX_ROTATION_TIME, MAX_ROTATION_TIME, MAX_ROTATION_TIME, MAX_ROTATION_TIME};	/* for averaging the speed */
 uint8_t timeIndex = 0;
 
 /*
@@ -98,15 +114,15 @@ void cyclo_Information() {
 	wheelRevo++;
 
 	// current speed calculation
-	if (rotationTime < 0.0) {
+	timeArray[timeIndex++] = rotationTime;
+	if (timeIndex >= 4) {
+		timeIndex = 0;
+	}
+	if (rotationTime >= (MAX_ROTATION_TIME-1)) {
+		wheelTime = wheelTime + (10 * 1024); // 10 seconds more
 		currSpeed = 0.0;
-		wheelTime = wheelTime + 20000;
 	} else {
 		wheelTime = wheelTime + rotationTime * 1024;
-		timeArray[timeIndex++] = rotationTime;
-		if (timeIndex >= 4) {
-			timeIndex = 0;
-		}
 		currSpeed = (4.0 * circumference) / (timeArray[0] + timeArray[1] + timeArray[2] + timeArray[3])  ; 		
 	}
 

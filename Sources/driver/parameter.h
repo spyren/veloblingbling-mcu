@@ -2,25 +2,40 @@
  *  @brief
  *  	Save, get, and remove configuration and log parameters to the flash memory
  *  	
- *  The internal FLASH memory is used to save persistently the parameters.
- *  128 KiB are reserved for the parameters.
- *  The standard FLASH memory for the program starts at 0x410 and 
- *  end at 0x3FFFF (roughly 256 KiB, size 3FBF0)
- *  Now it ends at 0x23FFF.
- *  The FLASH for the parameters starts at 0x24000 and ends at 0x3FFFF (112 kiB)
- *  (see Processor Expert CPU -> Build Options -> MemoryArea2 -> Size 23BF0 [original 3FBF0])
- *  An erasable block has the size of 2 kiB (0x800).
+ *		The internal FLASH memory is used to save persistently the parameters.
+ *		128 KiB are reserved for the parameters.
+ *		The standard FLASH memory for the program starts at 0x410 and
+ *		end at 0x3FFFF (roughly 256 KiB, size 3FBF0)
+ *		Now it ends at 0x23FFF.
+ *		The FLASH for the parameters starts at 0x24000 and ends at 0x3FFFF (112 kiB)
+ *		(see Processor Expert CPU -> Build Options -> MemoryArea2 -> Size 23BF0 [original 3FBF0])
+ *		An erasable block has the size of 2 kiB (0x800).
  *      
  *  @file
  *      parameter.c
- *  @copyright
- *      Peter Schmid, Switzerland
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
  *      2014-02-10
  *  @remark     
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This file is part of "Velo Bling-Bling" main MCU firmware.
+ *
+ *		"Velo Bling-Bling" firmware is free software: you can redistribute it
+ *		and/or modify it under the terms of the GNU General Public License as
+ *		published by the Free Software Foundation, either version 3 of the
+ *		License, or (at your option) any later version.
+ *
+ *		"Velo Bling-Bling" is distributed in the hope that it will be useful,
+ *		but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *		GNU General Public License for more details.
+ *
+ *		You should have received a copy of the GNU General Public License along
+ *		with "Velo Bling-Bling". If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef PARAMETER_H_

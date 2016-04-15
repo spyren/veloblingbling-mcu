@@ -8,14 +8,29 @@
  *      
  *  @file
  *      watch.c
- *  @copyright
- *      Peter Schmid, Switzerland
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
  *      2014-02-10
  *  @remark     
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This file is part of "Velo Bling-Bling" main MCU firmware.
+ *
+ *		"Velo Bling-Bling" firmware is free software: you can redistribute it
+ *		and/or modify it under the terms of the GNU General Public License as
+ *		published by the Free Software Foundation, either version 3 of the
+ *		License, or (at your option) any later version.
+ *
+ *		"Velo Bling-Bling" is distributed in the hope that it will be useful,
+ *		but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *		GNU General Public License for more details.
+ *
+ *		You should have received a copy of the GNU General Public License along
+ *		with "Velo Bling-Bling". If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -192,9 +207,9 @@ static void calc_Altitude() {
 void watch_Synch() {
 	char str[20];
 	
-	if (rotationTime < 0) {
-		currSpeed = 0.0;
-	}
+//	if (rotationTime < 0) {
+//		currSpeed = 0.0;
+//	}
 	
 	upTime = upTime + 1.0;
 	if (chronoMode == TRIP_STARTED) {
@@ -211,7 +226,7 @@ void watch_Synch() {
 		}
 	}
 
-	if ( (! rotating) && (operating_mode == NORMAL) ) {
+	if ( (! right_rotating) && (operating_mode == NORMAL) ) {
 		// not rotating and in normal mode
 		// battery charging and bluetooth link established is showed 
 		charger_show_state();

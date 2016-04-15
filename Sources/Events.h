@@ -1,3 +1,80 @@
+/**
+ *  @brief
+ *      Handles all events/interrupts.
+ *
+ *		LEDspi_OnBlockSent
+ *		LEDspi_OnBlockReceived
+ *			INT_SPI0					high, 5		5 us clock
+ *
+ *		BL600_OnError
+ *			INT_UART0_ERR				high, 5
+ *		BL600_OnRxChar
+ *		BL600_OnTxChar
+ *		BL600_OnFullRxBuf
+ *		BL600_OnFreeTxBuf
+ *			INT_UART0_RX_TX				high, 5
+ *
+ *		I2C0_OnMasterBlockSent
+ *		I2C0_OnMasterBlockReceived
+ *		I2C0_OnSlaveBlockSent
+ *		I2C0_OnSlaveBlockReceived
+ *		I2C0_OnSlaveRxRequest
+ *		I2C0_OnSlaveTxRequest
+ *			INT_I2C0					high, 5			SCL 75 kHz
+ *
+ *		ButtonInt_OnInterrupt
+ *		ReedInt_OnInterrupt
+ *			INT_PORTD					high, 5
+ *
+ *		RTC1_OnSecond
+ *			INT_RTC_Seconds				low, 10
+ *
+ *		Wakeup_OnInterrupt
+ *			INT_LPTimer					medium, 8
+ *
+ *		RotTimer_OnCounterRestart
+ *			INT_FTM0					medium, 8
+ *
+ *		USBpoll_OnInterrupt
+ *			INT_PIT0					medium, 8
+
+ *		Tick_OnInterrupt
+ *			INT_PIT1					medium, 8
+ *
+ *		FlashMem_OnWriteEnd
+ *			INT_FTFL					medium, 8
+ *
+ *		ADC_OnEnd
+ *		ADC_OnCalibrationEnd
+ *			INT_ADC0					medium, 8
+ *
+ *  @file
+ *      Events.h
+ *  @author
+ *      Peter Schmid, peter@spyr.ch
+ *  @date
+ *      2013-12-04
+ *  @remark
+ *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This file is part of "Velo Bling-Bling" main MCU firmware.
+ *
+ *		"Velo Bling-Bling" firmware is free software: you can redistribute it
+ *		and/or modify it under the terms of the GNU General Public License as
+ *		published by the Free Software Foundation, either version 3 of the
+ *		License, or (at your option) any later version.
+ *
+ *		"Velo Bling-Bling" is distributed in the hope that it will be useful,
+ *		but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *		GNU General Public License for more details.
+ *
+ *		You should have received a copy of the GNU General Public License along
+ *		with "Velo Bling-Bling". If not, see <http://www.gnu.org/licenses/>.
+ */
+
 /* ###################################################################
 **     Filename    : Events.h
 **     Project     : veloblingbling

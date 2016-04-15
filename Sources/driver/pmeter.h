@@ -1,19 +1,41 @@
 /**
  *  @brief
- *      Accelerometer over I2C Interface
+ *      Pressure sensor meter over I2C Interface
  *      
- *      The accelerometer is used for detecting the wheel position
+ *      The I2C master interface is also used for the accelerometer MMA8451QR1.
+ *      The I2C interface is initialized here.
+ *
+ *      The pressure sensor Xtrinsic MPL3115A2 is used for measuring the altitude and temperature.
+ *      I2C address for pressure sensor is 0x60 (7 bit address), CSL clock 75 kHz.
+ *      The internal Oversampling is used, 128 samples, 512 ms
+ *      The data is polled every second
+ *      (The internal sample FIFO is used for data acquisition. Acquisition time step is 2 s, 4 values for watermark)
  *      
  *  @file
  *      pmeter.c
- *  @copyright
- *      Peter Schmid, Switzerland
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
  *      2014-02-10
  *  @remark     
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This file is part of "Velo Bling-Bling" main MCU firmware.
+ *
+ *		"Velo Bling-Bling" firmware is free software: you can redistribute it
+ *		and/or modify it under the terms of the GNU General Public License as
+ *		published by the Free Software Foundation, either version 3 of the
+ *		License, or (at your option) any later version.
+ *
+ *		"Velo Bling-Bling" is distributed in the hope that it will be useful,
+ *		but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *		GNU General Public License for more details.
+ *
+ *		You should have received a copy of the GNU General Public License along
+ *		with "Velo Bling-Bling". If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef PMETER_H_

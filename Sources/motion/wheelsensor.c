@@ -3,16 +3,15 @@
  *      Wheel rotation related stuff e.g. timing (synchronisation) for display column
  *      Wheel synchronisation.
  *      
- *      v_max = 70 km/h = 19.44 m/s -> 20 m/s
- *      v_min = 15 km/h = 4.16 m/s  ->  4 m/s
- *      v_min = 10 km/h = 4.16 m/s  ->  2.8 m/s
+ *      v_max = 100 km/h = 27.8 m/s
+ *      v_min = 10 km/h = 2.78 m/s
  *      
  *      C = 2.105 m   ; 28" race wheel (2.133 m wikipedia)
  *      
- *      t_min = C / v_max = 0.109 s (0.0758)
- *      t_max = C / v_min = 0.505 s (0.758)
+ *      t_min = C / v_max = 0.0758 s
+ *      t_max = C / v_min = 0.758 s
  *      
- *      a_r = v� / r = 
+ *      a_r = v^2 / r =
  *        46 .. 1200 m/s^2 (am äussersten Punkt, d.h. auf dem Pneu)
  *        4.7 .. 122 g
  *        7.9 .. 197 m/s^2 (bei etwa 0.05 m von Nabe entfernt)
@@ -43,14 +42,29 @@
  *      
  *  @file
  *      wheelsensor.c
- *  @copyright
- *      Peter Schmid, Switzerland
  *  @author
  *      Peter Schmid, peter@spyr.ch
  *  @date
  *      2014-02-10
- *  @remark     
+ *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
+ *  @copyright
+ *      Peter Schmid, Switzerland
+ *
+ *      This file is part of "Velo Bling-Bling" main MCU firmware.
+ *
+ *		"Velo Bling-Bling" firmware is free software: you can redistribute it
+ *		and/or modify it under the terms of the GNU General Public License as
+ *		published by the Free Software Foundation, either version 3 of the
+ *		License, or (at your option) any later version.
+ *
+ *		"Velo Bling-Bling" is distributed in the hope that it will be useful,
+ *		but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *		GNU General Public License for more details.
+ *
+ *		You should have received a copy of the GNU General Public License along
+ *		with "Velo Bling-Bling". If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -81,6 +95,7 @@
 #include "visual/led.h"
 #include "visual/display.h"
 #include "comm/usb.h"
+#include "comm/ble.h"
 #include "bling.h"
 #include "powermgr.h"
 
@@ -89,9 +104,10 @@
 #define T_MAX 284175				/* maximum time for rotation (10 km/h): 0.758 s -> 758'000 / 2.667 = 284'175 */
 #define T_MIN 28417					/* minimum time for rotation (100 km/h): 0.0758 s -> 75'800 / 2.667 = 28'417 */
 
-#define MAX_TURNS 5					/* 5 * 175 ms = 800 ms */
+#define MAX_TURNS_RIGHT 5			/* 0.758 ms / 175 ms = 4.3 */
+#define MAX_TURNS_ROTATING 57		/* 10 s / 175 ms = 57, maybe better 64 s? (365) */
 
-#define DEBOUNCE_TIME 1500			/* 4 ms -> 4000 / 2.667 = 1500, at 100 km/h about 19 � */
+#define DEBOUNCE_TIME 1500			/* 4 ms -> 4000 / 2.667 = 1500, at 100 km/h about 19 ° */
 #define DEBOUNCE_TIME_S 0.004
 
 #define FRONT_LIGHT_DELAY 60.0
@@ -104,21 +120,24 @@ double circumference = 2.105;		/**< [m] default is road bike with 23 mm tire  */
 double stretch = 1.0;				/**< to stretch the display length */ 
 /*   default is 0.23 m  from hub to the middle of the display */
 
-double delay_front = 5.0;			/**< delay to the first window front wheel 5.0 .. 50.0 � */
-double between_front = 20.0;		/**< delay between the windows 10.0 .. 50.0 � */
-double delay_rear = 10.0;			/**< delay to the first window read wheel 5.0 .. 50.0 � */
-double between_rear = 40.0;			/**< delay between the windows 10.0 .. 50.0 � */
+double delay_front = 5.0;			/**< delay to the first window front wheel 5.0 .. 50.0 ° */
+double between_front = 20.0;		/**< delay between the windows 10.0 .. 50.0 ° */
+double delay_rear = 10.0;			/**< delay to the first window read wheel 5.0 .. 50.0 ° */
+double between_rear = 40.0;			/**< delay between the windows 10.0 .. 50.0 ° */
 
 bool right = FALSE;					/**< display on the right side (travel direction) */
 bool front = FALSE; 				/**< front wheel  */
 
-volatile double rotationTime = 0.0;			/**< [s]  */
+volatile double rotationTime = MAX_ROTATION_TIME;			/**< [s]  */
 
 volatile wait_modeT wait_mode = NOT_WAITING;
 
 volatile bool reed_closed = FALSE;			/**< reed contact closed */
 
-volatile bool rotating = FALSE;				/* valid rotation */
+volatile bool rotating = FALSE;				/**< wheel is rotating (timeout about 10 s) */
+volatile bool right_rotating = FALSE;		/**< wheel is rotating with a speed between 10 and 100 km/h */
+
+volatile bool valid_display = FALSE;		/**< speed is valid for display and no low energy*/
 
 bool enable_bling[2] = {FALSE, FALSE};
 
@@ -128,7 +147,7 @@ uint16_t rotTimerCh1;
 
 // Local Variables
 // ***************
-static volatile uint8_t timerTurns;			/* Timer overrun after 174.763 ms */
+static volatile uint8_t timerTurns;			/* Timer overrun after 174.763 ms, about 44 s for overflow */
 
 static volatile int16_t currColumn = 0;
 static volatile int16_t firstColumn;
@@ -167,48 +186,46 @@ void wheel_Synch() {
 	uint32_t rotationTimeU;
 	double delay;
 	
+	sleep_wakeup = TRUE;
+
 	if (tripMode == TRIP_PAUSED) {
+		// as soon as the wheel starts to turn trip will restart
 		tripMode = TRIP_STARTED;
 	}
 
 	trip_timeout = 0;
 
-	sleep_wakeup = TRUE;
+	if (!low_energy && !right_rotating) {
+		// switch on LED16 to show reed contact (Hall sensor) closed
+		set_led(TOPSIDE, LED16, GREEN);
+		write_ledColumn(TOPSIDE);
+		reed_closed = TRUE;
+	}
 
 	if (rotating) {
-		rotationTimeU = (uint32_t) RotTimer_GetCounterValue(RotTimerPtr);
-		rotationTimeU = rotationTimeU + ((uint32_t) timerTurns << 16);
+		rotationTimeU = (uint32_t) RotTimer_GetCounterValue(RotTimerPtr) + ((uint32_t) timerTurns << 16);
 		if (rotationTimeU < DEBOUNCE_TIME) {
 			return;
 		}
 
 		// restart rotation timer
 		timerTurns = 0;
-		// RotTimer_Disable(RotTimerPtr);
 		RotTimer_ResetCounter(RotTimerPtr);
-		// RotTimer_GetEventStatus(RotTimerPtr);
-		// RotTimer_Enable(RotTimerPtr);
 
-		/* calculate rotation time */
+		// calculate rotation time for BLE
 		rotationTime = rotationTimeU * TIMER_TICK;
 
-		/* valid rotation for cyclocomputer */
-		cyclo_Information(); 		
-
-		if (low_energy) {
-			return;
-		}
-
 		if ( (rotationTimeU < T_MIN) || (rotationTimeU > T_MAX) ) {
-			/* to fast or to slow */
-			rotating = FALSE;
+			// to fast or to slow -> do not display
+			right_rotating = FALSE;
 			wait_mode = NOT_WAITING;
-			RotTimer_Disable(RotTimerPtr);
+			// RotTimer_Disable(RotTimerPtr);
 			enable_bling[TOPSIDE] = FALSE;
 			enable_bling[BOTTOMSIDE] = FALSE;
 			bling_StopTimer();
-		} else {
-			/* start timer for first window */
+		} else 	if (!low_energy) {
+			// start timer for first window
+			right_rotating = TRUE;
 			wait_mode = TO_FIRST;
 			if (front) {
 				if (displayMode[TOPSIDE][UPPER] == LIGHT) {
@@ -223,7 +240,6 @@ void wheel_Synch() {
 					delay = delay_rear;
 				}	
 			}
-			
 
 			// set time (delay) for the first window
 			uint16_t periodTicks = (rotationTime * (delay / 360.0)) / TIMER_TICK;
@@ -240,28 +256,17 @@ void wheel_Synch() {
 
 	} else {
 		// not rotating -> start measurement
-		if (!standby) {
-			timerTurns = 0;
-			// RotTimer_Disable(RotTimerPtr);
-			RotTimer_ResetCounter(RotTimerPtr);
-			// RotTimer_GetEventStatus(RotTimerPtr);
-			RotTimer_Enable(RotTimerPtr);
-			rotating = TRUE;
-			bling_StopTimer();
-		}
-		rotationTime = -1.0;
-		
-		/* valid rotation for cyclocomputer */
-		cyclo_Information(); 	
-		
-		if (!low_energy) {
-			// show reed contact closed
-			set_led(TOPSIDE, LED16, GREEN);
-			write_ledColumn(TOPSIDE);
-			reed_closed = TRUE;
-		}
+		timerTurns = 0;
+		RotTimer_ResetCounter(RotTimerPtr);
+		RotTimer_Enable(RotTimerPtr);
+		rotating = TRUE;
+		bling_StopTimer();
 
+		rotationTime = 64;	// rotation time not valid (maximum)
 	}
+
+	// valid rotation do some cyclocomputer calculations
+	cyclo_Information();
 }
 
 /*
@@ -276,13 +281,17 @@ void wheel_Synch() {
  */
 /* ===================================================================*/
 void wheel_TimerOverrun() {
-	if (++timerTurns >= MAX_TURNS) {
-		// 
+	timerTurns++;
+	if (timerTurns >= MAX_TURNS_ROTATING) {
+		// to slow for rotation measuring
 		rotating = FALSE;
-		wait_mode = NOT_WAITING;
+		rotationTime = MAX_ROTATION_TIME;
 		RotTimer_Disable(RotTimerPtr);
+	} else if (timerTurns >= MAX_TURNS_RIGHT) {
+		// to slow for bling bling
+		right_rotating = FALSE;
+		wait_mode = NOT_WAITING;
 		bling_StopTimer();
-		rotationTime = -1.0;
 		enable_bling[TOPSIDE] = FALSE;
 		enable_bling[BOTTOMSIDE] = FALSE;
 	}
@@ -499,6 +508,7 @@ void wheel_StartColumn() {
 void wheel_checkReed() {
 	if (reed_closed) {
 		if (ReedContact_GetVal(NULL)) {
+			// Hall sensor no longer active -> switch off LED
 			set_led(TOPSIDE, LED16, BLACK);
 			write_ledColumn(TOPSIDE);
 			reed_closed = FALSE;
