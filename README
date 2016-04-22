@@ -1,0 +1,48 @@
+Firmware for the Velo Bling-Bling project
+*****************************************
+
+http://veloblingbling.ch
+
+LED lights for bicycle wheels.
+16 multi color LEDs on each side (PCB top- and bottom side).
+There are two windows (upper and lower) on each side for display 
+dynamic information like speed, trip time, trip distance, etc. or
+static information like strings and images.
+The windows have a resolution of 100 x 16 pixels.
+The space between the windows can be filled with a pattern/image 
+(AKA blingbling).
+
+Target system is a proprietary PCB (eWheel32 V1.4 an newer) with a
+MK22DX256VLF5 MCU from Freescale/NXP. The PCB is free hardware, see 
+https://github.com/spyren/veloblingbling-pcb
+
+There is also optional Bluetooth Low Energy (Smart) subsystem on board. 
+It is a LAIRD BL600 module. The application software is also on GitHub:
+https://github.com/spyren/veloblingbling-ble
+
+It is possible to mount die PCB direct onto the wheel spokes but it is 
+better to use a mounting frame. This frame can be ordered from
+http://shapeways.com or you can print it by yourself on 3D printer.
+https://github.com/spyren/veloblingbling-frame
+
+
+Copyright
+*********
+
+Peter Schmid, Switzerland, peter@spyr.ch
+
+This file is part of "Velo Bling-Bling" main MCU firmware.
+
+"Velo Bling-Bling" firmware is free software: you can redistribute it
+and/or modify it under the terms of the GNU General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+"Velo Bling-Bling" is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with "Velo Bling-Bling". If not, see <http://www.gnu.org/licenses/>.
+ 
