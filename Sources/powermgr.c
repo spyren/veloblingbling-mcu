@@ -159,7 +159,7 @@ void powermgr_DeepSleep() {
 		sleep_timeout = 0;
 		sleep_wakeup = FALSE;
 		hibernation_timeout = 0;
-		rotating = FALSE;
+		// rotating = FALSE;
 
 	} else {
 		if (sleep_timeout >= MAX_SLEEP) {

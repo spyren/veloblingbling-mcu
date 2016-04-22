@@ -187,6 +187,10 @@ void wheel_Synch() {
 	double delay;
 	
 	sleep_wakeup = TRUE;
+	if (standby) {
+		// while in standby mode it is not possible to start the timer
+		return;
+	}
 
 	if (tripMode == TRIP_PAUSED) {
 		// as soon as the wheel starts to turn trip will restart
@@ -223,8 +227,7 @@ void wheel_Synch() {
 			enable_bling[TOPSIDE] = FALSE;
 			enable_bling[BOTTOMSIDE] = FALSE;
 			bling_StopTimer();
-//		} else 	if (!low_energy) {
-		} else  {
+		} else 	if (!low_energy) {
 			// start timer for first window
 			right_rotating = TRUE;
 			wait_mode = TO_FIRST;
