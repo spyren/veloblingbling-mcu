@@ -695,7 +695,7 @@ int put_Tricolore(int position, surfaceT sur, windowT win, const LED_colorT colo
 	return ++pos;
 }
 
-/*
+ /*
  ** ===================================================================
  **  Method      :  put_Meander
  */
@@ -733,6 +733,46 @@ int put_Meander(int position, const LED_colorT front_color, const LED_colorT bac
 	display[sur][win].length = pos;
 	return pos;
 }
+
+/*
+** ===================================================================
+**  Method      :  put_Square
+*/
+/**
+*  @brief
+*  	Puts a square in the display. The character is 8x11 pixel.
+*  @param
+*      position	the column where the string start
+*  @param
+*      front_color	foreground (front) color
+*  @param
+*      side			side length (max. 16)
+*  @param
+*      sur			surface TOPSIDE or BOTTOMSIDE
+*  @param
+*      win			UPPER, LOWER, or BLING
+*  @return
+*  	the next position (column)
+*/
+/* ===================================================================*/
+int put_Square(int position, const LED_colorT front_color, const uint8_t side, surfaceT sur, windowT win) {
+	int 	pos;         // current position (column) in dotmatrix
+	int 	column;
+
+	pos = position;
+	for (column=0; column < side; column++) {
+		if (pos >= MAX_COLUMN) {
+			/* overflow, string is to long */
+			return pos;
+		}
+		display[sur][win].dotmatrix[pos]  = (01111111111111111 >> (16-side)) * front_color;
+		pos++;
+	}
+	display[sur][win].length = pos;
+	return pos;
+}
+
+
 
 /*
  ** ===================================================================
@@ -953,6 +993,14 @@ void images_Init() {
 	image_bufferP->length = position;
 	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
 	save_Image(24);
+
+	// 25: Geberit
+	clear_display(TOPSIDE, BLING);
+	position = put_Square(1, MAGENTA, 12, TOPSIDE, BLING);
+	position = put_str("\\s01GEBERIT", DOS8x12, WHITE, position, TOPSIDE, BLING);
+	image_bufferP->length = position;
+	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
+	save_Image(25);
 
 }
 

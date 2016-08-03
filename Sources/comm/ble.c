@@ -3,16 +3,16 @@
  *      Interface to the bluetooth low energy module BL600.
  *      The command line interface use the UART / vSP bridge mode.
  *      The BLE profiles are accessed through the I2C slave interface.
- *      
- *      The UART0 (Resource BL600) is used for communication, default baud rate is 9600. 
+ *
+ *      The UART0 (Resource BL600) is used for communication, default baud rate is 9600.
  *      The MK22DX does have HW support for CTS/RTS.
  *      Input Buffer size is limited to 100 chars
  *      Output buffer size is limited to 200 chars
- *      
+ *
  *      vSP bridge mode
- *      
+ *
  *      nAutoRun is GND -> autorun activated
- *      
+ *
  *      I2C Communication between BL600 and Bling Bling MCU
  *		The BL600 is Master :-( BL600 can only be the single master)
  *		High to low transition on BLlink: Data ready for read.
@@ -39,16 +39,41 @@
  *			        	   bit28-31
  *	      0  CYCLOCOMPUTER, 1 STRING, 2 IMAGE, 3 LIGHT, 4 BLANK
  *	 	16 cycleMode    32bit wr
+ *	 					   bit0-4   UPPER TOPSIDE
+ *		     	           bit5-9   LOWER TOPSIDE
+ *				           bit10-14 [BLING TOPSIDE]
+ *				           bit15
+ *			    	       bit16-20 UPPER BOTTOMSIDE
+ *			        	   bit21-25 LOWER BOTTOMSIDE
+ *			        	   bit26-30 [BLING BOTTOMSIDE]
+ *			        	   bit31
+ *		  0 CURRENTSPEED, 1 MAXIMUMSPEED, 2 AVERAGESPEED, 3 TRIPDISTANCE,
+ *		  4 TOTALDISTANCE, 5 CURRENTALTITUDE, 6 TRIPELEVATIONGAIN,
+ *		  7 TOTALELEVATIONGAIN, 8 MAXALTITUDE, 9 INCLINE, 10 TEMPERATURE,
+ *		  11 PEDALINGCADENCE, 12 CURRENTTIME, 13 CURRENTDATE, 14 TRIPTIME,
+ *		  15 TOTALTIME, 16 CHRONOTIME, 17 NOCYCLO
+ *	 	20 displayColor 32bit wr
  *	 					   bit0-3   UPPER TOPSIDE
  *		     	           bit4-7   LOWER TOPSIDE
- *				           bit8-11  BLING TOPSIDE
+ *				           bit8-11  [BLING TOPSIDE]
  *				           bit12-15
  *			    	       bit16-19 UPPER BOTTOMSIDE
  *			        	   bit20-23 LOWER BOTTOMSIDE
- *			        	   bit24-27 BLING BOTTOMSIDE
+ *			        	   bit24-27 [BLING BOTTOMSIDE]
  *			        	   bit28-31
- *	 	20 displayColor 32bit wr
- *	 	24 displayImage 32bit wr
+ *		  0 BLACK, 1 RED, 2 GREEN, 3 YELLOW, 4 BLUE, 5 MAGENTA, 6 CYAN, 7 WHITE
+ *	 	24 displayImageTop 32bit wr
+ *	 					   bit0-7   UPPER
+ *		     	           bit8-15  LOWER
+ *				           bit16-23 BLING
+ *				           bit24-31
+ *		  0 .. 49
+ *	 	28 displayImageBottom 32bit wr
+ *	 					   bit0-7   UPPER
+ *		     	           bit8-15  LOWER
+ *				           bit16-23 BLING
+ *				           bit24-31
+ *		  0 .. 49
  *
  *  @file
  *      ble.c
@@ -56,7 +81,7 @@
  *      Peter Schmid, peter@spyr.ch
  *  @date
  *      2014-05-13
- *  @remark     
+ *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @copyright
  *      Peter Schmid, Switzerland
@@ -80,7 +105,7 @@
 /**
  **  @defgroup ble_module blue tooth low energy module
  **  @{
- */         
+ */
 /* MODULE ble */
 
 // system include files
@@ -139,16 +164,16 @@ static const char run_lowpower_s[] = "at+run \"lp\"\r";  	// run the Low Power a
 int ble_Init() {
 	int error;
 	char answer[100];
-	
+
 	ble_reset();
-	
+
 	error = ble_command(run_bling_s, answer, sizeof(answer));
 	if (strstr(answer, "OK") == NULL) {
 		error = -3;
 	} else {
 		error = 0;
 	}
- 	
+
 	return error;
 }
 
@@ -182,7 +207,7 @@ void ble_lowPower() {
 /**
  *  @brief
  *  	Resets the blue tooth low energy module BL600.
- *  	The reset pin is normally input, otherwise it is not possible 
+ *  	The reset pin is normally input, otherwise it is not possible
  *  	to use JTAG for the BL600 module.
  */
 /* ===================================================================*/
@@ -190,7 +215,7 @@ void ble_reset() {
 	BLreset_SetOutput(NULL);
 	BLreset_PutVal(NULL, FALSE);
 	wait_10ms(4);
-	BLreset_PutVal(NULL, TRUE);	
+	BLreset_PutVal(NULL, TRUE);
 	BLreset_SetInput(NULL);
 
 	wait_10ms(100);
@@ -234,13 +259,13 @@ int ble_command(const char *command, char *answer, int len) {
 	word count = 0;
 	word rxchars;
 	int error;
-	
+
 	strcpy(answer, "");
 	error = ble_puts(command);
 	if (error < 0) {
 		return -1;
 	}
-	
+
 	wait_10ms(20);
 	rxchars = BL600_GetCharsInRxBuf();
 	if (rxchars >= len) {
@@ -248,9 +273,9 @@ int ble_command(const char *command, char *answer, int len) {
 	} else {
 		error = BL600_RecvBlock((BL600_TComData*) answer, rxchars, &count);
 	}
-		
+
 	answer[count] = 0;
-	
+
 	return error;
 }
 
@@ -259,12 +284,12 @@ int ble_command(const char *command, char *answer, int len) {
  ** ===================================================================
  **  Method      :  ble_puts
  */
-/**     
+/**
  *  @brief
- *      Write a string s to the BLE Module over UART 
- *      
+ *      Write a string s to the BLE Module over UART
+ *
  *  @parameter
- *  	s	string to write    
+ *  	s	string to write
  *  @return
  *  	>= 0	number of characters written
  *  	<0		error
@@ -273,7 +298,7 @@ int ble_command(const char *command, char *answer, int len) {
 int ble_puts(const char *s) {
 	word count;
 	byte error;
-	
+
 	error = BL600_SendBlock((BL600_TComData*) s, strlen(s), &count);
 	if (error == ERR_OK) {
 		return count;
@@ -288,10 +313,10 @@ int ble_puts(const char *s) {
  ** ===================================================================
  **  Method      :  ble_show_state
  */
-/**     
+/**
  *  @brief
  *      shows the Bluetooth link state
- *      
+ *
  */
 /* ===================================================================*/
 void ble_show_state() {

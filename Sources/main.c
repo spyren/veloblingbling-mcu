@@ -185,7 +185,8 @@ int main(void)
 	  ButtonLongPressed = FALSE;
 
 	  while (1) {
-		  if (usb_getc(2) == A_ESC) {
+//		  if (usb_getc(2) == A_ESC) {
+		  if (usb_getc(2) == A_CR) {
 			  // ESC from USB console -> leave for USB command line
 			  break;
 		  }

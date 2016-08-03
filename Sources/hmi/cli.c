@@ -84,7 +84,7 @@
  *  @remark     
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.1, 2016/02/01
+ *      Version 4.3, 2016/04/22
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -2094,7 +2094,11 @@ void cli_usb() {
 					// there is something to echo
 					BL600_RecvBlock((BL600_TComData*) line, charsInBuffer, &count);
 					line[count] = 0;
-					usb_puts(line);
+					//usb_puts(line);
+					int i;
+					for (i=0; i < strlen(line); i++) {
+						usb_putc(line[i]);
+					}
 				}
 			}
 			continue;
