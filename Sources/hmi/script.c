@@ -91,6 +91,54 @@ static const char e_s[]      = ":e";
 static const char colon_c  = ':';
 static const char semicolon_c  = ';';
 
+// Sample scripts
+// don't forget to escape the \ (\\) and the special chars
+
+// Geberit AquaClean
+static const char geberitScript[] =
+		"set up blk\n"
+		"set lo blk\n"
+		"set bling blk\n"
+		":w 5\n"
+		"set col up w\n"
+		"set img up 25\n"
+		"set col lo m\n"
+		"set str lo \\f04_AquaClean\n"
+		"set up img\n"
+		"set lo string\n"
+		"set bling blk\n"
+		":w 6\n"
+		"set img bling 26\n"
+		"set up blk\n"
+		"set lo blk\n"
+		"set bling img\n"
+		":w 3\n"
+		"set col up g\n"
+		"set str up \\f03__Karl_Zahner\n"
+		"set img lo 27\n"
+		"set up string\n"
+		"set lo img\n"
+		"set bling blk\n"
+		":w 3\n"
+		"set str up \\f00__Andreas_Helbling\n"
+		":w 3\n"
+		"set str up \\f03_Margit_Harsch\n"
+		":w 3\n"
+		"set str up \\f00__Marc_Attenhofer\n"
+		":w 3\n"
+		"set str up \\f00__Martin_Baum\201ller\n"
+		":w 3\n"
+		"set str up \\f00__Hubert_Britschgi\n"
+		":w 3\n"
+		"set img lo 24\n"
+		"set img bling 0\n"
+		"set up speed\n"
+		"set lo img\n"
+		"set bling img\n"
+		":w 8\n"
+		";\n";
+
+
 
 // Global Variables
 // ****************
@@ -103,6 +151,26 @@ bool script_set = FALSE;
 char *charP;			// points to the image buffer
 uint8_t waitTime = 0;
 
+/*
+ ** ===================================================================
+ **  Method      :  script_Init
+ */
+/**
+ *  @brief
+ *      Initializes sample scripts
+ *
+ */
+/* ===================================================================*/
+void script_Init(void) {
+	char *chP;			// points to the image buffer
+
+	// Geberit script to 30
+	chP = (char*) &image_bufferP->dotmatrix[0];
+	strcpy(chP, geberitScript);
+	// save buffer to flash
+	image_bufferP->length = 0;
+	save_Image(30);
+}
 
 
 /*

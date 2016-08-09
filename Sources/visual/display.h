@@ -177,7 +177,7 @@ int put_str(const char *s, fontT font, LED_colorT color, int position, surfaceT 
  *  	the next position (column) 	
  */
 /* ===================================================================*/
-int put_heart(int position, surfaceT sur, windowT win);
+int put_heart(int position, const LED_colorT color, surfaceT sur, windowT win);
 
 /*
  ** ===================================================================

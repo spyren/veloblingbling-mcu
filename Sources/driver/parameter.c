@@ -69,6 +69,8 @@
 #include "visual/display.h"
 #include "hmi/mode.h"
 #include "hmi/button.h"
+#include "hmi/cli.h"
+#include "hmi/script.h"
 
 
 #define EEPROM_BASE	0x14000000
@@ -109,8 +111,9 @@ void flash_Init() {
 
 		set_params();
 		save_params();
-		// initialise some images
+		// initialise some images and scripts
 		images_Init();
+		script_Init();
 
 		while (!ButtonReleased) {
 			;
@@ -128,8 +131,9 @@ void flash_Init() {
 			// no valid data in Flash -> initialise from global variables
 			set_params();
 			save_params();
-			// initialise some images
+			// initialise some images and scripts
 			images_Init();
+			script_Init();
 		}
 	}
 }

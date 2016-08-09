@@ -178,15 +178,16 @@ int main(void)
 
 
   while(1) {
-	  usb_puts("Normal operation mode (automatically), hit ESC for command line interface (interactive mode)\n");
+	  usb_puts("Normal operation mode, hit ESC for command line interface (interactive mode)\n");
+//	  usb_puts("Normal operation mode, hit CR for command line interface (interactive mode)\n");
 	  sleep_wakeup = TRUE;
 
 	  ButtonPressed = FALSE;
 	  ButtonLongPressed = FALSE;
 
 	  while (1) {
-//		  if (usb_getc(2) == A_ESC) {
-		  if (usb_getc(2) == A_CR) {
+		  if (usb_getc(2) == A_ESC) {
+//		  if (usb_getc(2) == A_CR) {
 			  // ESC from USB console -> leave for USB command line
 			  break;
 		  }

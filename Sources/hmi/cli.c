@@ -1,7 +1,7 @@
 /**
  *  @brief
  *      Command Line Interface (CLI, interactive mode)
- *      
+ *
  *      show [all]
  *      show     currentspeed|speed   float            [m/s]
  *      show     maximumspeed|max     float            [m/s]
@@ -15,37 +15,37 @@
  *      show     temperature|temp     float            [°C]
  *      show     pedalingcadence|cad  float            [/Min]
  *      set|show energy               low|standard
- *      
+ *
  *      show|set currenttime|watch    yyyymmddhhmmss
  *      show     triptime|time        float            [s]
  *      show|set totaltime|tottime    float            [s]
  *      show     chronotime|chrono    float            [s]
- *      
+ *
  *      show     datalog
- *      
+ *
  *      show|set circumference|circ   float            [m]
- *      show|set unit                 imperial|metric 
+ *      show|set unit                 imperial|metric
  *      show|set stretch              float
- *      show|set side                 left|right      
+ *      show|set side                 left|right
  *      show|set wheel                front|rear
  *      show|set logintervall|log     float            [s]
  *      show|set delay                float            [°]
  *      show|set surface              top|bottom
- *      
+ *
  *		show|set upper|lower          speed|max|avg|trip|tot|alt|inc|temp|cad|watch|time|stop|str|blk|img|light
  *		show|set bling                str|blk|img
- *		
+ *
  *		show|set color upper|lower    rd|gn|yl|bl|ma|cy|wt
- *		
+ *
  *		show|set pattern              number           [0..49]
- *		rrrrrrrrrrrr    
- *		rrrrrwwrrrrr    
- *		rrrrrwwrrrrr         
- *		rrwwwwwwwwrr    
- *		rrwwwwwwwwrr    
- *		rrrrrwwrrrrr    
- *		rrrrrwwrrrrr    
- *		rrrrrrrrrrrr    
+ *		rrrrrrrrrrrr
+ *		rrrrrwwrrrrr
+ *		rrrrrwwrrrrr
+ *		rrwwwwwwwwrr
+ *		rrwwwwwwwwrr
+ *		rrrrrwwrrrrr
+ *		rrrrrwwrrrrr
+ *		rrrrrrrrrrrr
  *		.
  *
  *		show|set script               number
@@ -56,18 +56,18 @@
  *
  *		show|set string upper|lower   anystring
  *		show|set image upper|lower|bling number
- *      
+ *
  *      ble reset
  *      ble command
  *      ble transparent
  *
  *      log start                      [yyyymmddhhmmss]
  *      log stop
- *		
+ *
  *      clear logdata
  *
  *      trip start|stop|pause|resume
- *      
+ *
  *      test
  *      about
  *      help
@@ -81,10 +81,10 @@
  *      Peter Schmid, peter@spyr.ch
  *  @date
  *      2013-12-04
- *  @remark     
+ *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.3, 2016/04/22
+ *      Version 4.4, 2016/08/09
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -111,7 +111,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 4.3, 2016/04/22, Copyright Peter Schmid\n\n";
+		"Version 4.4, 2016/08/09, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -162,11 +162,11 @@ static const char script_prompt_s[] = "SCR> ";
 // help strings
 // ************
 
-static const char cliHelp[] = 
+static const char cliHelp[] =
        //01234567890123456789012345678901234567890123456789012345678901234567890123456789
         "Command Line Interface (interactive mode).\n";
 
-static const char cliHelpFull[] = 
+static const char cliHelpFull[] =
         "exit\n"
         "show\n"
 		"set\n"
@@ -176,24 +176,24 @@ static const char cliHelpFull[] =
 		"script\n"
         "uptime\n"
         "test\n"
-        "fault\n"       
+        "fault\n"
         "reset\n"
 		"factory\n"
 		"about\n"
         "help [<command>]\n";
 
-static const char cliHelpExit[] = 
+static const char cliHelpExit[] =
         "exit\n"
         "\n"
         "Exits the interactive mode and goes back to the normal operating mode.\n";
 
-static const char cliHelpTest[] = 
+static const char cliHelpTest[] =
         "test\n"
         "\n"
         "Goes to the automatic test mode.\n"
         "This command is only useful for commissioning.\n";
 
-static const char cliHelpShow[] = 
+static const char cliHelpShow[] =
         "show currentspeed|maximumspeed|averagespeed|tripdistance|totaldistance\n"
 		"show currentaltitude|tripelevation|totalelevation|incline\n"
 		"show altimeteroffset\n"
@@ -210,7 +210,7 @@ static const char cliHelpShow[] =
         "\n"
         "Shows the parameters\n";
 
-static const char cliHelpSet[] = 
+static const char cliHelpSet[] =
        //01234567890123456789012345678901234567890123456789012345678901234567890123456789
         "set totaldistance <distance [m]>\n"
         "set totalelevationgain <height [m]>\n"
@@ -222,7 +222,7 @@ static const char cliHelpSet[] =
 		"set stretch <0.8 .. 1.5>\n"
 		"set side left|right\n"
 		"set wheel front|rear\n"
-		"set energy low|standard"
+		"set energy low|standard\n"
 		"set surface top|bottom\n"
 		"set upper|lower speed|max|avg|trip|tot|alt|inc|temp|cad|watch|time|chro|string|blk|img|light\n"
 		"set bling blk|img\n"
@@ -239,17 +239,17 @@ static const char cliHelpSet[] =
         ".\n"
         "Sets the parameters\n";
 
-static const char cliHelpTrip[] = 
+static const char cliHelpTrip[] =
         "trip start|stop|pause|resume\n"
 		"\n"
 		"Starting and stopping the trip\n";
 
-static const char cliHelpSave[] = 
+static const char cliHelpSave[] =
         "save\n"
         "\n"
         "Saves the configuration parameters.\n";
 
-static const char cliHelpBle[] = 
+static const char cliHelpBle[] =
         "ble\n"
 		"ble reset\n"
 		"ble command <command> <parameter>\n"
@@ -257,12 +257,12 @@ static const char cliHelpBle[] =
         "\n"
         "BLE commands over UART.\n";
 
-static const char cliHelpUptime[] = 
+static const char cliHelpUptime[] =
         "uptime\n"
         "\n"
         "Shows the elapsed time since startup.\n";
 
-static const char cliHelpFault[] = 
+static const char cliHelpFault[] =
         "fault\n"
         "\n"
         "For test purposes only. Produces a memory fault.\n";
@@ -272,7 +272,7 @@ static const char cliHelpFactory[] =
         "\n"
         "Restore factory settings.\n";
 
-static const char cliHelpReset[] = 
+static const char cliHelpReset[] =
         "reset\n"
         "\n"
         "Resets (restarts) the eWheel.\n";
@@ -289,7 +289,7 @@ static const char maximumspeed_s[]    = "maximumspeed";
 static const char max_s[]             = "max";
 static const char averagespeed_s[]    = "averagespeed";
 static const char avg_s[]             = "avg";
-static const char tripdistance_s[]    = "tripdistance"; 
+static const char tripdistance_s[]    = "tripdistance";
 static const char trip_s[]            = "trip";
 static const char currentaltitude_s[] = "currentaltitude";
 static const char alt_s[]             = "alt";
@@ -468,7 +468,7 @@ static void cause_hard_fault(void) {
 /*  ===================================================================
  *     Method      :  puts_ch
  */
-/**     
+/**
  *  @brief
  *      Write a string s to the serial channel
  */
@@ -493,7 +493,7 @@ void puts_ch(const char *s, channelT ch) {
 /*  ===================================================================
  *     Method      :  windowStr2Enum
  */
-/**     
+/**
  *  @brief
  *      scan a string for windowT enum
  */
@@ -512,7 +512,7 @@ static windowT windowStr2Enum(const char *s){
 ///*  ===================================================================
 // *     Method      :  surfaceStr2Enum
 // */
-///**     
+///**
 // *  @brief
 // *      scan a string for windowT enum
 // */
@@ -550,7 +550,7 @@ static windowT windowStr2Enum(const char *s){
 static void showFloat(const char info[], double number, const char unit[], int prec, channelT ch) {
 	char str[40];
 	char number_s[20];
-	
+
 	strcpy(str, info);
 	strcat(str, " ");
 	ftoa(number, prec, number_s);
@@ -583,7 +583,7 @@ static void showWindow(windowT win, channelT ch) {
 		break;
 	case BLING:
 		strcpy(str, bling_s);
-		break;		
+		break;
 	default:
 		break;
 	}
@@ -647,10 +647,10 @@ static void showWindow(windowT win, channelT ch) {
 			break;
 		}
 		break;
-	case STRING: 
+	case STRING:
 		strcat(str, string_s);
 		break;
-	case IMAGE: 
+	case IMAGE:
 		strcat(str, imag_s);
 		break;
 	case LIGHT:
@@ -689,12 +689,12 @@ static void showString(windowT win, channelT ch) {
 			break;
 		case BLING:
 			strcat(str, bling_s);
-			break;		
+			break;
 		default:
 			break;
 		}
 		strcat(str, " ");
-		strcat(str, displayString[surface][win]); 
+		strcat(str, displayString[surface][win]);
 		strcat(str, lf_s);
 	} else {
 		strcpy(str, syntaxError_s);
@@ -715,7 +715,7 @@ static void showString(windowT win, channelT ch) {
 static void showColor(windowT win, channelT ch) {
 	char str[40];
 
-	if (win != -1) {	
+	if (win != -1) {
 		strcpy(str, color_s);
 		strcat(str, " ");
 		switch (win) {
@@ -727,8 +727,8 @@ static void showColor(windowT win, channelT ch) {
 			break;
 		case BLING:
 			strcat(str, bling_s);
-			break;		
-		default: 
+			break;
+		default:
 			break;
 		}
 		strcat(str, " ");
@@ -736,7 +736,7 @@ static void showColor(windowT win, channelT ch) {
 		case BLACK:
 			strcat(str, black_s);
 			break;
-		case RED: 
+		case RED:
 			strcat(str, red_s);
 			break;
 		case GREEN:
@@ -777,8 +777,8 @@ static void showColor(windowT win, channelT ch) {
 static void showImage(windowT win, channelT ch) {
 	char str[40];
 	char s[10];
-	
-	if (win != -1) {	
+
+	if (win != -1) {
 		strcpy(str, imag_s);
 		strcat(str, " ");
 		switch (win) {
@@ -790,12 +790,12 @@ static void showImage(windowT win, channelT ch) {
 			break;
 		case BLING:
 			strcat(str, bling_s);
-			break;		
+			break;
 		default:
 			break;
 		}
 		strcat(str, " ");
-		ltoa(displayImage[surface][win], s); 
+		ltoa(displayImage[surface][win], s);
 		strcat(str, s);
 		strcat(str, lf_s);
 	} else {
@@ -875,7 +875,7 @@ static void showWheel(channelT ch) {
 		strcat(str, rear_s);
 	}
 	strcat(str, lf_s);
-	puts_ch(str, ch);	
+	puts_ch(str, ch);
 }
 
 
@@ -891,7 +891,7 @@ static void showWheel(channelT ch) {
 static void showTime(channelT ch) {
 	char str[40];
 	char s[10];
-	
+
 	LDD_RTC_TTime timePtr;
 
 	RTC1_GetTime(watchPtr, &timePtr);
@@ -908,7 +908,7 @@ static void showTime(channelT ch) {
 	itoa2(timePtr.Second, s);
 	strcat(str, s);
 	strcat(str, lf_s);
-	puts_ch(str, ch);		
+	puts_ch(str, ch);
 }
 
 /*
@@ -928,7 +928,7 @@ static void showTripMode(channelT ch) {
 	case TRIP_STARTED:
 		strcat(str, " started");
 		break;
-	case TRIP_PAUSED: 
+	case TRIP_PAUSED:
 		strcat(str, " paused");
 		break;
 	case TRIP_STOPPED:
@@ -957,7 +957,7 @@ static void showChronoMode(channelT ch) {
 	case TRIP_STARTED:
 		strcat(str, " started");
 		break;
-	case TRIP_PAUSED: 
+	case TRIP_PAUSED:
 		strcat(str, " paused");
 		break;
 	case TRIP_STOPPED:
@@ -986,7 +986,7 @@ static void showSurface(channelT ch) {
 	case TOPSIDE:
 		strcat(str, top_s);
 		break;
-	case BOTTOMSIDE: 
+	case BOTTOMSIDE:
 		strcat(str, bottom_s);
 		break;
 	}
@@ -1017,7 +1017,7 @@ static void showPattern(const char number_s[], channelT ch) {
 	uint64_t LED;
 	LED_colorT color;
 	char c;
-	
+
 	number = atoi(number_s);
 	itoa2(number, num_s);
 
@@ -1026,12 +1026,12 @@ static void showPattern(const char number_s[], channelT ch) {
 	strcat(str, num_s);
 	strcat(str, "\n");
 	puts_ch(str, ch);
-	
+
 	if ((*imageP)[number].length > MAX_COLUMN) {
 		puts_ch("Pattern empty\n", ch);
 		return;
 	}
-	
+
 	for (column=0; column < (*imageP)[number].length; column++) {
 		strcpy(str, "");
 		LED = (*imageP)[number].dotmatrix[column];
@@ -1044,10 +1044,10 @@ static void showPattern(const char number_s[], channelT ch) {
 			case RED:
 				c = 'r';
 				break;
-			case GREEN: 
+			case GREEN:
 				c = 'g';
 				break;
-			case YELLOW: 
+			case YELLOW:
 				c = 'y';
 				break;
 			case BLUE:
@@ -1164,21 +1164,21 @@ static void showScript(channelT ch) {
 /* ===================================================================*/
 static void showAll(channelT ch) {
 	showSurface(ch);
-	
+
 	showWindow(UPPER, ch);
 	showWindow(LOWER, ch);
 	showWindow(BLING, ch);
 
 	showString(UPPER, ch);
 	showString(LOWER, ch);
-	
+
 	showColor(UPPER, ch);
 	showColor(LOWER, ch);
-	
+
 	showImage(UPPER, ch);
 	showImage(LOWER, ch);
 	showImage(BLING, ch);
-	
+
 	showFloat(currentspeed_s, currSpeed, m_s_s, 1, ch);
 	showFloat(maximumspeed_s, maxSpeed, m_s_s, 1, ch);
 	showFloat(averagespeed_s, avgSpeed, m_s_s, 1, ch);
@@ -1200,15 +1200,15 @@ static void showAll(channelT ch) {
 	showFloat(battery_s, batteryVoltage, V_s, 2, ch);
 	showEnergy(ch);
 	showAcceleration(ch);
-	
+
 	showTripMode(ch);
 	showChronoMode(ch);
-	
+
 	showUnit(ch);
 	showSide(ch);
 	showWheel(ch);
 	showTime(ch);
-	
+
 }
 
 
@@ -1243,7 +1243,7 @@ static void setColor(char* str, windowT win, channelT ch) {
 			displayColor[surface][win] = CYAN;
 		} else if (! strcmp(str, white_s)   || ! strcmp(str, wt_s) || ! strcmp(str, w_s) ) {
 			displayColor[surface][win] = WHITE;
-		} else if (! strcmp(str, black_s)   || ! strcmp(str, bk_s) || ! strcmp(str, d_s) ) {   	
+		} else if (! strcmp(str, black_s)   || ! strcmp(str, bk_s) || ! strcmp(str, d_s) ) {
 			displayColor[surface][win] = BLACK;
 		}
 	} else {
@@ -1448,27 +1448,27 @@ static void setWheel(char* string, channelT ch) {
 static void setWatch(char* string, channelT ch) {
 	LDD_RTC_TTime timePtr;
 	char str[10];
-	
+
 	if (strlen(string) == 14) {
 		memcpy(str, string, 4);
 		str[4] = 0;
 		timePtr.Year = atoi(str);
 		if (timePtr.Year >= 2000 && (timePtr.Year < 3000)) {
-			
+
 			memcpy(str, string + 4, 2);
 			str[2] = 0;
 			timePtr.Month = atoi(str);
-			
+
 			if (timePtr.Month >= 1 && (timePtr.Month <= 12)) {
 				memcpy(str, string + 6, 2);
 				str[2] = 0;
 				timePtr.Day = atoi(str);
-				
+
 				if (timePtr.Day >= 1 && (timePtr.Day <= 31)) {
 					memcpy(str, string + 8, 2);
 					str[2] = 0;
 					timePtr.Hour = atoi(str);
-					
+
 					if (timePtr.Hour >= 0 && (timePtr.Hour <= 23)) {
 						memcpy(str, string + 10, 2);
 						str[2] = 0;
@@ -1478,7 +1478,7 @@ static void setWatch(char* string, channelT ch) {
 							memcpy(str, string + 12, 2);
 							str[2] = 0;
 							timePtr.Second = atoi(str);
-							
+
 							if (timePtr.Second >= 0 && (timePtr.Second <= 59)) {
 								if (RTC1_SetTime(watchPtr, &timePtr) == ERR_OK) {
 									return;
@@ -1488,11 +1488,11 @@ static void setWatch(char* string, channelT ch) {
 								}
 							}
 						}
-					}					
+					}
 				}
 			}
-		}		
-	}	
+		}
+	}
 	puts_ch("Error: wrong date/time format\n", ch);
 }
 
@@ -1551,7 +1551,7 @@ static void setEnergy(char* string, channelT ch) {
  */
 /* ===================================================================*/
 static void setPattern(const char number_s[], channelT ch) {
-	
+
 	pattern_number = atoi(number_s);
 	if (pattern_number < 0 || pattern_number >= MAX_IMAGE) {
 		puts_ch(syntaxError_s, ch);
@@ -1582,12 +1582,12 @@ static void pattern_parse(const char line[], channelT ch) {
 		// no more columns
 		image_bufferP->length = pattern_column;
 		save_Image(pattern_number);
-		pattern_number = -1;	
+		pattern_number = -1;
 		pattern_column = -1;
 	} else {
 		// next column
 		if (strlen(line) != MAX_ROW) {
-			pattern_number = -1;	
+			pattern_number = -1;
 			pattern_column = -1;
 			puts_ch(patternError_s, ch);
 			return;
@@ -1600,10 +1600,10 @@ static void pattern_parse(const char line[], channelT ch) {
 			case 'r':
 				color = RED;
 				break;
-			case 'g': 
+			case 'g':
 				color = GREEN;
 				break;
-			case 'y': 
+			case 'y':
 				color = YELLOW;
 				break;
 			case 'b':
@@ -1619,18 +1619,18 @@ static void pattern_parse(const char line[], channelT ch) {
 				color = WHITE;
 				break;
 			default:
-				pattern_number = -1;	
+				pattern_number = -1;
 				pattern_column = -1;
 				puts_ch(patternError_s, ch);
-				return;				
+				return;
 			}
 			LED = LED | ((uint64_t)color << (row * 3));
 		}
 		image_bufferP->dotmatrix[pattern_column++] = LED;
 		if (pattern_column > MAX_COLUMN) {
-			pattern_number = -1;	
+			pattern_number = -1;
 			pattern_column = -1;
-			puts_ch(patternError_s, ch);			
+			puts_ch(patternError_s, ch);
 		}
 	}
 }
@@ -1661,20 +1661,20 @@ static void pattern_parse(const char line[], channelT ch) {
  *  @return
  *  	0	OK
  *  	1	Exit command
- *    
+ *
  */
 /* ===================================================================*/
 int cli_parse(char* line, channelT ch) {
 	char out_str[100];
 	static char answer[100];
 	char *command;
-	char *p[6]; 
+	char *p[6];
 	int i;
 
 
 	// tokenize
 	command = strtok(line, " ");
-	i = 0; 
+	i = 0;
 	while (i < 7) {
 		p[i] = strtok(NULL, " ");
 		if (p[i] == NULL) {
@@ -1718,7 +1718,7 @@ int cli_parse(char* line, channelT ch) {
 				strcpy(out_str, syntaxError_s);
 				puts_ch(out_str, ch);
 			}
-		}           
+		}
 	}
 	else if (! strcmp(command, set_s)) {
 		switch (i) {
@@ -1775,11 +1775,11 @@ int cli_parse(char* line, channelT ch) {
 			}
 			break;
 		case 4:
-			// break;        		
+			// break;
 		default:
 			// parameter count not OK
 			puts_ch(syntaxError_s, ch);
-			break;	
+			break;
 		}
 	} else if (! strcmp(command, show_s)) {
 		switch (i) {
@@ -1870,7 +1870,7 @@ int cli_parse(char* line, channelT ch) {
 		default:
 			// parameter count not OK
 			puts_ch(syntaxError_s, ch);
-			break;	
+			break;
 		}
 	} else if (! strcmp(command, trip_s)) {
 		switch (i) {
@@ -1890,7 +1890,7 @@ int cli_parse(char* line, channelT ch) {
 			} else if (! strcmp(p[0], resume_s) ) {
 				if (tripMode == TRIP_PAUSED) {
 					tripMode = TRIP_STARTED;
-				}        			
+				}
 			} else if (! strcmp(p[0], mode_s) ) {
 				showTripMode(ch);
 			} else {
@@ -1936,7 +1936,7 @@ int cli_parse(char* line, channelT ch) {
 			} else if (! strcmp(p[0], resume_s) ) {
 				if (chronoMode == TRIP_PAUSED) {
 					chronoMode = TRIP_STARTED;
-				}        			
+				}
 			} else if (! strcmp(p[0], mode_s) ) {
 				showChronoMode(ch);
 			} else {
@@ -1977,11 +1977,11 @@ int cli_parse(char* line, channelT ch) {
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
-			break;				
+			break;
 		default:
 			puts_ch(syntaxError_s, ch);
 			break;
-		}			
+		}
 	} else if (! strcmp(command, test_s)) {
 		test();
 	} else if (! strcmp(command, uptime_s)) {
@@ -2018,18 +2018,18 @@ int cli_parse(char* line, channelT ch) {
  *
  *  Command line interface. Reads the USB console and interprets the
  *  commands. With command 'exit' the function returns.
- *  
+ *
  *  USB has priority over BLE.
- *  
+ *
  *  Called by main-loop (ProcessorExpert)
- *  
+ *
  */
 /* ===================================================================*/
 void cli_usb() {
 	char line[100];
 	word count = 0;
 	word charsInBuffer;
-	
+
 	operating_mode = INTERACTIVE_USB;
 	clear_leds(TOPSIDE);
 	write_ledColumn(TOPSIDE);
@@ -2037,7 +2037,7 @@ void cli_usb() {
 	usb_puts(cliHelp);
 	while (1) {
 		if (pattern_number < 0 && !script_set) {
-			usb_puts(cli_prompt_s); 
+			usb_puts(cli_prompt_s);
 		} else {
 			if (script_set) {
 				usb_puts(script_prompt_s);
@@ -2119,9 +2119,9 @@ void cli_usb() {
  *
  *  Command line interface. Reads the BLE vSP and interprets the
  *  commands.
- *  
+ *
  *  Called every 10 ms by operation (not called as long as USB is active)
- *  
+ *
  */
 /* ===================================================================*/
 void cli_ble() {
@@ -2132,7 +2132,7 @@ void cli_ble() {
 	word charsInBuffer;
 
 //	static bool first = TRUE;
-	
+
 //	operating_mode = INTERACTIVE_BLE;
 //	if (first) {
 //		if (pattern_number < 0 && !script_set) {
@@ -2150,7 +2150,7 @@ void cli_ble() {
 //		line[0] = 0;
 //		first = FALSE;
 //	}
-	
+
 	charsInBuffer = BL600_GetCharsInRxBuf();
 	if (charsInBuffer > 0) {
 		if (charsInBuffer > 50) {
@@ -2160,7 +2160,7 @@ void cli_ble() {
 		switch (error) {
 		case ERR_OK:
 			// block received
-			buffer[count] = 0; 
+			buffer[count] = 0;
 			if (strlen(buffer) + strlen(line) >= sizeof(line)) {
 				// string to long -> throw away
 				line[0] = 0;
