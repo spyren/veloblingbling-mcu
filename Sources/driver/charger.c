@@ -181,6 +181,8 @@ static void clearChargerLEDs() {
 	for (LED = LED1; LED < LED14; LED++) {
 		set_led(TOPSIDE, LED, BLACK);
 	}
+	LEDred_SetVal();
+	LEDgreen_SetVal();
 }
 
 /*
@@ -233,8 +235,10 @@ void charger_show_state() {
 		}
 		if (LED > LED11) {
 			set_led(TOPSIDE, LED, GREEN);
+			LEDgreen_ClrVal();
 		} else {
 			set_led(TOPSIDE, LED, RED);
+			LEDred_ClrVal();
 		}
 	}
 }

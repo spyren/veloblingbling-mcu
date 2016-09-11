@@ -70,7 +70,10 @@
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/HallVCC.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/I2C0.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/IntFlashLdd1.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDblue.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDgreen.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDoe.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDred.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDreset.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDspi.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ModeButton.c</PathName>
@@ -138,7 +141,10 @@
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/I2C0.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/IO_Map.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/IntFlashLdd1.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDblue.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDgreen.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDoe.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDred.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDreset.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/LEDspi.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ModeButton.h</PathName>

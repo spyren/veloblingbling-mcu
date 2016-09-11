@@ -309,7 +309,8 @@ void wheel_TimerOverrun() {
 */
 /**
  *  @brief
- *  	Interrupt from ColumnTimer (Channel 0 RotTimer/FTM0), reset channel offset
+ *  	Interrupt from ColumnTimer (Channel 0 RotTimer/FTM0), reset channel offset.
+ *  	Some kind of state machine.
  */
 /* ===================================================================*/
 void wheel_StartColumn() {

@@ -492,6 +492,8 @@ void BL600_OnError(void)
 void BL600_OnRxChar(void)
 {
   /* Write your code here ... */
+	// BLE UART wakes up from standby
+	sleep_wakeup = TRUE;
 }
 
 /*

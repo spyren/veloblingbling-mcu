@@ -64,6 +64,7 @@
 #include "comm/usb.h"
 #include "pmeter.h"
 
+#define	G_CONST	9.81			//  gravity constant 9.81 m/s^2
 
 /* Data register addresses */
 #define OUT_X_MSB 0x01
@@ -77,7 +78,7 @@
 #define CTRL_REG_1 0x2A
 /* External 3-axis accelerometer control register bit masks */
 #define ACTIVE_BIT_MASK 0x01	// 0: STANDBY mode; 1: ACTIVE mode
-#define F_READ_BIT_MASK 0x02	// 0: only 8-bit data, 1: fast read mode
+#define F_READ_BIT_MASK 0x02	// 0: normal, 1: fast read mode (8-bit data)
 #define LNOISE_BIT_MASK 0x04	// Reduced noise reduced Maximum range mode, 1: Reduced Noise mode
 
 #define ASLP_50Hz  0x00	// Auto-WAKE sample frequency when the device is in SLEEP Mode.
@@ -255,8 +256,15 @@ void ameter_Init() {
 			usb_puts("Initialise accelerometer: can't write CTRL_REG_5\n");
 		}
 
+		// set High Resolution Mode
+		Data = MOD_HIGH_RESOLUTION; /* Set active mode */
+		if (WriteRegs(I2C_DeviceData, &DataState, CTRL_REG_2, ACC_REG_SIZE, &Data)) {
+			usb_puts("Initialise accelerometer: can't write  CTRL_REG_2\n");
+		}
+
 		// activate orientation detection, 50 Hz data rate
-		Data = (ACTIVE_BIT_MASK | ODR_12Hz5 ); /* Set active mode */
+		// output data rate (ODR) 1.56 Hz
+		Data = (ACTIVE_BIT_MASK | ODR_1Hz56 ); /* Set active mode */
 		if (WriteRegs(I2C_DeviceData, &DataState, CTRL_REG_1, ACC_REG_SIZE, &Data)) {
 			usb_puts("Initialise accelerometer: can't write  CTRL_REG_1\n");
 		}
@@ -265,9 +273,11 @@ void ameter_Init() {
 		if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, ACC_REG_SIZE, &Data)) {
 			usb_puts("Initialise accelerometer: can't read accelerometer\n");
 		}
-		if (Data != (ACTIVE_BIT_MASK | ODR_12Hz5)) {
+		if (Data != (ACTIVE_BIT_MASK | ODR_1Hz56)) {
 			usb_puts("Initialise accelerometer: wrong data written\n");
 		}
+
+
 	}
 
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
@@ -335,12 +345,14 @@ int ameter_getOrientation() {
 /* ===================================================================*/
 float ameter_X() {
 #ifdef ACCELEROMETER
-	int8_t Data;
+	int8_t Data_MSB;
+	uint8_t Data_LSB;
 
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_X_MSB, ACC_REG_SIZE, &Data);
-	return Data * 9.81 / 64;
+	ReadRegs(I2C_DeviceData, &DataState, OUT_X_MSB, ACC_REG_SIZE, &Data_MSB);
+	ReadRegs(I2C_DeviceData, &DataState, OUT_X_LSB, ACC_REG_SIZE, &Data_LSB);
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
+	return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
 #else
 	return 0.0;
 #endif
@@ -360,12 +372,14 @@ float ameter_X() {
 /* ===================================================================*/
 float ameter_Y() {
 #ifdef ACCELEROMETER
-	int8_t Data;
+	int8_t Data_MSB;
+	uint8_t Data_LSB;
 
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_Y_MSB, ACC_REG_SIZE, &Data);
-	return Data * 9.81 / 64;
+	ReadRegs(I2C_DeviceData, &DataState, OUT_Y_MSB, ACC_REG_SIZE, &Data_MSB);
+	ReadRegs(I2C_DeviceData, &DataState, OUT_Y_LSB, ACC_REG_SIZE, &Data_LSB);
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
+	return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
 #else
 	return 0.0;
 #endif
@@ -385,12 +399,14 @@ float ameter_Y() {
 /* ===================================================================*/
 float ameter_Z() {
 #ifdef ACCELEROMETER
-	int8_t Data;
+	int8_t Data_MSB;
+	uint8_t Data_LSB;
 
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_Z_MSB, ACC_REG_SIZE, &Data);
-	return Data * 9.81 / 64;
+	ReadRegs(I2C_DeviceData, &DataState, OUT_Z_MSB, ACC_REG_SIZE, &Data_MSB);
+	ReadRegs(I2C_DeviceData, &DataState, OUT_Z_LSB, ACC_REG_SIZE, &Data_LSB);
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
+	return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
 #else
 	return 0.0;
 #endif

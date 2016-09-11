@@ -1096,7 +1096,7 @@ static void showAcceleration(channelT ch) {
 	strcat(str, " ");
 	ftoa(ameter_Z(), 2, number_s);
 	strcat(str, number_s);
-	strcat(str, " m/s^2, Orientation ");
+	strcat(str, " mg, Orientation ");
 	ltoa(ameter_getOrientation(), number_s);
 	strcat(str, number_s);
 	strcat(str, lf_s);

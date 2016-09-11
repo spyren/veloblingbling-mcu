@@ -155,7 +155,7 @@ void wait_10ms(int time) {
 /* ===================================================================*/
 void powermgr_DeepSleep() {
 	if (sleep_wakeup) {
-		// wake up by mode button or wheel turn -> reset timeouts
+		// wake up by mode button, UART (BLE) or wheel turn -> reset timeouts
 		sleep_timeout = 0;
 		sleep_wakeup = FALSE;
 		hibernation_timeout = 0;
