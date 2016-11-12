@@ -17,7 +17,7 @@ MK22DX256VLF5 MCU from Freescale/NXP. The PCB is free hardware, see
 https://github.com/spyren/veloblingbling-pcb
 
 There is also optional Bluetooth Low Energy (Smart) subsystem on board. 
-It is a LAIRD BL600 module. The application software is also on GitHub:
+It is a LAIRD BL652 module. The application software is also on GitHub:
 https://github.com/spyren/veloblingbling-ble
 
 It is possible to mount die PCB direct onto the wheel spokes but it is 

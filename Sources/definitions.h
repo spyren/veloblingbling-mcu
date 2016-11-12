@@ -54,6 +54,7 @@
 #define A_CR '\x0d'			/**< ASCII Carriage Return code */	
 #define A_LF '\x0a'			/**< ASCII Line Feed code */	
 #define A_BS '\x08'			/**< ASCII Back Space code */	
+#define A_TAB '\x09'		/**< ASCII TAB code */
 
 
 

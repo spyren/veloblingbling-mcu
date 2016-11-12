@@ -1,10 +1,11 @@
 /**
  *  @brief
- *      Interface to the bluetooth low energy module BL600.
+ *      Interface to the bluetooth low energy module BL600/BL652.
  *      The command line interface use the UART / vSP bridge mode.
  *      The BLE profiles are accessed through the I2C slave interface.
  *
- *      The UART0 (Resource BL600) is used for communication, default baud rate is 9600.
+ *      The UART0 (Resource BL600) is used for communication, default
+ *      baud rate is 9600 for BL600 and 115200 for BL652.
  *      The MK22DX does have HW support for CTS/RTS.
  *      Input Buffer size is limited to 100 chars
  *      Output buffer size is limited to 200 chars
@@ -13,7 +14,7 @@
  *
  *      nAutoRun is GND -> autorun activated
  *
- *      I2C Communication between BL600 and Bling Bling MCU
+ *      I2C Communication between BL600/BL652 and Bling Bling MCU
  *		The BL600 is Master :-( BL600 can only be the single master)
  *		High to low transition on BLlink: Data ready for read.
  *		Only after this event the BL600 acts as master.
