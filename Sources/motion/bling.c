@@ -144,7 +144,9 @@ void bling_StartTimer() {
 */
 /**
  *  @brief
- *  	Bling no longer used, stop timer and clear LEDs 
+ *  	Bling no longer used
+ *  	 -> stop timer and clear LEDs
+ *  	 -> reset blingPosition
  */
 /* ===================================================================*/
 void bling_StopTimer() {

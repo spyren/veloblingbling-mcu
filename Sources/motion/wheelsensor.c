@@ -265,6 +265,7 @@ void wheel_Synch() {
 		RotTimer_Enable(RotTimerPtr);
 		rotating = TRUE;
 		bling_StopTimer();
+		script_Reset();
 
 		rotationTime = 64;	// rotation time not valid (maximum)
 	}

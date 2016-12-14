@@ -105,11 +105,11 @@ void script_Interpreter(void);
 
 /*
  ** ===================================================================
- **  Method      :  script_Start
+ **  Method      :  script_Reset
  */
 /**
  *  @brief
- *  	Starts the script execution.
+ *  	Sets the script pointer to the beginning.
  *
  *  @param
  *  	number	image number in ascii
@@ -117,7 +117,22 @@ void script_Interpreter(void);
  *
  */
 /* ===================================================================*/
-void script_Start(char* number, channelT ch);
+void script_Reset();
+
+/*
+ ** ===================================================================
+ **  Method      :  script_Start
+ */
+/**
+ *  @brief
+ *  	Starts the script execution.
+ *
+ *  @param
+ *  	none
+ *
+ */
+/* ===================================================================*/
+void script_Start();
 
 /*
  ** ===================================================================
@@ -128,11 +143,11 @@ void script_Start(char* number, channelT ch);
  *  	Stops the script execution.
  *
  *  @param
- *  	ch		channel for the output
+ *  	none
  *
  */
 /* ===================================================================*/
-void script_Stop(channelT ch);
+void script_Stop();
 
 /*
  ** ===================================================================
@@ -160,11 +175,10 @@ void script_Test(char* number, channelT ch);
  *
  *  @param
  *  	number	image number in ascii
- *  	ch		channel for the output
  *
  */
 /* ===================================================================*/
-void script_Set(char* number, channelT ch);
+void script_Set(char* number);
 
 /*
  ** ===================================================================

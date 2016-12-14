@@ -249,6 +249,25 @@ void script_Interpreter(void) {
 
 /*
  ** ===================================================================
+ **  Method      :  script_Reset
+ */
+/**
+ *  @brief
+ *  	Sets the script pointer to the beginning.
+ *
+ *  @param
+ *  	none
+ *
+ */
+/* ===================================================================*/
+void script_Reset() {
+
+	charP = (char*) &(*imageP)[currScript].dotmatrix[0];
+}
+
+
+/*
+ ** ===================================================================
  **  Method      :  script_Start
  */
 /**
@@ -257,14 +276,13 @@ void script_Interpreter(void) {
  *
  *  @param
  *  	number	image number in ascii
- *  	ch		channel for the output
  *
  */
 /* ===================================================================*/
-void script_Start(char* number, channelT ch) {
+void script_Start(char* number) {
 
 	currScript = atoi(number);
-	charP = (char*) &(*imageP)[currScript].dotmatrix[0];
+	script_Reset();
 	scriptExecution = TRUE;
 }
 
@@ -277,11 +295,11 @@ void script_Start(char* number, channelT ch) {
  *  	Stops the script execution.
  *
  *  @param
- *  	ch		channel for the output
+ *  	none
  *
  */
 /* ===================================================================*/
-void script_Stop(channelT ch) {
+void script_Stop() {
 
 	scriptExecution = FALSE;
 }
@@ -372,16 +390,15 @@ void script_Test(char* number, channelT ch) {
  *  	set the contents of a script
  *
  *  @param
- *  	number	image number in ascii
- *  	ch		channel for the output
+ *  	none
  *
  */
 /* ===================================================================*/
-void script_Set(char* number, channelT ch) {
+void script_Set(char* number) {
 
 	script_set = TRUE;
 	currScript = atoi(number);
-	charP = (char*) &image_bufferP->dotmatrix[0];
+	script_Reset();
 }
 
 

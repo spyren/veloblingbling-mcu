@@ -84,7 +84,7 @@
  *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.5, 2016/11/12
+ *      Version 4.6rc1, 2016/12/14
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -111,7 +111,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 4.5, 2016/11/12, Copyright Peter Schmid\n\n";
+		"Version 4.6rc1, 2016/12/14, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -1769,7 +1769,7 @@ int cli_parse(char* line, channelT ch) {
 			} else if (! strcmp(p[0], pattern_s) || ! strcmp(p[0], pat_s) ) {
 				setPattern(p[1], ch);
 			} else if (! strcmp(p[0], script_s) || ! strcmp(p[0], sc_s) ) {
-				script_Set(p[1], ch);
+				script_Set(p[1]);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1912,7 +1912,7 @@ int cli_parse(char* line, channelT ch) {
 			break;
 		case 2:
 			if (!        strcmp(p[0], start_s) ) {
-				script_Start(p[1], ch);
+				script_Start(p[1]);
 			} else if (! strcmp(p[0], test_s) ) {
 				script_Test(p[1], ch);
 			} else {

@@ -59,7 +59,7 @@
 #include "motion/wheelsensor.h"
 
 #define MAX_SLEEP 60			// if there is no action for 60s go to deep sleep
-#define MAX_HIBERNATION (60*60)	// after 1 h (60 * 60 = 3600) standby go for hibernation
+#define MAX_HIBERNATION (15*60)	// after 15 Minutes standby go for hibernation
 
 // Global Variables
 // ***************
@@ -180,7 +180,7 @@ void powermgr_DeepSleep() {
 #ifdef ACCELEROMETER
 				if (hibernation_timeout == MAX_HIBERNATION) {
 #ifdef HALL_SENSOR
-					HallVCC_ClrVal(NULL); // switch off Hall sensor
+					HallVCC_ClrVal(NULL); // switch off fast Hall sensor
 #endif
 					Cpu_VLPModeDisable();
 					Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_0);
