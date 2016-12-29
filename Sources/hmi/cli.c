@@ -14,6 +14,7 @@
  *      show     incline|inc          float            [%]
  *      show     temperature|temp     float            [°C]
  *      show     pedalingcadence|cad  float            [/Min]
+ *      show	 hallsensor           yes|no
  *      set|show energy               low|standard
  *
  *      show|set currenttime|watch    yyyymmddhhmmss
@@ -48,7 +49,7 @@
  *		rrrrrrrrrrrr
  *		.
  *
- *		show|set script               number
+ *		set script               number
  *		command
  *		command
  *		..
@@ -84,7 +85,7 @@
  *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.6rc1, 2016/12/14
+ *      Version 4.6rc2, 2016/12/27
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -111,7 +112,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 4.6rc1, 2016/12/14, Copyright Peter Schmid\n\n";
+		"Version 4.6rc2, 2016/12/27, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -207,6 +208,8 @@ static const char cliHelpShow[] =
 		"show pattern\n"
 		"show acceleration\n"
 		"show battery|energy\n"
+		"show hallsensor\n"
+		"show script\n"
         "\n"
         "Shows the parameters\n";
 
@@ -223,6 +226,7 @@ static const char cliHelpSet[] =
 		"set side left|right\n"
 		"set wheel front|rear\n"
 		"set energy low|standard\n"
+		"set hallsensor yes|no\n"
 		"set surface top|bottom\n"
 		"set upper|lower speed|max|avg|trip|tot|alt|inc|temp|cad|watch|time|chro|string|blk|img|light\n"
 		"set bling blk|img\n"
@@ -256,6 +260,13 @@ static const char cliHelpBle[] =
 		"ble transparent\n"
         "\n"
         "BLE commands over UART.\n";
+
+static const char cliHelpScript[] =
+        "script\n"
+		"script start|test <number>\n"
+		"script stop\n"
+        "\n"
+        "Start, stop, and test scripts.\n";
 
 static const char cliHelpUptime[] =
         "uptime\n"
@@ -367,6 +378,8 @@ static const char acceleration_s[]    = "acceleration";
 static const char acc_s[]             = "acc";
 static const char script_s[]          = "script";
 static const char sc_s[]              = "sc";
+static const char hallsensor_s[]      = "hallsensor";
+static const char hall_s[]            = "hall";
 
 static const char red_s[]             = "red";
 static const char rd_s[]              = "rd";
@@ -395,6 +408,9 @@ static const char d_s[]               = "d";
 
 static const char imperial_s[]        = "imperial";
 static const char metric_s[]          = "metric";
+
+static const char yes_s[]             = "yes";
+static const char no_s[]              = "no";
 
 static const char right_s[]           = "right";
 static const char left_s[]            = "left";
@@ -1152,6 +1168,29 @@ static void showScript(channelT ch) {
 	puts_ch(str, ch);
 }
 
+/*
+ ** ===================================================================
+ **  Method      :  showHallsensor
+ */
+/**
+ *  @brief
+ *      Prints the hallsensor
+ */
+/* ===================================================================*/
+static void showHallsensor(channelT ch) {
+	char str[40];
+
+	strcpy(str, hallsensor_s);
+	strcat(str, " ");
+	if (slowHall_Present) {
+		strcat(str, yes_s);
+	} else {
+		strcat(str, no_s);
+	}
+	strcat(str, lf_s);
+	puts_ch(str, ch);
+}
+
 
 /*
  ** ===================================================================
@@ -1208,6 +1247,8 @@ static void showAll(channelT ch) {
 	showSide(ch);
 	showWheel(ch);
 	showTime(ch);
+
+	showHallsensor(ch);
 
 }
 
@@ -1561,6 +1602,27 @@ static void setPattern(const char number_s[], channelT ch) {
 	}
 }
 
+/*
+ ** ===================================================================
+ **  Method      :  setHallsensor
+ */
+/**
+ *  @brief
+ *      set the hallsensor
+ *  @param
+ *  	string
+ */
+/* ===================================================================*/
+static void setHallsensor(char* string, channelT ch) {
+	if (!        strcmp(string, yes_s) ) {
+		slowHall_Present = TRUE;
+	} else if (! strcmp(string, no_s) ) {
+		slowHall_Present = FALSE;
+	} else {
+		puts_ch(syntaxError_s, ch);
+	}
+}
+
 
 /*
  ** ===================================================================
@@ -1712,6 +1774,8 @@ int cli_parse(char* line, channelT ch) {
 				puts_ch(cliHelpFactory, ch);
 			} else if (! strcmp(p[0], ble_s)) {
 				puts_ch(cliHelpBle, ch);
+			} else if (! strcmp(p[0], script_s)) {
+				puts_ch(cliHelpScript, ch);
 			} else if (! strcmp(p[0], help_s)) {
 				puts_ch(cliHelpFull, ch);
 			} else {
@@ -1770,6 +1834,8 @@ int cli_parse(char* line, channelT ch) {
 				setPattern(p[1], ch);
 			} else if (! strcmp(p[0], script_s) || ! strcmp(p[0], sc_s) ) {
 				script_Set(p[1]);
+			} else if (! strcmp(p[0], hallsensor_s) || ! strcmp(p[0], hall_s) ) {
+				setHallsensor(p[1], ch);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1848,6 +1914,8 @@ int cli_parse(char* line, channelT ch) {
 				showAll(ch);
 			} else if (! strcmp(p[0], script_s) || ! strcmp(p[0], sc_s) ) {
 				showScript(ch);
+			} else if (! strcmp(p[0], hallsensor_s) || ! strcmp(p[0], hall_s) ) {
+				showHallsensor(ch);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1999,6 +2067,14 @@ int cli_parse(char* line, channelT ch) {
 		save_params();
 	} else if (! strcmp(command, about_s)) {
 		puts_ch(helloMessage, ch);
+		puts_ch(ble_ModuleName, ch);
+		puts_ch(" ", ch);
+		puts_ch(ble_ModuleAdr, ch);
+		puts_ch("\n", ch);
+		puts_ch(ameter_Name, ch);
+		puts_ch("\n", ch);
+		puts_ch(pmeter_Name, ch);
+		puts_ch("\n", ch);
 	} else if (! strcmp(command, "")) {
 		;
 	} else {
@@ -2032,6 +2108,9 @@ void cli_usb() {
 
 	operating_mode = INTERACTIVE_USB;
 	clear_leds(TOPSIDE);
+	LEDred_SetVal();
+	LEDgreen_SetVal();
+	LEDblue_SetVal();
 	write_ledColumn(TOPSIDE);
 
 	usb_puts(cliHelp);

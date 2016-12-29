@@ -61,6 +61,7 @@
 // application include files
 // *************************
 #include "parameter.h"
+#include "powermgr.h"
 #include "motion/wheelsensor.h"
 #include "cyclo/cyclocomputer.h"
 #include "cyclo/watch.h"
@@ -106,6 +107,8 @@ void flash_Init() {
 	if (ButtonPressed) {
 		// button pressed on power on -> Restore factory settings
 		set_led(TOPSIDE, 0, MAGENTA);
+		LEDred_ClrVal();
+		LEDblue_ClrVal();
 		write_ledColumn(TOPSIDE);
 		wait_ledColumn();
 
@@ -120,6 +123,8 @@ void flash_Init() {
 		}
 
 		set_led(TOPSIDE, 0, BLACK);
+		LEDred_SetVal();
+		LEDblue_SetVal();
 		write_ledColumn(TOPSIDE);
 		wait_ledColumn();
 
@@ -167,6 +172,8 @@ void set_config() {
 	memcpy(&displayColor, 	&configParameter.Color, 		sizeof(displayColor));
 	memcpy(&displayImage, 	&configParameter.Image, 		sizeof(displayImage));
 
+	currScript		= configParameter.currScript;
+	scriptExecution	= configParameter.scriptExecution;
 
 	/* cyclocomputer */
 	maxSpeed 			= configParameter.maxSpeed ;
@@ -181,6 +188,9 @@ void set_config() {
 	currTime 			= configParameter.currTime;
 
 	memcpy(&watchTime, 	&configParameter.watchTime, sizeof(watchTime));
+
+	/* Hardware */
+	slowHall_Present	=configParameter.slowHall_Present;
 }
 
 
@@ -213,6 +223,9 @@ void set_params() {
 	memcpy(&configParameter.Color, 			&displayColor, 	sizeof(displayColor));
 	memcpy(&configParameter.Image, 			&displayImage, 	sizeof(displayImage));
 
+	configParameter.currScript 		= currScript;
+	configParameter.scriptExecution	= scriptExecution;
+
 	/* cyclocomputer */
 	configParameter.maxSpeed 			= maxSpeed;
 	configParameter.tripDistance 		= tripDistance;
@@ -226,6 +239,9 @@ void set_params() {
 	configParameter.currTime 			= currTime;
 	
 	memcpy(&configParameter.watchTime, &watchTime, sizeof(watchTime));
+
+	/* Hardware */
+	configParameter.slowHall_Present 	= slowHall_Present;
 
 	configParameter.valid 			= FLASH_RECORD_VALID;	// if the config length change, the config is no longer valid
 }

@@ -182,7 +182,7 @@ int main(void)
 
 
   while(1) {
-	  usb_puts("Normal operation mode, hit ESC or > for command line interface (interactive mode)\n");
+	  usb_puts("Normal operation mode, hit ESC or > for command line interface.\n");
 //	  usb_puts("Normal operation mode, hit CR for command line interface (interactive mode)\n");
 	  sleep_wakeup = TRUE;
 

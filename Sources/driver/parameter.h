@@ -73,6 +73,9 @@ typedef struct configParameter_s {
 	LED_colorT Color[BOTTOMSIDE+1][BLING+1];
 	int Image [BOTTOMSIDE+1][BLING+1];
 
+	int currScript;
+	bool scriptExecution;
+
 	/* cyclocomputer */
 	double maxSpeed;
 	double tripDistance;
@@ -85,6 +88,9 @@ typedef struct configParameter_s {
 	double tripTime;
 	double currTime;
 	LDD_RTC_TTime watchTime;
+
+	/* Hardware */
+	bool slowHall_Present;
 		
 	uint8_t valid;			// if the config length change, the config is no longer valid
 	

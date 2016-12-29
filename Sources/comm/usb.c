@@ -267,7 +267,8 @@ void usb_Init(void)
  */
 /**
  *   @brief
- *      USB task function. It is called regularly from a timer interrupt
+ *      USB task function.
+ *      It is called regularly by the USBpoll timer interrupt every 0.5 ms.
  *
  */
 /* ===================================================================*/

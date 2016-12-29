@@ -122,8 +122,9 @@ void set_Mode() {
 
 	operating_mode = MODE_BUTTON;
 	clear_leds(TOPSIDE);
-
-
+	LEDred_SetVal();
+	LEDgreen_SetVal();
+	LEDblue_SetVal();
 
 	// button pressed
 	while (! ButtonReleased) {
@@ -132,97 +133,27 @@ void set_Mode() {
 	}
 
 	if (ButtonLongPressed) {
-//		// change mode
-//		for (win = UPPER; win <= BLING; win++) {
-//			set_led(TOPSIDE, win+LED13, WHITE);
-//			set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
-//			write_ledColumn(TOPSIDE);
-//			wait_ledColumn();
-//
-//			while (! ButtonReleased) {
-//				// wait till button released
-//				wait_10ms(2);
-//			}
-//			ButtonPressed = FALSE;
-//			ButtonReleased = FALSE;
-//			ButtonLongPressed = FALSE;
-//
-//			while(1) {
-//				// choose mode for win
-//				wait_10ms(20);
-//				if (ButtonLongPressed) {
-//					// mode choosen
-//					ButtonLongPressed = FALSE;
-//					break;
-//				} else if (ButtonReleased) {
-//					// next mode step
-//					ButtonReleased = FALSE;
-//					if (++currModeStep[win] == MODE_STEPS) {
-//						currModeStep[win] = 0;
-//					}
-//					clear_leds(TOPSIDE);
-//					set_led(TOPSIDE, win+LED13, WHITE);
-//					set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
-//					write_ledColumn(TOPSIDE);
-//					displayMode[TOPSIDE][win] = mode_step[currModeStep[win]].display_mode;
-//					cycloMode[TOPSIDE][win] = mode_step[currModeStep[win]].cyclo_mode;
-//				}
-//			}
-//
-//			clear_leds(TOPSIDE);
-//			write_ledColumn(TOPSIDE);
-//			while (! ButtonReleased) {
-//				// wait till button released
-//				wait_10ms(2);
-//			}
-//			ButtonPressed = FALSE;
-//			ButtonReleased = FALSE;
-//			ButtonLongPressed = FALSE;
-//
-//			set_led(TOPSIDE, win+LED13, WHITE);
-//			set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
-//			write_ledColumn(TOPSIDE);
-//
-//			while(1) {
-//				// choose color for win
-//				wait_10ms(2);
-//				if (ButtonLongPressed) {
-//					// mode choosen
-//					ButtonLongPressed = FALSE;
-//					break;
-//				} else if (ButtonReleased) {
-//					// next mode step
-//					ButtonReleased = FALSE;
-//					if (++displayColor[TOPSIDE][win] == (WHITE+1)) {
-//						displayColor[TOPSIDE][win] = RED;
-//					}
-//					set_led(TOPSIDE, mode_step[currModeStep[win]].nr, displayColor[TOPSIDE][win]);
-//					write_ledColumn(TOPSIDE);
-//				}
-//			}
-//			clear_leds(TOPSIDE);
-//			write_ledColumn(TOPSIDE);
-//		} /* for */
-//		while (! ButtonReleased) {
-//			// wait till button released
-//			wait_10ms(2);
-//		}
-//		ButtonReleased = FALSE;
-//		ButtonPressed = FALSE;
-//		ButtonLongPressed = FALSE;
-
+		ButtonLongPressed = FALSE;
 
 		// toggle low energy mode
 		if (low_energy) {
 			low_energy = FALSE;
 			set_led(TOPSIDE, LED1, WHITE);
+			LEDred_ClrVal();
+			LEDgreen_ClrVal();
+			LEDblue_ClrVal();
 		} else {
 			low_energy = TRUE;
 			set_led(TOPSIDE, LED1, YELLOW);
+			LEDred_ClrVal();
+			LEDgreen_ClrVal();
 		}
 		write_ledColumn(TOPSIDE);
 		wait_10ms(100);
 		clear_leds(TOPSIDE);
+		LEDred_SetVal();
+		LEDgreen_SetVal();
+		LEDblue_SetVal();
 		write_ledColumn(TOPSIDE);
 		wait_ledColumn();
 
@@ -240,11 +171,13 @@ void set_Mode() {
 			tripMode = TRIP_STARTED;
 			chronoMode = TRIP_STARTED;
 			set_led(TOPSIDE, LED1, GREEN);
+			LEDgreen_ClrVal();
 		} else {
 			// started (or paused) -> stop trip
 			tripMode = TRIP_STOPPED;
 			chronoMode = TRIP_STOPPED;
-			set_led(TOPSIDE, LED1, RED);	
+			set_led(TOPSIDE, LED1, RED);
+			LEDred_ClrVal();
 			// save the configuration and data
 			set_params();
 			save_params();
@@ -255,6 +188,9 @@ void set_Mode() {
 		if (ButtonPressed) {
 			// reset trip
 			set_led(TOPSIDE, LED1, BLUE);
+			LEDblue_ClrVal();
+			LEDred_SetVal();
+			LEDgreen_SetVal();
 			write_ledColumn(TOPSIDE);
 			tripDistance = 0.0;
 			maxSpeed = 0.0;

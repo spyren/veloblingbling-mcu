@@ -142,13 +142,15 @@ static const char geberitScript[] =
 
 // Global Variables
 // ****************
-int currScript = 40;
+int currScript = 30;
 bool scriptExecution = FALSE;
 bool script_set = FALSE;
 
 // Local Variables
 // ***************
-char *charP;			// points to the image buffer
+char *charInterpreterP;		// points to the flash image buffer for interpreter
+char *charBufferP;			// points to the image buffer
+int scriptSetNumber;
 uint8_t waitTime = 0;
 
 /*
@@ -204,12 +206,12 @@ void script_Interpreter(void) {
 		while (TRUE) {
 			// get line from buffer
 			for (i=0; i<80; i++) {
-				if (*charP == A_LF) {
+				if (*charInterpreterP == A_LF) {
 					line[i] = '\0';
-					charP++;
+					charInterpreterP++;
 					break;
 				} else {
-					line[i] = *charP++;
+					line[i] = *charInterpreterP++;
 				}
 			}
 			if (i == 80) {
@@ -221,7 +223,7 @@ void script_Interpreter(void) {
 			if (line[0] == semicolon_c) {
 				// script finished, restart from the beginning
 				waitTime = 0;
-				charP = (char*) &(*imageP)[currScript].dotmatrix[0];
+				charInterpreterP = (char*) &(*imageP)[currScript].dotmatrix[0];
 				break;
 			} else if(line[0] == colon_c) {
 				// special commands
@@ -256,13 +258,13 @@ void script_Interpreter(void) {
  *  	Sets the script pointer to the beginning.
  *
  *  @param
- *  	none
+ *  	number	image number in ascii
+ *  	ch		channel for the output
  *
  */
 /* ===================================================================*/
 void script_Reset() {
-
-	charP = (char*) &(*imageP)[currScript].dotmatrix[0];
+	charInterpreterP = (char*) &(*imageP)[currScript].dotmatrix[0];
 }
 
 
@@ -282,7 +284,7 @@ void script_Reset() {
 void script_Start(char* number) {
 
 	currScript = atoi(number);
-	script_Reset();
+	charInterpreterP = (char*) &(*imageP)[currScript].dotmatrix[0];
 	scriptExecution = TRUE;
 }
 
@@ -321,10 +323,11 @@ void script_Stop() {
 void script_Test(char* number, channelT ch) {
 	char line[81];
 	char *token;
+	char *charP;			// points to the flash image buffer
 	uint8_t i;
 
-	currScript = atoi(number);
-	charP = (char*) &(*imageP)[currScript].dotmatrix[0];
+	int scriptNumber = atoi(number);
+	charP = (char*) &(*imageP)[scriptNumber].dotmatrix[0];
 
 	while (TRUE) {
 		// get line from buffer
@@ -352,7 +355,7 @@ void script_Test(char* number, channelT ch) {
 			// script finished
 			puts_ch("script finished\n", ch);
 			waitTime = 0;
-			charP = (char*) &(*imageP)[currScript].dotmatrix[0];
+			charP = (char*) &(*imageP)[scriptNumber].dotmatrix[0];
 			break;
 		} else if(line[0] == colon_c) {
 			// special commands
@@ -396,9 +399,9 @@ void script_Test(char* number, channelT ch) {
 /* ===================================================================*/
 void script_Set(char* number) {
 
+	scriptSetNumber = atoi(number);
 	script_set = TRUE;
-	currScript = atoi(number);
-	script_Reset();
+	charBufferP = (char*) &image_bufferP->dotmatrix[0];
 }
 
 
@@ -408,7 +411,8 @@ void script_Set(char* number) {
  */
 /**
  *  @brief
- *  	saves one script line
+ *  	Writes one script line to the image_buffer,
+ *  	after the last line save the buffer to the flash.
  *
  *  @param
  *  	line	script line in ascii
@@ -418,19 +422,19 @@ void script_Set(char* number) {
 /* ===================================================================*/
 void script_Line(char* line, channelT ch) {
 
-	// save line
-	strcpy(charP, line);
-	charP = charP + strlen(line);
-	*charP++ = A_LF;
+	// write line
+	strcpy(charBufferP, line);
+	charBufferP = charBufferP + strlen(line);
+	*charBufferP++ = A_LF;
 
 	if (line[0] == semicolon_c) {
 		script_set = FALSE;
 		// save buffer to flash
 		image_bufferP->length = 0;
-		save_Image(currScript);
+		save_Image(scriptSetNumber);
 	}
 
-	if (charP > (char*) image_bufferP + sizeof(image_s)) {
+	if (charBufferP > (char*) image_bufferP + sizeof(image_s)) {
 		// buffer overflow
 		script_set = FALSE;
 		puts_ch("buffer overflow\n", ch);
@@ -455,6 +459,8 @@ void script_Line(char* line, channelT ch) {
 void script_Show(char* number, channelT ch) {
 	char line[81];
 	uint8_t i;
+	char *charP;			// points to the flash image buffer
+
 	int scriptNumber = atoi(number);
 	charP = (char*) &(*imageP)[scriptNumber].dotmatrix[0];
 

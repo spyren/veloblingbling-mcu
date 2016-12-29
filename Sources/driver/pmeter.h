@@ -50,6 +50,8 @@ typedef struct {
 
 extern LDD_TDeviceData *I2C_DeviceData;
 extern TDataState DataState;
+extern char pmeter_Name[];
+extern bool pmeter_Present;
 
 #define PMETER_ADR 0x60		// 7 bit I2C address
 

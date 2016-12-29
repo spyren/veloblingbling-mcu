@@ -196,6 +196,9 @@ void test(void){
 			if (c == A_ESC || ButtonLongPressed) {
 				ButtonLongPressed = FALSE;
 				clear_leds(TOPSIDE);	
+				LEDred_SetVal();
+				LEDgreen_SetVal();
+				LEDblue_SetVal();
 				write_ledColumn(TOPSIDE);
 				wait_10ms(2);
 				clear_leds(BOTTOMSIDE);	
@@ -214,7 +217,21 @@ void test(void){
 		}
 		clear_leds(TOPSIDE);
 		clear_leds(BOTTOMSIDE);
+		LEDred_SetVal();
+		LEDgreen_SetVal();
+		LEDblue_SetVal();
 		set_led(steps_a[stepno].surface, steps_a[stepno].nr, steps_a[stepno].color);
+		switch (steps_a[stepno].color) {
+		case RED:
+			LEDred_ClrVal();
+			break;
+		case GREEN:
+			LEDgreen_ClrVal();
+			break;
+		case BLUE:
+			LEDblue_ClrVal();
+			break;
+		}
 		write_ledColumn(steps_a[stepno].surface);
 		usb_puts(steps_a[stepno].text);
 		if (++stepno >= TEST_STEPS)

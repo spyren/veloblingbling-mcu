@@ -74,6 +74,10 @@
 extern char I2C_Slave_TxBuffer[];
 extern char I2C_Slave_RxBuffer[];
 extern bool ble_LinkState;
+extern char ble_ModuleName[];
+extern char ble_ModuleAdr[];
+extern bool ble_Present;
+
 
 /*
  ** ===================================================================

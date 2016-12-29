@@ -131,6 +131,11 @@
 #define INT_SOURCE 0x0C
 #define SRC_FF_MT 0x04
 
+/* Device ID register */
+#define WHO_AM_I	0x0D
+#define MMA8451Q	0x1A
+#define MMA8452Q	0x2A
+#define MMA8453Q	0x3A
 
 /* Portrait and landscape configuration */
 
@@ -201,6 +206,8 @@
 // Global Variables
 // ****************
 LDD_TDeviceData* AccIntPtr;		// accelerometer interrupt (wake up from sleep)
+char ameter_Name[20];
+bool ameter_Present = FALSE;
 
 /*
 ** ===================================================================
@@ -214,7 +221,6 @@ LDD_TDeviceData* AccIntPtr;		// accelerometer interrupt (wake up from sleep)
  */
 /* ===================================================================*/
 void ameter_Init() {
-#ifdef ACCELEROMETER
 	uint8_t Data;
 
 	AccIntPtr = AccInt_Init(NULL);
@@ -222,10 +228,24 @@ void ameter_Init() {
 
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
 
+	strcpy(ameter_Name, "No_Accelerometer");
+	ameter_Present = FALSE;
 	// test read
-	if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, ACC_REG_SIZE, &Data)) {
-		usb_puts("no accelerometer\n");
-	} else {
+	if (ReadRegs(I2C_DeviceData, &DataState, WHO_AM_I, 1, &Data) == 0) {
+		// valid answer
+		if (Data == MMA8451Q) {
+			strcpy(ameter_Name, "MMA8451Q");
+			ameter_Present = TRUE;
+		} else if (Data == MMA8452Q) {
+			strcpy(ameter_Name, "MMA8452Q");
+			ameter_Present = TRUE;
+		} else if (Data == MMA8453Q) {
+			strcpy(ameter_Name, "MMA8453Q");
+			ameter_Present = TRUE;
+		}
+	}
+
+	if (ameter_Present) {
 		// go to standby for configuration
 		Data = (ODR_12Hz5); /* only 8-bit data */
 		if (WriteRegs(I2C_DeviceData, &DataState, CTRL_REG_1, ACC_REG_SIZE, &Data)) {
@@ -264,7 +284,8 @@ void ameter_Init() {
 
 		// activate orientation detection, 50 Hz data rate
 		// output data rate (ODR) 1.56 Hz
-		Data = (ACTIVE_BIT_MASK | ODR_1Hz56 ); /* Set active mode */
+		// Data = (ACTIVE_BIT_MASK | ODR_1Hz56 ); /* Set active mode */
+		Data = (ACTIVE_BIT_MASK | ODR_50Hz ); /* Set active mode */
 		if (WriteRegs(I2C_DeviceData, &DataState, CTRL_REG_1, ACC_REG_SIZE, &Data)) {
 			usb_puts("Initialise accelerometer: can't write  CTRL_REG_1\n");
 		}
@@ -281,8 +302,6 @@ void ameter_Init() {
 	}
 
 	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
-
-#endif
 }
 
 /*
@@ -296,16 +315,17 @@ void ameter_Init() {
  */
 /* ===================================================================*/
 int ameter_getMotion() {
-#ifdef ACCELEROMETER
-	uint8_t Data;
+	if (ameter_Present) {
+		uint8_t Data;
 
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-	ReadRegs(I2C_DeviceData, &DataState, FF_MT_SRC, ACC_REG_SIZE, &Data);
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
-	return Data;
-#else
-	return 0.0;
-#endif
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
+		ReadRegs(I2C_DeviceData, &DataState, FF_MT_SRC, ACC_REG_SIZE, &Data);
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
+		return Data;
+	} else {
+		return 0.0;
+	}
+
 }
 
 /*
@@ -319,16 +339,16 @@ int ameter_getMotion() {
  */
 /* ===================================================================*/
 int ameter_getOrientation() {
-#ifdef ACCELEROMETER
-	uint8_t Data;
+	if (ameter_Present) {
+		uint8_t Data;
 
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-	ReadRegs(I2C_DeviceData, &DataState, PL_STATUS, ACC_REG_SIZE, &Data);
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
-	return Data;
-#else
-	return 0.0;
-#endif
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
+		ReadRegs(I2C_DeviceData, &DataState, PL_STATUS, ACC_REG_SIZE, &Data);
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
+		return Data;
+	} else {
+		return 0.0;
+	}
 }
 
 /*
@@ -344,18 +364,18 @@ int ameter_getOrientation() {
  */
 /* ===================================================================*/
 float ameter_X() {
-#ifdef ACCELEROMETER
-	int8_t Data_MSB;
-	uint8_t Data_LSB;
+	if (ameter_Present) {
+		int8_t Data_MSB;
+		uint8_t Data_LSB;
 
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_X_MSB, ACC_REG_SIZE, &Data_MSB);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_X_LSB, ACC_REG_SIZE, &Data_LSB);
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
-	return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
-#else
-	return 0.0;
-#endif
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
+		ReadRegs(I2C_DeviceData, &DataState, OUT_X_MSB, ACC_REG_SIZE, &Data_MSB);
+		ReadRegs(I2C_DeviceData, &DataState, OUT_X_LSB, ACC_REG_SIZE, &Data_LSB);
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
+		return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
+	} else {
+		return 0.0;
+	}
 }
 
 /*
@@ -371,18 +391,18 @@ float ameter_X() {
  */
 /* ===================================================================*/
 float ameter_Y() {
-#ifdef ACCELEROMETER
-	int8_t Data_MSB;
-	uint8_t Data_LSB;
+	if (ameter_Present) {
+		int8_t Data_MSB;
+		uint8_t Data_LSB;
 
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_Y_MSB, ACC_REG_SIZE, &Data_MSB);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_Y_LSB, ACC_REG_SIZE, &Data_LSB);
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
-	return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
-#else
-	return 0.0;
-#endif
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
+		ReadRegs(I2C_DeviceData, &DataState, OUT_Y_MSB, ACC_REG_SIZE, &Data_MSB);
+		ReadRegs(I2C_DeviceData, &DataState, OUT_Y_LSB, ACC_REG_SIZE, &Data_LSB);
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
+		return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
+	} else {
+		return 0.0;
+	}
 }
 
 /*
@@ -398,18 +418,18 @@ float ameter_Y() {
  */
 /* ===================================================================*/
 float ameter_Z() {
-#ifdef ACCELEROMETER
-	int8_t Data_MSB;
-	uint8_t Data_LSB;
+	if (ameter_Present) {
+		int8_t Data_MSB;
+		uint8_t Data_LSB;
 
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_Z_MSB, ACC_REG_SIZE, &Data_MSB);
-	ReadRegs(I2C_DeviceData, &DataState, OUT_Z_LSB, ACC_REG_SIZE, &Data_LSB);
-	I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
-	return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
-#else
-	return 0.0;
-#endif
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, AMETER_ADR);
+		ReadRegs(I2C_DeviceData, &DataState, OUT_Z_MSB, ACC_REG_SIZE, &Data_MSB);
+		ReadRegs(I2C_DeviceData, &DataState, OUT_Z_LSB, ACC_REG_SIZE, &Data_LSB);
+		I2C0_SelectSlaveDevice(I2C_DeviceData, LDD_I2C_ADDRTYPE_7BITS, PMETER_ADR);
+		return ((Data_MSB * 256) + Data_LSB) * (1000.0/16348); // * (1000.0/16348);
+	} else {
+		return 0.0;
+	}
 }
 
 

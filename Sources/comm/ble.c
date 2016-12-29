@@ -6,6 +6,12 @@
  *
  *      The UART0 (Resource BL600) is used for communication, default
  *      baud rate is 9600 for BL600 and 115200 for BL652.
+ *      It is possible to change the module's baudrate in the interactive mode:
+ *        AT+CFG 115 115200			// vSP baudrate
+ *        AT+CFG 520 115200			// command mode baudrate (possible from v1.8.88.0)
+ *      But the command "AT&F *" revert to factory default values.
+ *      From
+ *
  *      The MK22DX does have HW support for CTS/RTS.
  *      Input Buffer size is limited to 100 chars
  *      Output buffer size is limited to 200 chars
@@ -15,9 +21,9 @@
  *      nAutoRun is GND -> autorun activated
  *
  *      I2C Communication between BL600/BL652 and Bling Bling MCU
- *		The BL600 is Master :-( BL600 can only be the single master)
+ *		The BL600/BL652 is Master :-( BL600/BL652 can only be the single master)
  *		High to low transition on BLlink: Data ready for read.
- *		Only after this event the BL600 acts as master.
+ *		Only after this event the BL600/BL652 acts as master.
  *		All registers are 32 bit.
  *		A write with only 8 bit data sets the register address.
  *
@@ -141,11 +147,20 @@
 char I2C_Slave_TxBuffer[5] = {0x00, 0x12, 0x34, 0x56, 0x78};
 char I2C_Slave_RxBuffer[5] = {0x00, 0x12, 0x34, 0x56, 0x78};
 bool ble_LinkState = FALSE;
+char ble_ModuleName[10];		/**< module name eg. BL600r2 */
+char ble_ModuleAdr[13];			/**< module bluetooth address */
+bool ble_Present = FALSE;		/**< BLE module present */
 
 // Local Variables
 // ***************
 static const char run_bling_s[] = "at+run \"bling\"\r";		// run the Bling vSP application
 static const char run_lowpower_s[] = "at+run \"lp\"\r";  	// run the Low Power application
+static const char getname_s[] = "ati 0\r";  				// get the module's name
+static const char getadr_s[] = "ati 4\r";  					// get the module's bluetooth address
+static const char vSP_115200_s[] = "AT+CFG 115 115200\r";	// set vSP baudrate
+static const char cmd_115200_s[] = "AT+CFG 520 115200\r";	// set command mode baudrate
+static const char no_module_s[] = "No_BLE_Module";			// no BLE module
+static const char no_adr_s[] = "No_BLE_Address";			// no BLE address
 
 
 /*
@@ -154,7 +169,7 @@ static const char run_lowpower_s[] = "at+run \"lp\"\r";  	// run the Low Power a
  */
 /**
  *  @brief
- *  	Initialises the blue tooth low energy module BL600
+ *  	Initialises the blue tooth low energy module BL600/BL652
  *  @return
  *  	0			success
  *  	-1			can't send
@@ -168,6 +183,56 @@ int ble_Init() {
 
 	ble_reset();
 
+	// check for module, default baudrate 115200
+	error = ble_command(getname_s, answer, sizeof(answer));
+	if (strstr(answer, "00") != NULL) {
+		// valid answer ends with 00 -> baudrate is 115200
+		if (strstr(answer, "BL") != NULL) {
+			ble_Present = TRUE;
+			// \n10\tMM\tInformation\r\n00\r
+			// 1 234 5 6            1 2 345
+			// \n10\t0\tBL652\r\n00\r
+			strncpy(ble_ModuleName, answer+6, strlen(answer)-11);
+			error = ble_command(getadr_s, answer, sizeof(answer));
+			// 10 4 01 D31A920731B0
+			strncpy(ble_ModuleAdr, answer+9, 12);
+		} else {
+			// invalid module
+			strcpy(ble_ModuleName, no_module_s);
+			strcpy(ble_ModuleAdr, no_adr_s);
+		}
+	} else {
+		// maybe wrong baudrate, try slower baudrate
+		// the baudrate for command mode cannot be changed for BL600
+		error = BL600_SetBaudRateMode(1); // set baudrate to 9600
+		wait_10ms(10);
+		error = ble_command("\r", answer, sizeof(answer));
+		wait_10ms(10);
+		error = ble_command(getname_s, answer, sizeof(answer));
+		if (strstr(answer, "BL") != NULL) {
+			ble_Present = TRUE;
+			strncpy(ble_ModuleName, answer+6, strlen(answer)-11);
+			error = ble_command(getadr_s, answer, sizeof(answer));
+			// 10 4 01 D31A920731B0
+			strncpy(ble_ModuleAdr, answer+9, 12);
+			strcpy(answer, "");
+			wait_10ms(10);
+			ble_command(cmd_115200_s, answer, sizeof(answer));
+			if (strstr(answer, "\n00\r") != NULL) {
+				// new firmware -> set baudrate to 115200
+				wait_10ms(10);
+				ble_command(vSP_115200_s, answer, sizeof(answer));
+				ble_reset();
+				BL600_SetBaudRateMode(0); // set baudrate to 115200
+			}
+		} else {
+			// invalid module
+			strcpy(ble_ModuleName, no_module_s);
+			strcpy(ble_ModuleAdr, no_adr_s);
+		}
+	}
+
+	// start the "bling" application
 	error = ble_command(run_bling_s, answer, sizeof(answer));
 	if (strstr(answer, "OK") == NULL) {
 		error = -3;
@@ -185,7 +250,7 @@ int ble_Init() {
  */
 /**
  *  @brief
- *  	Initialises the blue tooth low energy module BL600 to
+ *  	Initialises the blue tooth low energy module BL600/BL652 to
  *  	low power mode (everything is switched off)
  */
 /* ===================================================================*/
@@ -207,9 +272,9 @@ void ble_lowPower() {
  */
 /**
  *  @brief
- *  	Resets the blue tooth low energy module BL600.
+ *  	Resets the blue tooth low energy module BL600/BL652.
  *  	The reset pin is normally input, otherwise it is not possible
- *  	to use JTAG for the BL600 module.
+ *  	to use JTAG for the BL600/BL652 module.
  */
 /* ===================================================================*/
 void ble_reset() {
@@ -243,11 +308,11 @@ void ble_onFullRxBuf() {
  */
 /**
  *  @brief
- *  	Sends a command (e.g. a ATI command) to the BL600
+ *  	Sends a command (e.g. a ATI command) to the BL600/BL652
  *  @parameter
  *  	command		command string
  *  @parameter
- *  	answer		answer string from BL600
+ *  	answer		answer string from BL600/BL652
  *  @parameter
  *  	len			max. answer length
  *  @return
@@ -324,8 +389,10 @@ void ble_show_state() {
 	if (ble_LinkState) {
 		set_led(TOPSIDE, LED15, BLUE);
 		sleep_wakeup = TRUE;
+		LEDblue_ClrVal();
 	} else {
 		set_led(TOPSIDE, LED15, BLACK);
+		LEDblue_SetVal();
 	}
 
 //    if (BLlink_GetVal(NULL)) {

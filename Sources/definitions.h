@@ -43,9 +43,8 @@
 // PROTO4 USB voltage detection
 #define HARDWARE PROTO4
 
-#define HALL_SENSOR 1
 #define USB_VOLTAGE_DETECTION 1
-#define ACCELEROMETER 1
+
 
 /* ASCII control codes */
 /***********************/

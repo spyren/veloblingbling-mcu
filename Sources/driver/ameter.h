@@ -44,6 +44,9 @@
 
 extern LDD_TDeviceData* AccIntPtr;
 extern char I2C_Slave_Buffer[];
+extern char ameter_Name[];
+extern bool ameter_Present;
+
 
 
 /*

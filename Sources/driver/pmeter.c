@@ -156,7 +156,7 @@
 
 // STATUS
 #define PTDR_MASK 0x08			// Pressure/Altitude OR temperature data ready
-
+#define MPL3115A2 0xC4			// device ID for MPL3115A2
 
 // Local Variables
 // ***************
@@ -167,6 +167,9 @@ static float Temperature = 0.0;
 // ****************
 LDD_TDeviceData *I2C_DeviceData = NULL;
 TDataState DataState;
+char pmeter_Name[25];
+bool pmeter_Present = TRUE;
+
 
 
 /*
@@ -193,22 +196,37 @@ void pmeter_Init() {
 		usb_puts("I2C Slave Rx Block: can't init\n");
 	}
 
+	strcpy(pmeter_Name, "No_Pressure_Sensor");
+	pmeter_Present = FALSE;
 	// test read
-	if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
-		usb_puts("Initialise pressure sensor: can't read pressure sensor\n");
-		return;
+	if (ReadRegs(I2C_DeviceData, &DataState, WHO_AM_I, 1, &Data) == 0) {
+		// valid answer
+		if (Data == MPL3115A2) {
+			strcpy(pmeter_Name, "MPL3115A2");
+			pmeter_Present = TRUE;
+		}
 	}
 
-	pmeter_setStandby();
+	if (pmeter_Present) {
 
-	// enable data flags for pressure and temperature
-	Data = DREM_MASK | PDEFE_MASK | TDEFE_MASK;
-	if (WriteRegs(I2C_DeviceData, &DataState, PT_DATA_CFG, REGISTER_SIZE, &Data)) {
-		usb_puts("Initialise pressure sensor: can't write PT_DATA_CFG\n");
-		return;
+		// test read
+		if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
+			usb_puts("Initialise pressure sensor: can't read pressure sensor\n");
+			pmeter_Present = FALSE;
+			return;
+		}
+
+		pmeter_setStandby();
+
+		// enable data flags for pressure and temperature
+		Data = DREM_MASK | PDEFE_MASK | TDEFE_MASK;
+		if (WriteRegs(I2C_DeviceData, &DataState, PT_DATA_CFG, REGISTER_SIZE, &Data)) {
+			usb_puts("Initialise pressure sensor: can't write PT_DATA_CFG\n");
+			return;
+		}
+
+		pmeter_setActive();
 	}
-
-	pmeter_setActive();
 }
 
 /*
@@ -246,7 +264,7 @@ int ReadRegs(LDD_TDeviceData *I2CPtr,
 		return -4;
 	}
 	
-	waitTimeout = 2; // start the timeout for 40 ms
+	waitTimeout = 2; // start the timeout for 20 ms
 	while ((! DataState->Sent) && (waitTimeout)) {
 		// wait for interrupt
 		Cpu_SetOperationMode(DOM_WAIT, NULL, NULL); // enter wait mode -> exit by any interrupt
@@ -345,33 +363,35 @@ int WriteRegs(LDD_TDeviceData *I2CPtr,
  */
 /* ===================================================================*/
 int pmeter_acquireData() {
-	uint8_t Buffer[5];
-	int AltitudeI;
-	int16 TemperatureI;
-	
-	if (ReadRegs(I2C_DeviceData, &DataState, STATUS, REGISTER_SIZE, Buffer)) {
-		// usb_puts("Read pressure sensor: can't read STATUS\n");
-		return -1;
-	}
-	if (Buffer[0] & PTDR_MASK) {
-		// Altitude or Temperature data ready
+	if (pmeter_Present) {
+		uint8_t Buffer[5];
+		int AltitudeI;
+		int16 TemperatureI;
 		
-		// read Altitude and Temperature data
-		if (ReadRegs(I2C_DeviceData, &DataState, OUT_P_MSB, 5 * REGISTER_SIZE, Buffer)) {
-			usb_puts("Read pressure sensor: can't read OUT_P_MSB\n");
+		if (ReadRegs(I2C_DeviceData, &DataState, STATUS, REGISTER_SIZE, Buffer)) {
+			// usb_puts("Read pressure sensor: can't read STATUS\n");
 			return -1;
 		}
-		
-		// calculate Altitude
-		AltitudeI = (Buffer[0] << 24) | (Buffer[1] << 16) | (Buffer[2] << 8);
-		Altitude = AltitudeI / 65536.0;
-		
-		// calculate Temperature
-		TemperatureI = (Buffer[3] << 8) | Buffer[4];
-		Temperature = TemperatureI / 256.0;
-		
-		return 1;
-		
+		if (Buffer[0] & PTDR_MASK) {
+			// Altitude or Temperature data ready
+
+			// read Altitude and Temperature data
+			if (ReadRegs(I2C_DeviceData, &DataState, OUT_P_MSB, 5 * REGISTER_SIZE, Buffer)) {
+				usb_puts("Read pressure sensor: can't read OUT_P_MSB\n");
+				return -1;
+			}
+
+			// calculate Altitude
+			AltitudeI = (Buffer[0] << 24) | (Buffer[1] << 16) | (Buffer[2] << 8);
+			Altitude = AltitudeI / 65536.0;
+
+			// calculate Temperature
+			TemperatureI = (Buffer[3] << 8) | Buffer[4];
+			Temperature = TemperatureI / 256.0;
+
+			return 1;
+
+		}
 	}
 	return 0;
 }
@@ -431,13 +451,15 @@ float pmeter_getTemperature() {
  */
 /* ===================================================================*/
 void pmeter_setActive() {
-	uint8_t Data;
-	
-	// set altimeter active with OSR = 128
-	Data = ACTIVE_MASK | ALT_MASK | OSR128;
-	if (WriteRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
-		// usb_puts("Initialise pressure sensor: can't write CTRL_REG_1\n");
-		return;
+	if (pmeter_Present) {
+		uint8_t Data;
+
+		// set altimeter active with OSR = 128
+		Data = ACTIVE_MASK | ALT_MASK | OSR128;
+		if (WriteRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
+			// usb_puts("Initialise pressure sensor: can't write CTRL_REG_1\n");
+			return;
+		}
 	}
 }
 
@@ -452,15 +474,16 @@ void pmeter_setActive() {
  */
 /* ===================================================================*/
 void pmeter_setStandby() {
-	uint8_t Data;
-		
-	// set altimeter standby with OSR = 128
-	Data = ALT_MASK | OSR128;
-	if (WriteRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
-		// usb_puts("Initialise pressure sensor: can't write CTRL_REG_1\n");
-		return;
-	}
+	if (pmeter_Present) {
+		uint8_t Data;
 
+		// set altimeter standby with OSR = 128
+		Data = ALT_MASK | OSR128;
+		if (WriteRegs(I2C_DeviceData, &DataState, CTRL_REG_1, REGISTER_SIZE, &Data)) {
+			// usb_puts("Initialise pressure sensor: can't write CTRL_REG_1\n");
+			return;
+		}
+	}
 }
 
 

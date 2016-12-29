@@ -58,8 +58,9 @@
 #include "driver/pmeter.h"
 #include "motion/wheelsensor.h"
 
-#define MAX_SLEEP 60			// if there is no action for 60s go to deep sleep
-#define MAX_HIBERNATION (15*60)	// after 15 Minutes standby go for hibernation
+#define MAX_SLEEP 60				// if there is no action for 60 s go to deep sleep
+#define MAX_HIBERNATION (15*60)		// after 15 Minutes standby go for hibernation
+//#define MAX_HIBERNATION (2*60)	// after 2 Minutes standby go for hibernation (only for tests)
 
 // Global Variables
 // ***************
@@ -67,6 +68,7 @@ volatile bool sleep_wakeup = FALSE;
 volatile bool standby = FALSE;
 volatile bool low_energy = FALSE;
 volatile uint8_t waitTimeout = 0;
+bool slowHall_Present = FALSE;			/**< a slow Hall sensor is present  */
 
 // Local Variables
 // ***************
@@ -98,7 +100,7 @@ void powermgr_Init() {
  */
 /**
  *  @brief
- *      Called by the Wakeup-Timer interrupt
+ *      Called by the Wakeup-Timer interrupt every 10 ms
  *      
  *  This interrupt service routine releases the CPU wait state in 
  *  wait_ms
@@ -114,7 +116,7 @@ void wait_int() {
  */
 /**
  *  @brief
- *      Waits the specified time in tens of ms. CPU is in wait mode
+ *      Waits the specified time in tens of ms. CPU is in wait mode.
  *  @param
  *      time    Wait time in 10 ms
  */
@@ -122,7 +124,7 @@ void wait_int() {
 void wait_10ms(int time) {
     int i;
     
-    Wakeup_Enable(WakeupPtr); // start the timer for 10 ms
+    Wakeup_Enable(WakeupPtr); // start the 10 ms timer
     for (i=0; i<time; i++) {
         while(1) {
         	//Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_3);
@@ -147,26 +149,34 @@ void wait_10ms(int time) {
  *      Stops the CPU if there is no wheel turn or no Mode button event for more than MAX_SLEEP s. 
  *      CPU goes into Stop mode.
  *      
- *      Called every 20 ms by main loop.
- *      Interrupts from BTN1 (Mode Button), ReedInt, and RTC1 can wake up the CPU.
+ *      sleep_timeout and hibernation_timeout are incremented every second by powermgr_Second()
+ *
+ *      Called every 20 ms by main loop, except for the operating_mode INTERACTIVE_USB.
+ *
+ *      Following interrupts can wake up the CPU:
+ *        - BTN1 (Mode Button)
+ *        - ReedInt (fast and slow Hall sensor, wheelsensor)
+ *        - RTC1 (real time clock, watch)
+ *        - UART0 (BLE Module, ble)
+ *        - AccInt (movement detection by accelerometer, ameter)
  *      Wakeup Interrupt Controller (WIC) is used to wake from interruptions
  *      
  */
 /* ===================================================================*/
 void powermgr_DeepSleep() {
 	if (sleep_wakeup) {
-		// wake up by mode button, UART (BLE) or wheel turn -> reset timeouts
+		// reset timeouts by events:
+		// mode button, UART (BLE) or wheel turn
 		sleep_timeout = 0;
 		sleep_wakeup = FALSE;
 		hibernation_timeout = 0;
-		// rotating = FALSE;
-
 	} else {
+		// check for sleep
 		if (sleep_timeout >= MAX_SLEEP) {
 			// -> go to sleep (again)
-			pmeter_setStandby();
-			disable_BatMeasure();
-			USBpoll_Disable(usb_TimerPtr); // no interruption from USB
+			pmeter_setStandby();			// pmeter standby to save energy
+			disable_BatMeasure();			// no ADC to save energy
+			USBpoll_Disable(usb_TimerPtr); 	// no interruption from USB
 			rotating = FALSE;
 			standby = TRUE;
 			// ble_reset(); 
@@ -177,45 +187,61 @@ void powermgr_DeepSleep() {
 				// enter deep sleep mode -> exit by any enabled interrupt
 				// wake up by RTC every second
 
-#ifdef ACCELEROMETER
 				if (hibernation_timeout == MAX_HIBERNATION) {
-#ifdef HALL_SENSOR
-					HallVCC_ClrVal(NULL); // switch off fast Hall sensor
-#endif
+					// got to hibernation
+					if (slowHall_Present || ameter_Present) {
+						// switch off fast Hall sensor to save energy
+						HallVCC_ClrVal(NULL);
+					}
+
+					// for configuration we need fast clock
 					Cpu_VLPModeDisable();
 					Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_0);
-					USBpoll_Enable(usb_TimerPtr);
-					ble_lowPower();
-					wait_10ms(200);
-					BL600_Disable();
-					ameter_getOrientation(); // Clear ameter orientation interrupt
-					AccInt_Enable(AccIntPtr);
-					USBpoll_Disable(usb_TimerPtr); // no interruption from USB
+
+					if (ble_Present) {
+						// disable BLE to save energy
+						ble_lowPower();
+						wait_10ms(200);
+						BL600_Disable();
+					}
+					if (ameter_Present) {
+						// enable wake up for movement detection (ameter)
+						ameter_getOrientation(); // Clear ameter orientation interrupt
+						AccInt_Enable(AccIntPtr);
+					}
 					hibernation_timeout++; // only for the first time
 
 					Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_1);
 				}
-#endif
 			}
-			// after wakeup
+
+			// after wake up
 			Cpu_VLPModeDisable();
 			Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_0);
-
 
 			pmeter_setActive();
 			enable_BatMeasure();
 			USBpoll_Enable(usb_TimerPtr);
-#ifdef ACCELEROMETER
+
 			if (hibernation_timeout >= MAX_HIBERNATION) {
-				// wake up BLE
-#ifdef HALL_SENSOR
-				HallVCC_SetVal(NULL); // switch on Hall sensor
-#endif
-				BL600_Enable();
-				ble_Init();
-				AccInt_Disable(AccIntPtr);
+				// wake up from hibernation
+				if (slowHall_Present || ameter_Present) {
+					// switch on fast Hall sensor
+					HallVCC_SetVal(NULL); // switch on Hall sensor
+				}
+
+				if (ble_Present) {
+					// wake up BLE
+					BL600_Enable();
+					ble_Init();
+				}
+
+				if (ameter_Present) {
+					// disable interrupts from movement detection (ameter)
+					AccInt_Disable(AccIntPtr);
+				}
 			}
-#endif
+
 			sleep_wakeup = FALSE;
 			sleep_timeout = 0;
 			hibernation_timeout = 0;

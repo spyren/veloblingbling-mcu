@@ -202,6 +202,7 @@ void wheel_Synch() {
 	if (!low_energy && !right_rotating) {
 		// switch on LED16 to show reed contact (Hall sensor) closed
 		set_led(TOPSIDE, LED16, GREEN);
+		LEDgreen_ClrVal();
 		write_ledColumn(TOPSIDE);
 		reed_closed = TRUE;
 	}
@@ -517,6 +518,7 @@ void wheel_checkReed() {
 		if (ReedContact_GetVal(NULL)) {
 			// Hall sensor no longer active -> switch off LED
 			set_led(TOPSIDE, LED16, BLACK);
+			LEDgreen_SetVal();
 			write_ledColumn(TOPSIDE);
 			reed_closed = FALSE;
 		}

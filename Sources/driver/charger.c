@@ -84,7 +84,7 @@ volatile double batteryVoltage;
 
 /*
  ** ===================================================================
- **  Method      :  init_Charger
+ **  Method      :  charger_Init
  */
 /**
  *  @brief
@@ -204,9 +204,9 @@ void charger_show_state() {
 #ifdef USB_VOLTAGE_DETECTION
 	if (UsbSupply_GetVal()) {
 		sleep_wakeup = TRUE;
-		USBpoll_Enable(usb_TimerPtr);
+		// USBpoll_Enable(usb_TimerPtr);
 	} else {
-		USBpoll_Disable(usb_TimerPtr);
+		// USBpoll_Disable(usb_TimerPtr);
 	}
 #endif
 

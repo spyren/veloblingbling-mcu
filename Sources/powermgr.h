@@ -44,6 +44,7 @@ extern volatile bool sleep_wakeup;
 extern volatile bool standby;
 extern volatile bool low_energy;
 extern volatile uint8_t waitTimeout;
+extern bool slowHall_Present;
 
 
 /*
