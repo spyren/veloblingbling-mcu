@@ -1,17 +1,28 @@
 /**
  *  @brief
- *  	Save, get, and remove configuration to EEPROM.
- *  	Log parameters and patterns (images) to the flash memory
+ *  	Save and get configuration to the flash memory.
+ *  	Save and get patterns (images) and scripts to the flash memory.
+ *  	Log parameters to the flash memory (not used yet).
  *  	
  *		The internal FLASH memory is used to save persistently the parameters.
  *		128 KiB are reserved for the parameters.
  *		The standard FLASH memory for the program starts at 0x410 and
  *		end at 0x3FFFF (roughly 256 KiB, size 3FBF0)
- *		Now it ends at 0x23FFF.
- *		The FLASH for the parameters starts at 0x24000 and ends at 0x3FFFF (112 kiB)
- *		(see Processor Expert CPU -> Build Options -> MemoryArea2 -> Size 23BF0 [original 3FBF0])
+ *		Now it ends at 0x24FFF.
+ *
+ *		The FLASH for the parameters starts at 0x25000 and ends at
+ *		0x3FFFF (107 kiB). See also in the Kinetis Design Studio:
+ *		Processor Expert Components
+ *		CPU -> Build Options -> Generate linker file -> MemoryArea2
+ *		-> Size 24BF0 [original 3FBF0])
  *		An erasable block has the size of 2 kiB (0x800).
- *      
+ *
+ *		The Flex NVM EEPROM is not used yet. Therefore  the EEPROM buffer RAM can
+ *		be used for other purposes. It is used in display module for
+ *		image_bufferP buffer. The 64 KiB Flash can be used for other purposes.
+ *
+ *		The Flex NVM 64 KiB Flash block is used for parameters and images now.
+ *
  *  @file
  *      parameter.c
  *  @author
@@ -67,6 +78,7 @@
 #include "cyclo/watch.h"
 #include "comm/usb.h"
 #include "visual/led.h"
+#include "visual/oled.h"
 #include "visual/display.h"
 #include "hmi/mode.h"
 #include "hmi/button.h"
@@ -74,7 +86,6 @@
 #include "hmi/script.h"
 
 
-#define EEPROM_BASE	0x14000000
 
 
 // Global Variables
@@ -97,13 +108,11 @@ static LDD_TDeviceData* FlashDevicePtr;
  */
 /**
  *  @brief
- *  	Initialises from the Flash memory
+ *  	Initializes from the Flash memory
  *  	
  */
 /* ===================================================================*/
 void flash_Init() {
-	FlashDevicePtr = IntFlashLdd1_Init(NULL);		// init FLASH
-	//malloc_ptr = malloc(4);
 	if (ButtonPressed) {
 		// button pressed on power on -> Restore factory settings
 		set_led(TOPSIDE, 0, MAGENTA);
@@ -114,7 +123,7 @@ void flash_Init() {
 
 		set_params();
 		save_params();
-		// initialise some images and scripts
+		// initialize some images and scripts
 		images_Init();
 		script_Init();
 
@@ -133,10 +142,10 @@ void flash_Init() {
 		if (configParameter.valid == FLASH_RECORD_VALID) {
 			set_config();
 		} else {
-			// no valid data in Flash -> initialise from global variables
+			// no valid data in Flash -> initialize from global variables
 			set_params();
 			save_params();
-			// initialise some images and scripts
+			// initialize some images and scripts
 			images_Init();
 			script_Init();
 		}
@@ -185,9 +194,10 @@ void set_config() {
 	altimeterOffset 	= configParameter.altimeterOffset;
 	
 	tripTime 			= configParameter.tripTime;
-	currTime 			= configParameter.currTime;
 
 	memcpy(&watchTime, 	&configParameter.watchTime, sizeof(watchTime));
+
+	oled_debug			= configParameter.oledDebug;
 
 	/* Hardware */
 	slowHall_Present	=configParameter.slowHall_Present;
@@ -236,9 +246,10 @@ void set_params() {
 	configParameter.altimeterOffset		= altimeterOffset;
 	
 	configParameter.tripTime 			= tripTime;
-	configParameter.currTime 			= currTime;
 	
 	memcpy(&configParameter.watchTime, &watchTime, sizeof(watchTime));
+
+	configParameter.oledDebug			= oled_debug;
 
 	/* Hardware */
 	configParameter.slowHall_Present 	= slowHall_Present;
@@ -305,7 +316,7 @@ void clear_params() {
  */
 /**
  *  @brief
- *  	Saves the log data parameters into the FLASH
+ *  	Saves the log data parameters into the FLASH (not used yet)
  *  @param
  *  	param	Log data parameter to save to flash
  *  @param
@@ -333,7 +344,7 @@ void save_logdata(const int16 record_nr, logParameter_s *param) {
  */
 /**
  *  @brief
- *  	Gets the log data parameters from the FLASH
+ *  	Gets the log data parameters from the FLASH (not used yet)
  *  @param
  *  	param	Log data parameter to get from flash
  *  @param
@@ -354,7 +365,7 @@ void get_logdata(const int16 record_nr, logParameter_s *param) {
  */
 /**
  *  @brief
- *  	erases the internal FLASH
+ *  	erases the internal FLASH (not used yet)
  */
 /* ===================================================================*/
 void erase_flash() {

@@ -63,6 +63,7 @@
 #include "comm/ble.h"
 #include "motion/wheelsensor.h"
 #include "visual/display.h"
+#include "visual/oled.h"
 #include "hmi/cli.h"
 #include "hmi/script.h"
 #include "driver/charger.h"
@@ -72,11 +73,10 @@
 // Global Variables
 // ****************
 double tripTime = 0.0;		/**< trip time [s] */
-double currTime = 0.0;		/**< current time [s] since 1.1.2000 ? */
 double chronoTime = 0.0;	/**< stop (chrono) watch time [s] */
 double totalTime = 0.0;		/**< total time [s] */
 double upTime = 0.0;		/**< up time [s] */
-LDD_RTC_TTime watchTime = {	0, 0, 19, 5, 27, 3, 2015 };	    /**< watch time */
+LDD_RTC_TTime watchTime = {	0, 0, 0, 0, 1, 1, 2017 };	    /**< watch time */
 
 bool stopWatchRunning;
 
@@ -206,11 +206,7 @@ static void calc_Altitude() {
 /* ===================================================================*/
 void watch_Synch() {
 	char str[20];
-	
-//	if (rotationTime < 0) {
-//		currSpeed = 0.0;
-//	}
-	
+
 	upTime = upTime + 1.0;
 	if (chronoMode == TRIP_STARTED) {
 		chronoTime = chronoTime + 1.0;
@@ -235,9 +231,13 @@ void watch_Synch() {
 		write_ledColumn(TOPSIDE);
 		wait_ledColumn();
 		
-		clear_leds(BOTTOMSIDE);
-		write_ledColumn(BOTTOMSIDE);
-		wait_ledColumn();
+		cyclo_resetSpeed();
+
+		if (!oled_debug) {
+			clear_leds(BOTTOMSIDE);
+			write_ledColumn(BOTTOMSIDE);
+			wait_ledColumn();
+		}
 	}
 	
 	if (! standby) {
@@ -265,9 +265,9 @@ void watch_Synch() {
 		start_BatMeasure();
 
 		if (batteryVoltage < 2.9) {
-			// low_energy = TRUE;
+			// energy_mode = TRUE;
 			clear_leds(TOPSIDE);
-			write_ledColumn(BOTTOMSIDE);
+			write_ledColumn(TOPSIDE);
 		}
 
 		// altitude, trip elevation gain, maximum altitude, and temperature
@@ -278,10 +278,13 @@ void watch_Synch() {
 			script_Interpreter();
 		}
 
+		if (oled_debug) {
+			oled_writeWindows();
+		}
+
 		// falling edge for I2C master (BL600)
 		BLlink_ClrVal(NULL);
 		BLlink_SetVal(NULL);
-
 
 	}
 }

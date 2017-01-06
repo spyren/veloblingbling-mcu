@@ -294,7 +294,7 @@ void ameter_Init() {
 		if (ReadRegs(I2C_DeviceData, &DataState, CTRL_REG_1, ACC_REG_SIZE, &Data)) {
 			usb_puts("Initialise accelerometer: can't read accelerometer\n");
 		}
-		if (Data != (ACTIVE_BIT_MASK | ODR_1Hz56)) {
+		if (Data != (ACTIVE_BIT_MASK | ODR_50Hz)) {
 			usb_puts("Initialise accelerometer: wrong data written\n");
 		}
 

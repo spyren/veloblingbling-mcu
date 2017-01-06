@@ -56,30 +56,6 @@
 #include "driver/parameter.h"
 #include "hmi/cli.h"
 
-#define MODE_STEPS 12
-#define COLOR_STEPS 7
-
-struct mode_step_s {
-	LED_nrT        nr; 
-	Display_modeT  display_mode;
-	Cyclo_modeT    cyclo_mode;
-};
-
-const static const struct mode_step_s mode_step[MODE_STEPS] = {
-		{LED1,  CYCLOCOMPUTER, CURRENTSPEED},		// 0
-		{LED2,  CYCLOCOMPUTER, TRIPDISTANCE},		// 1
-		{LED3,  CYCLOCOMPUTER, TOTALDISTANCE},		// 2
-		{LED4,  CYCLOCOMPUTER, CURRENTALTITUDE},	// 3
-		{LED5,  CYCLOCOMPUTER, TRIPELEVATIONGAIN},	// 4
-		{LED6,  CYCLOCOMPUTER, CURRENTTIME},		// 5
-		{LED7,  CYCLOCOMPUTER, TRIPTIME},			// 6
-		{LED8,  CYCLOCOMPUTER, CHRONOTIME},			// 7
-		{LED9,  STRING,        NOCYCLO},			// 8
-		{LED10, IMAGE,         NOCYCLO},			// 9
-		{LED11, BLANK,         NOCYCLO},			// 10
-		{LED12, BLANK,         NOCYCLO}				// 11
-};
-
 
 // Global Variables
 // ****************
@@ -136,14 +112,14 @@ void set_Mode() {
 		ButtonLongPressed = FALSE;
 
 		// toggle low energy mode
-		if (low_energy) {
-			low_energy = FALSE;
+		if (energy_mode) {
+			energy_mode = FALSE;
 			set_led(TOPSIDE, LED1, WHITE);
 			LEDred_ClrVal();
 			LEDgreen_ClrVal();
 			LEDblue_ClrVal();
 		} else {
-			low_energy = TRUE;
+			energy_mode = TRUE;
 			set_led(TOPSIDE, LED1, YELLOW);
 			LEDred_ClrVal();
 			LEDgreen_ClrVal();

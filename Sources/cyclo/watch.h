@@ -37,7 +37,6 @@
 #define WATCH_H_
 
 extern double tripTime;		/** trip time [s] */
-extern double currTime;		/** current time [s] */
 extern double chronoTime;	/** stop (chrono) watch time [s] */
 extern double totalTime;	/**< total time [s] */
 extern double upTime;		/**< up time [s] */

@@ -86,4 +86,15 @@ extern volatile uint8_t trip_timeout;
 /* ===================================================================*/
 void cyclo_Information();
 
+/*
+ ** ===================================================================
+ **  Method      :  cyclo_resetSpeed
+ */
+/**
+ *  @brief
+ *  	Resets the speed and the time_array to zero.
+ */
+/* ===================================================================*/
+void cyclo_resetSpeed();
+
 #endif /* CYCLOCOMPUTER_H_ */

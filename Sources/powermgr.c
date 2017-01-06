@@ -51,6 +51,7 @@
 #include "definitions.h"
 #include "powermgr.h"
 #include "visual/led.h"
+#include "visual/oled.h"
 #include "comm/usb.h"
 #include "comm/ble.h"
 #include "driver/charger.h"
@@ -66,7 +67,7 @@
 // ***************
 volatile bool sleep_wakeup = FALSE;
 volatile bool standby = FALSE;
-volatile bool low_energy = FALSE;
+volatile energy_modeT energy_mode = ENERGY_STANDARD;
 volatile uint8_t waitTimeout = 0;
 bool slowHall_Present = FALSE;			/**< a slow Hall sensor is present  */
 
@@ -164,92 +165,97 @@ void wait_10ms(int time) {
  */
 /* ===================================================================*/
 void powermgr_DeepSleep() {
-	if (sleep_wakeup) {
+	if (sleep_wakeup | energy_mode == ENERGY_ALWAYS_ON) {
 		// reset timeouts by events:
 		// mode button, UART (BLE) or wheel turn
 		sleep_timeout = 0;
 		sleep_wakeup = FALSE;
 		hibernation_timeout = 0;
-	} else {
-		// check for sleep
-		if (sleep_timeout >= MAX_SLEEP) {
-			// -> go to sleep (again)
-			pmeter_setStandby();			// pmeter standby to save energy
-			disable_BatMeasure();			// no ADC to save energy
-			USBpoll_Disable(usb_TimerPtr); 	// no interruption from USB
-			rotating = FALSE;
-			standby = TRUE;
-			// ble_reset(); 
-			Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_1);
-			while (! sleep_wakeup) {
-				Cpu_VLPModeEnable();
-				Cpu_SetOperationMode(DOM_SLEEP, NULL, NULL);
-				// enter deep sleep mode -> exit by any enabled interrupt
-				// wake up by RTC every second
+	}
 
-				if (hibernation_timeout == MAX_HIBERNATION) {
-					// got to hibernation
-					if (slowHall_Present || ameter_Present) {
-						// switch off fast Hall sensor to save energy
-						HallVCC_ClrVal(NULL);
-					}
+	// check for sleep
+	if (sleep_timeout >= MAX_SLEEP) {
+		// -> go to sleep (again)
+		pmeter_setStandby();			// pmeter standby to save energy
+		disable_BatMeasure();			// no ADC to save energy
+		USBpoll_Disable(usb_TimerPtr); 	// no interruption from USB
+		rotating = FALSE;
+		standby = TRUE;
+		oled_setState(OLED_STANDBY);
+		// ble_reset();
+		Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_1);
+		while (! sleep_wakeup) {
+			Cpu_VLPModeEnable();
+			Cpu_SetOperationMode(DOM_SLEEP, NULL, NULL);
+			// enter deep sleep mode -> exit by any enabled interrupt
+			// wake up by RTC every second
 
-					// for configuration we need fast clock
-					Cpu_VLPModeDisable();
-					Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_0);
-
-					if (ble_Present) {
-						// disable BLE to save energy
-						ble_lowPower();
-						wait_10ms(200);
-						BL600_Disable();
-					}
-					if (ameter_Present) {
-						// enable wake up for movement detection (ameter)
-						ameter_getOrientation(); // Clear ameter orientation interrupt
-						AccInt_Enable(AccIntPtr);
-					}
-					hibernation_timeout++; // only for the first time
-
-					Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_1);
-				}
-			}
-
-			// after wake up
-			Cpu_VLPModeDisable();
-			Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_0);
-
-			pmeter_setActive();
-			enable_BatMeasure();
-			USBpoll_Enable(usb_TimerPtr);
-
-			if (hibernation_timeout >= MAX_HIBERNATION) {
-				// wake up from hibernation
+			if (hibernation_timeout == MAX_HIBERNATION) {
+				// got to hibernation
 				if (slowHall_Present || ameter_Present) {
-					// switch on fast Hall sensor
-					HallVCC_SetVal(NULL); // switch on Hall sensor
+					// switch off fast Hall sensor to save energy
+					HallVCC_ClrVal(NULL);
 				}
+
+				// for configuration we need fast clock
+				Cpu_VLPModeDisable();
+				Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_0);
 
 				if (ble_Present) {
-					// wake up BLE
-					BL600_Enable();
-					ble_Init();
+					// disable BLE to save energy
+					ble_lowPower();
+					wait_10ms(200);
+					BL600_Disable();
 				}
-
 				if (ameter_Present) {
-					// disable interrupts from movement detection (ameter)
-					AccInt_Disable(AccIntPtr);
+					// enable wake up for movement detection (ameter)
+					ameter_getOrientation(); // Clear ameter orientation interrupt
+					AccInt_Enable(AccIntPtr);
 				}
-			}
+				oled_setState(OLED_OFF);
 
-			sleep_wakeup = FALSE;
-			sleep_timeout = 0;
-			hibernation_timeout = 0;
-			standby = FALSE;
+				hibernation_timeout++; // only for the first time
+
+				Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_1);
+			}
 		}
 
+		// after wake up
+		Cpu_VLPModeDisable();
+		Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_0);
+
+		pmeter_setActive();
+		enable_BatMeasure();
+		USBpoll_Enable(usb_TimerPtr);
+		oled_setState(OLED_ON);
+
+		if (hibernation_timeout >= MAX_HIBERNATION) {
+			// wake up from hibernation
+			if (slowHall_Present || ameter_Present) {
+				// switch on fast Hall sensor
+				HallVCC_SetVal(NULL); // switch on Hall sensor
+			}
+
+			if (ble_Present) {
+				// wake up BLE
+				BL600_Enable();
+				ble_Init();
+			}
+
+			if (ameter_Present) {
+				// disable interrupts from movement detection (ameter)
+				AccInt_Disable(AccIntPtr);
+			}
+		}
+
+		sleep_wakeup = FALSE;
+		sleep_timeout = 0;
+		hibernation_timeout = 0;
+		standby = FALSE;
 	}
+
 }
+
 
 
 /*

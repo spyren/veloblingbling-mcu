@@ -38,11 +38,14 @@
 // ****************
 #include "PE_Types.h"
 
+typedef enum {ENERGY_STANDARD, ENERGY_LOW, ENERGY_ALWAYS_ON} energy_modeT;
+
+
 // Global Variables
 // ***************
 extern volatile bool sleep_wakeup;
 extern volatile bool standby;
-extern volatile bool low_energy;
+extern volatile energy_modeT energy_mode;
 extern volatile uint8_t waitTimeout;
 extern bool slowHall_Present;
 

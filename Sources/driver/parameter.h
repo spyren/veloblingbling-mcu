@@ -1,15 +1,27 @@
 /**
  *  @brief
- *  	Save, get, and remove configuration and log parameters to the flash memory
+ *  	Save and get configuration to the flash memory.
+ *  	Save and get patterns (images) and scripts to the flash memory.
+ *  	Log parameters to the flash memory (not used yet).
  *  	
  *		The internal FLASH memory is used to save persistently the parameters.
  *		128 KiB are reserved for the parameters.
  *		The standard FLASH memory for the program starts at 0x410 and
  *		end at 0x3FFFF (roughly 256 KiB, size 3FBF0)
- *		Now it ends at 0x23FFF.
- *		The FLASH for the parameters starts at 0x24000 and ends at 0x3FFFF (112 kiB)
- *		(see Processor Expert CPU -> Build Options -> MemoryArea2 -> Size 23BF0 [original 3FBF0])
+ *		Now it ends at 0x24FFF.
+ *
+ *		The FLASH for the parameters starts at 0x25000 and ends at
+ *		0x3FFFF (107 kiB). See also in the Kinetis Design Studio:
+ *		Processor Expert Components
+ *		CPU -> Build Options -> Generate linker file -> MemoryArea2
+ *		-> Size 24BF0 [original 3FBF0])
  *		An erasable block has the size of 2 kiB (0x800).
+ *
+ *		The Flex NVM EEPROM is not used yet. Therefore  the EEPROM buffer RAM can
+ *		be used for other purposes. It is used in display module for
+ *		image_bufferP buffer. The 64 KiB Flash can be used for other purposes.
+ *
+ *		The Flex NVM 64 KiB Flash block is used for parameters and images now.
  *      
  *  @file
  *      parameter.c
@@ -50,8 +62,13 @@
 **  @{
 */         
 
-#define FLASH_BASE_ADR 0x24000			/**< where FLASH memory starts, see also protection region in Cpu Properties */
+#define FLEX_NVM_RAM_BASE	0x14000000 		// Flex NVM EEPROM not used yet, 4 KiB EEE RAM available
+#define FLEX_NVM_FLASH_BASE	0x10000000		// Flex NVM 64 KiB Flash block
+#define FLASH_BASE_PARAM 0x25000			/**< where FLASH memory starts, see also protection region in Cpu Properties */
+
+#define FLASH_BASE_ADR FLEX_NVM_FLASH_BASE	/**< flash base address for parameters and images */
 #define FLASH_RECORD_VALID 0x55
+
 
 typedef struct configParameter_s {
 	/* configuration */
@@ -86,8 +103,9 @@ typedef struct configParameter_s {
 	double altimeterOffset;
 	
 	double tripTime;
-	double currTime;
 	LDD_RTC_TTime watchTime;
+
+	bool oledDebug;
 
 	/* Hardware */
 	bool slowHall_Present;
@@ -218,53 +236,6 @@ void erase_flash();
 /*!
 ** @}
 */
-
-///*
-// ** ===================================================================
-// **  Method      :  EEPROM_Init
-// */
-///**
-// *  @brief
-// *  	Initialises from the EEPROM memory
-// *  	
-// */
-///* ===================================================================*/
-//void EEPROM_Init();
-
-///*
-// ** ===================================================================
-// **  Method      :  set_config
-// */
-///**
-// *  @brief
-// *  	Copies the configuration data to the configParameterP in EEPROM.
-// *  	(initialise from global variables)
-// */
-///* ===================================================================*/
-//void set_config();
-
-///*
-// ** ===================================================================
-// **  Method      :  set_parameter
-// */
-///**
-// *  @brief
-// *  	Copies the configParameterP (EEPROM) to the configuration 
-// *  	data (parameter).
-// */
-///* ===================================================================*/
-//void set_parameter();
-
-///*
-// ** ===================================================================
-// **  Method      :  clear_config
-// */
-///**
-// *  @brief
-//  *  	Clears the configuration parameters into the EEPROM.
-// */
-///* ===================================================================*/
-//void clear_config();
 
 
 #endif /* PARAMETER_H_ */

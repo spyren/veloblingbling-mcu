@@ -48,6 +48,7 @@ typedef enum {TOPSIDE, BOTTOMSIDE} surfaceT;
 #define BLUE_MASK 	0x04
 
 volatile bool Led_BlockSent;
+LDD_TDeviceData* LEDspiPtr;
 
 /*
  ** ===================================================================

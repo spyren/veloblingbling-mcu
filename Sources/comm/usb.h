@@ -58,7 +58,7 @@
 
 #define  DATA_BUFF_SIZE     (16)
 #define  RING_BUFF_SIZE_RX	(100)	/**< USB receive buffer size */   
-#define  RING_BUFF_SIZE_TX 	(1024)	/**< USB transmit buffer size, big enough for help info */   
+#define  RING_BUFF_SIZE_TX 	(1024)	/**< USB transmit buffer size, big enough for help info */
 
 extern LDD_TDeviceData* usb_TimerPtr;
 extern volatile bool usb_ready;

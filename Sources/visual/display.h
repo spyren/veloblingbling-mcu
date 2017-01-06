@@ -62,9 +62,6 @@ extern image_s *image_bufferP;
 
 extern image_s display[BOTTOMSIDE+1][BLING+1];
 
-// from left to right, bottom to top
-extern const LED_colorT France[];
-extern const LED_colorT Germany[];
 
 /*
  ** ===================================================================

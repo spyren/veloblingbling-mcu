@@ -52,6 +52,7 @@
 #include "hmi/cli.h"
 #include "hmi/button.h"
 #include "visual/led.h"
+#include "visual/oled.h"
 #include "comm/usb.h"
 
 
@@ -202,7 +203,9 @@ void test(void){
 				write_ledColumn(TOPSIDE);
 				wait_10ms(2);
 				clear_leds(BOTTOMSIDE);	
-				write_ledColumn(BOTTOMSIDE);				
+				if (!oled_debug) {
+					write_ledColumn(BOTTOMSIDE);
+				}
 				return;
 			}
 			if (c != ERR_TIMEOUT) {
@@ -232,7 +235,14 @@ void test(void){
 			LEDblue_ClrVal();
 			break;
 		}
-		write_ledColumn(steps_a[stepno].surface);
+		if (oled_debug) {
+			if (steps_a[stepno].surface == TOPSIDE) {
+				write_ledColumn(steps_a[stepno].surface);
+			}
+		} else {
+			write_ledColumn(steps_a[stepno].surface);
+		}
+
 		usb_puts(steps_a[stepno].text);
 		if (++stepno >= TEST_STEPS)
 			stepno = 0;

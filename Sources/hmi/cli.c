@@ -15,7 +15,8 @@
  *      show     temperature|temp     float            [°C]
  *      show     pedalingcadence|cad  float            [/Min]
  *      show	 hallsensor           yes|no
- *      set|show energy               low|standard
+ *      show     oled                 yes|no
+ *      set|show energy               low|standard|on
  *
  *      show|set currenttime|watch    yyyymmddhhmmss
  *      show     triptime|time        float            [s]
@@ -85,7 +86,7 @@
  *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.6rc2, 2016/12/27
+ *      Version 4.6, 2017/01/06
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -112,7 +113,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 4.6rc2, 2016/12/27, Copyright Peter Schmid\n\n";
+		"Version 4.6, 2017/01/06, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -136,6 +137,7 @@ const char helloMessage[] =
 #include "script.h"
 #include "visual/led.h"
 #include "visual/display.h"
+#include "visual/oled.h"
 #include "powermgr.h"
 #include "comm/usb.h"
 #include "test.h"
@@ -209,6 +211,7 @@ static const char cliHelpShow[] =
 		"show acceleration\n"
 		"show battery|energy\n"
 		"show hallsensor\n"
+		"show oled\n"
 		"show script\n"
         "\n"
         "Shows the parameters\n";
@@ -225,8 +228,9 @@ static const char cliHelpSet[] =
 		"set stretch <0.8 .. 1.5>\n"
 		"set side left|right\n"
 		"set wheel front|rear\n"
-		"set energy low|standard\n"
+		"set energy low|standard|on\n"
 		"set hallsensor yes|no\n"
+		"set oled yes|no\n"
 		"set surface top|bottom\n"
 		"set upper|lower speed|max|avg|trip|tot|alt|inc|temp|cad|watch|time|chro|string|blk|img|light\n"
 		"set bling blk|img\n"
@@ -374,12 +378,15 @@ static const char en_s[]              = "en";
 static const char low_s[]             = "low";
 static const char standard_s[]        = "standard";
 static const char std_s[]             = "std";
+static const char alwayson_s[]        = "alwayson";
+static const char on_s[]              = "on";
 static const char acceleration_s[]    = "acceleration";
 static const char acc_s[]             = "acc";
 static const char script_s[]          = "script";
 static const char sc_s[]              = "sc";
 static const char hallsensor_s[]      = "hallsensor";
 static const char hall_s[]            = "hall";
+static const char oled_s[]              = "oled";
 
 static const char red_s[]             = "red";
 static const char rd_s[]              = "rd";
@@ -1133,10 +1140,16 @@ static void showEnergy(channelT ch) {
 
 	strcpy(str, energy_s);
 	strcat(str, " ");
-	if (low_energy) {
-		strcat(str, low_s);
-	} else {
+	switch (energy_mode) {
+	case ENERGY_STANDARD:
 		strcat(str, standard_s);
+		break;
+	case ENERGY_LOW:
+		strcat(str, low_s);
+		break;
+	case ENERGY_ALWAYS_ON:
+		strcat(str, alwayson_s);
+		break;
 	}
 	strcat(str, lf_s);
 	puts_ch(str, ch);
@@ -1191,6 +1204,28 @@ static void showHallsensor(channelT ch) {
 	puts_ch(str, ch);
 }
 
+/*
+ ** ===================================================================
+ **  Method      :  showOled
+ */
+/**
+ *  @brief
+ *      Prints the oled debug mode.
+ */
+/* ===================================================================*/
+static void showOled(channelT ch) {
+	char str[40];
+
+	strcpy(str, oled_s);
+	strcat(str, " ");
+	if (oled_debug) {
+		strcat(str, yes_s);
+	} else {
+		strcat(str, no_s);
+	}
+	strcat(str, lf_s);
+	puts_ch(str, ch);
+}
 
 /*
  ** ===================================================================
@@ -1249,6 +1284,7 @@ static void showAll(channelT ch) {
 	showTime(ch);
 
 	showHallsensor(ch);
+	showOled(ch);
 
 }
 
@@ -1571,9 +1607,11 @@ static void setSurface(char* string, channelT ch) {
 /* ===================================================================*/
 static void setEnergy(char* string, channelT ch) {
 	if (!        strcmp(string, low_s) ) {
-		low_energy = TRUE;
+		energy_mode = ENERGY_LOW;
 	} else if (! strcmp(string, standard_s) || ! strcmp(string, std_s) ) {
-		low_energy = FALSE;
+		energy_mode = ENERGY_STANDARD;
+	} else if (! strcmp(string, alwayson_s) || ! strcmp(string, on_s) ) {
+		energy_mode = ENERGY_ALWAYS_ON;
 	} else {
 		puts_ch(syntaxError_s, ch);
 	}
@@ -1618,6 +1656,29 @@ static void setHallsensor(char* string, channelT ch) {
 		slowHall_Present = TRUE;
 	} else if (! strcmp(string, no_s) ) {
 		slowHall_Present = FALSE;
+	} else {
+		puts_ch(syntaxError_s, ch);
+	}
+}
+
+/*
+ ** ===================================================================
+ **  Method      :  setOled
+ */
+/**
+ *  @brief
+ *      set the oled debug mode.
+ *  @param
+ *  	string
+ */
+/* ===================================================================*/
+static void setOled(char* string, channelT ch) {
+	if (!        strcmp(string, yes_s) ) {
+		oled_debug = TRUE;
+		oled_Init();
+	} else if (! strcmp(string, no_s) ) {
+		oled_setState(OLED_OFF);
+		oled_debug = FALSE;
 	} else {
 		puts_ch(syntaxError_s, ch);
 	}
@@ -1836,6 +1897,8 @@ int cli_parse(char* line, channelT ch) {
 				script_Set(p[1]);
 			} else if (! strcmp(p[0], hallsensor_s) || ! strcmp(p[0], hall_s) ) {
 				setHallsensor(p[1], ch);
+			} else if (! strcmp(p[0], oled_s) ) {
+				setOled(p[1], ch);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1916,6 +1979,8 @@ int cli_parse(char* line, channelT ch) {
 				showScript(ch);
 			} else if (! strcmp(p[0], hallsensor_s) || ! strcmp(p[0], hall_s) ) {
 				showHallsensor(ch);
+			} else if (! strcmp(p[0], oled_s) ) {
+				showOled(ch);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}

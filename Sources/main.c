@@ -140,6 +140,7 @@
 #include "driver/pmeter.h"
 #include "driver/charger.h"
 #include "visual/led.h"
+#include "visual/oled.h"
 #include "visual/display.h"
 #include "hmi/cli.h"
 #include "hmi/button.h"
@@ -174,16 +175,15 @@ int main(void)
   ameter_Init();
   charger_Init();
   ble_Init();
-
   flash_Init();
-
+  if (oled_debug) {
+	  oled_Init();
+  }
   watch_Init();
   ReedInt_Init(NULL);
 
-
   while(1) {
 	  usb_puts("Normal operation mode, hit ESC or > for command line interface.\n");
-//	  usb_puts("Normal operation mode, hit CR for command line interface (interactive mode)\n");
 	  sleep_wakeup = TRUE;
 
 	  ButtonPressed = FALSE;

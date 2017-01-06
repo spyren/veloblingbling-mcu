@@ -140,5 +140,21 @@ void cyclo_Information() {
 	
 }
 
+/*
+ ** ===================================================================
+ **  Method      :  cyclo_resetSpeed
+ */
+/**
+ *  @brief
+ *  	Resets the speed and the time_array to zero.
+ */
+/* ===================================================================*/
+void cyclo_resetSpeed() {
+	uint8_t i;
 
+	currSpeed = 0.0;
+	for (i=0; i < 4; i++) {
+		timeArray[i] = 0.0;
+	}
+}
 

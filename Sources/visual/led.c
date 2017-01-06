@@ -51,17 +51,17 @@
 // application include files
 // *************************
 #include "led.h"
+#include "oled.h"
 #include "powermgr.h"
 
 // Global Variables
 // ****************
 volatile bool Led_BlockSent = FALSE;
+LDD_TDeviceData* LEDspiPtr;
 
 // Local Variables
 // ***************
-static LDD_TDeviceData* LEDspiPtr;
 static uint64_t LedColumn[BOTTOMSIDE+1];	/**< only the first 48 bits are used */
-
 
 /*
  ** ===================================================================
@@ -164,15 +164,18 @@ void set_ledColumn(surfaceT surface, uint64_t column) {
 void write_ledColumn(surfaceT surface) {
 	static uint64_t LedSPI[2];
 	
-	Led_BlockSent = FALSE;
-	if (surface == TOPSIDE) {
-		LedSPI[0] = ~ LedColumn[0];
-		LEDspi_SelectConfiguration(LEDspiPtr, 0, 0);	// top column
-		LEDspi_SendBlock(LEDspiPtr, &LedSPI[0], 6);		// send a 48 bit block
-	} else {
-		LedSPI[1] = ~ LedColumn[1];
-		LEDspi_SelectConfiguration(LEDspiPtr, 1, 0);	// bottom column
-		LEDspi_SendBlock(LEDspiPtr, &LedSPI[1], 6);		// send a 48 bit block
+	if (!oled_debug) {
+		Led_BlockSent = FALSE;
+		if (surface == TOPSIDE) {
+			LedSPI[0] = ~ LedColumn[0];
+			LEDspi_SelectConfiguration(LEDspiPtr, 0, 0);	// top column
+			LEDspi_SendBlock(LEDspiPtr, &LedSPI[0], 6);		// send a 48 bit block
+		} else {
+			// do not use bottom LEDs as long as oled_debug is activated
+			LedSPI[1] = ~ LedColumn[1];
+			LEDspi_SelectConfiguration(LEDspiPtr, 1, 0);	// bottom column
+			LEDspi_SendBlock(LEDspiPtr, &LedSPI[1], 6);		// send a 48 bit block
+		}
 	}
 }
 
@@ -189,13 +192,16 @@ void write_ledColumn(surfaceT surface) {
 /* ===================================================================*/
 void wait_ledColumn() {
 	
-	if (standby) {
-		return;
-	}
-	waitTimeout = 2; // start the timeout for 40 ms
-	while (!Led_BlockSent  && (waitTimeout) ) {
-		// wait for interrupt
-		Cpu_SetOperationMode(DOM_WAIT, NULL, NULL); // enter wait mode -> exit by any interrupt
+	if (!oled_debug) {
+
+		if (standby) {
+			return;
+		}
+		waitTimeout = 2; // start the timeout for 20 ms
+		while (!Led_BlockSent  && (waitTimeout) ) {
+			// wait for interrupt
+			Cpu_SetOperationMode(DOM_WAIT, NULL, NULL); // enter wait mode -> exit by any interrupt
+		}
 	}
 }
 

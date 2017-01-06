@@ -10,7 +10,7 @@
 /*##                                   */
 /*##     Compiler  : GNU C Compiler    */
 /*##                                   */
-/*##     Date/Time : 2015-03-25, 09:40, # CodeGen: 53 */
+/*##     Date/Time : 2017-01-06, 16:24, # CodeGen: 108 */
 /*##                                   */
 /*##     Abstract  :                   */
 /*##                                   */
@@ -37,7 +37,8 @@ __stack_size = 0x0200;                 /* required amount of stack */
 
 MEMORY {
   m_interrupts (RX) : ORIGIN = 0x00000000, LENGTH = 0x00000144
-  m_text      (RX) : ORIGIN = 0x00000410, LENGTH = 0x00023BF0
+  m_text      (RX) : ORIGIN = 0x00000410, LENGTH = 0x00024BF0
+  m_data_14000000 (RW) : ORIGIN = 0x14000000, LENGTH = 0x00001000
   m_data      (RW) : ORIGIN = 0x1FFFC000, LENGTH = 0x00004000
   m_data_20000000 (RW) : ORIGIN = 0x20000000, LENGTH = 0x00004000
   m_cfmprotrom  (RX) : ORIGIN = 0x00000400, LENGTH = 0x00000010
@@ -158,7 +159,19 @@ SECTIONS
   } > m_data
 
   ___data_size = _edata - _sdata;
-  ___m_data_20000000_ROMStart = ___ROM_AT + SIZEOF(.data);
+  ___m_data_14000000_ROMStart = ___ROM_AT + SIZEOF(.data);
+  .m_data_14000000 : AT(___m_data_14000000_ROMStart)
+  {
+     . = ALIGN(4);
+     ___m_data_14000000_RAMStart = .;
+     *(.m_data_14000000) /* This is an User defined section */
+     ___m_data_14000000_RAMEnd = .;
+     . = ALIGN(4);
+  } > m_data_14000000
+  ___m_data_14000000_ROMSize = ___m_data_14000000_RAMEnd - ___m_data_14000000_RAMStart;
+
+
+  ___m_data_20000000_ROMStart = ___m_data_14000000_ROMStart + SIZEOF(.m_data_14000000);
   .m_data_20000000 : AT(___m_data_20000000_ROMStart)
   {
      . = ALIGN(4);
@@ -188,13 +201,16 @@ SECTIONS
  	  PROVIDE ( __bss_end__ = __END_BSS );
   } > m_data
 
-  _romp_at = ___ROM_AT + SIZEOF(.data) +SIZEOF(.m_data_20000000);
+  _romp_at = ___ROM_AT + SIZEOF(.data) +SIZEOF(.m_data_14000000) +SIZEOF(.m_data_20000000);
   .romp : AT(_romp_at)
   {
     __S_romp = _romp_at;
     LONG(___ROM_AT);
     LONG(_sdata);
     LONG(___data_size);
+    LONG(___m_data_14000000_ROMStart);
+    LONG(___m_data_14000000_RAMStart);
+    LONG(___m_data_14000000_ROMSize);
     LONG(___m_data_20000000_ROMStart);
     LONG(___m_data_20000000_RAMStart);
     LONG(___m_data_20000000_ROMSize);

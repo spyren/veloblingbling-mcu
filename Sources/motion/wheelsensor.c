@@ -93,6 +93,7 @@
 #include "cyclo/cyclocomputer.h"
 #include "hmi/mode.h"
 #include "visual/led.h"
+#include "visual/oled.h"
 #include "visual/display.h"
 #include "comm/usb.h"
 #include "comm/ble.h"
@@ -199,7 +200,7 @@ void wheel_Synch() {
 
 	trip_timeout = 0;
 
-	if (!low_energy && !right_rotating) {
+	if ( (energy_mode != ENERGY_LOW) && !right_rotating) {
 		// switch on LED16 to show reed contact (Hall sensor) closed
 		set_led(TOPSIDE, LED16, GREEN);
 		LEDgreen_ClrVal();
@@ -228,7 +229,7 @@ void wheel_Synch() {
 			enable_bling[TOPSIDE] = FALSE;
 			enable_bling[BOTTOMSIDE] = FALSE;
 			bling_StopTimer();
-		} else 	if (!low_energy) {
+		} else 	if (energy_mode != ENERGY_LOW) {
 			// start timer for first window
 			right_rotating = TRUE;
 			wait_mode = TO_FIRST;
@@ -399,7 +400,7 @@ void wheel_StartColumn() {
 			wait_ledColumn();
 			clear_leds(BOTTOMSIDE);
 			write_ledColumn(BOTTOMSIDE);
-			wait_ledColumn();			
+			wait_ledColumn();
 			wait_mode = TO_SECOND;
 			if (displayMode[TOPSIDE][UPPER] == LIGHT) {
 				wait_mode = NOT_WAITING;
@@ -483,7 +484,7 @@ void wheel_StartColumn() {
 			wait_ledColumn();
 			clear_leds(BOTTOMSIDE);
 			write_ledColumn(BOTTOMSIDE);
-			wait_ledColumn();			
+			wait_ledColumn();
 			wait_mode = NOT_WAITING;
 
 			enable_bling[TOPSIDE] = TRUE;

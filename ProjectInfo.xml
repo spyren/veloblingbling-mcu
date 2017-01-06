@@ -124,6 +124,7 @@
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/test.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/display.c</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/led.c</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/oled.c</PathName>
     </GeneratedCs>
     <GeneratedHs>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Generated_Code/ADC.h</PathName>
@@ -204,6 +205,7 @@
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/8x12_vertikal_MSB_1.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/display.h</PathName>
       <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/led.h</PathName>
+      <PathName>/home/psi/Dropbox/euler/workspace.kds/veloblingbling/Sources/visual/oled.h</PathName>
       <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/iofiles/MK22D5.h</PathName>
       <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/ADC_PDD.h</PathName>
       <PathName>/opt/Freescale/KDS_2.0.0/eclipse/ProcessorExpert/lib/Kinetis/pdd/inc/CMP_PDD.h</PathName>

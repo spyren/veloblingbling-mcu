@@ -64,6 +64,7 @@
 // *************************
 #include "display.h"
 #include "led.h"
+#include "oled.h"
 #include "5x12_vertikal_MSB_1.h"
 #include "6x8_vertikal_MSB_1.h"
 #include "7x12_vertikal_MSB_1.h"
@@ -84,16 +85,17 @@
 // Global Variables
 // ****************
 image_s (*imageP)[50];
-//image_s image_buffer;
 image_s *image_bufferP;
 
-// from left to right, bottom to top
-const LED_colorT France[3] =  {BLUE, WHITE, RED};
-const LED_colorT Germany[3] = {YELLOW, RED, BLACK};
-const LED_colorT Belgium[3] = {BLACK, YELLOW, RED};
-const LED_colorT Austria[3] = {RED, WHITE, RED};
-const LED_colorT Spain[3] =   {RED, YELLOW, RED};
-const LED_colorT Italy[3] =   {GREEN, WHITE, RED};
+/**
+ * 20 char in 5x12, 14 char in 7x12, 12 char in 8x12, 8 char in 12x16 (100 y dots)
+ * Dimensions: Surface, Window, Column, Rows are grouped in 3 bits
+ * Window dimension:
+ *   the first dotmatrix is the UPPER window,
+ *   the second dotmatrix is the LOWER window,
+ *   the third dotmatrix is the (bling)-pattern
+ */
+image_s display[BOTTOMSIDE+1][BLING+1];
 
 /*
 12 in 8x12
@@ -119,20 +121,17 @@ A 0400     XX           XXXXXXXX                        XXXXXXXXXXXX
 0 0001
 */
 
-/**
- * 20 char in 5x12, 14 char in 7x12, 12 char in 8x12, 8 char in 12x16 (100 y dots)
- * Dimensions: Surface, Window, Column, Rows are grouped in 3 bits
- * Window dimension:
- *   the first dotmatrix is the UPPER window,
- *   the second matrix is the LOWER window,
- *   the third matrix is the (bling)-pattern
- */
-//static uint64_t dotmatrix[BOTTOMSIDE+1][BLING+1][MAX_COLUMN];
-image_s display[BOTTOMSIDE+1][BLING+1];
-
 
 // Local Variables
 // ***************
+
+// from left to right, bottom to top
+static const LED_colorT France[3] =  {BLUE, WHITE, RED};
+static const LED_colorT Germany[3] = {YELLOW, RED, BLACK};
+static const LED_colorT Belgium[3] = {BLACK, YELLOW, RED};
+static const LED_colorT Austria[3] = {RED, WHITE, RED};
+static const LED_colorT Spain[3] =   {RED, YELLOW, RED};
+static const LED_colorT Italy[3] =   {GREEN, WHITE, RED};
 
 static const uint64_t swiss_pattern[16] = {
 	01111111111111111, // octal!
@@ -232,8 +231,12 @@ static const uint64_t meander_pattern[8] = {
 /* ===================================================================*/
 void display_Init() {
 	//init_Images();
+
+	// the images starts after the configuration
 	imageP = (void*) FLASH_BASE_ADR + sizeof(configParameter_s);
-	image_bufferP = (void*) 0x14000000; // no FLEX EEE used, 4 kB RAM starting at 0x14000000
+
+	// no Flex NVM EEPROM used, 4 kB RAM starting at 0x14000000
+	image_bufferP = (void*) FLEX_NVM_RAM_BASE;
 }
 
 
@@ -291,11 +294,12 @@ void display_blingColumn(surfaceT sur, int col) {
 	if (sur == TOPSIDE) {
 		set_ledColumn(TOPSIDE, display[TOPSIDE][BLING].dotmatrix[col]);
 		write_ledColumn(TOPSIDE);
+		wait_ledColumn();
 	} else {
 		set_ledColumn(BOTTOMSIDE, display[BOTTOMSIDE][BLING].dotmatrix[display[BOTTOMSIDE][BLING].length-col]);
 		write_ledColumn(BOTTOMSIDE);
+		wait_ledColumn();
 	}
-	wait_ledColumn();
 }
 
 
@@ -1036,7 +1040,10 @@ void images_Init() {
 	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
 	save_Image(27);
 
-
+//	while (FlashMem_Busy(NULL)) {
+//		// busy wait
+//		;
+//	}
 }
 
 
