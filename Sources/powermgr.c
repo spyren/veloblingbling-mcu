@@ -181,7 +181,9 @@ void powermgr_DeepSleep() {
 		USBpoll_Disable(usb_TimerPtr); 	// no interruption from USB
 		rotating = FALSE;
 		standby = TRUE;
-		oled_setState(OLED_STANDBY);
+		if (energy_mode == ENERGY_STANDARD) {
+			oled_setState(OLED_STANDBY);
+		}
 		// ble_reset();
 		Cpu_SetClockConfiguration(CPU_CLOCK_CONFIG_1);
 		while (! sleep_wakeup) {
@@ -227,7 +229,9 @@ void powermgr_DeepSleep() {
 		pmeter_setActive();
 		enable_BatMeasure();
 		USBpoll_Enable(usb_TimerPtr);
-		oled_setState(OLED_ON);
+		if (energy_mode != ENERGY_LOW) {
+			oled_setState(OLED_ON);
+		}
 
 		if (hibernation_timeout >= MAX_HIBERNATION) {
 			// wake up from hibernation

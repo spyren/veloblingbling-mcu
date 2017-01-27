@@ -5,6 +5,7 @@
  *      Log intervall 60 s -> log time = 90 h 
  *                    10 s ->            15 h 
  *                     5 s ->             7.5 h
+ *      Buffer for 100 records in Flex NVM RAM
  *      
  *      Log Record
  *      	trip distance

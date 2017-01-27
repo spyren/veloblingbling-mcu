@@ -86,7 +86,7 @@
  *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.6, 2017/01/06
+ *      Version 4.7rc2, 2017/01/27
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -113,7 +113,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 4.6, 2017/01/06, Copyright Peter Schmid\n\n";
+		"Version 4.7rc2, 2017/01/27, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -223,7 +223,7 @@ static const char cliHelpSet[] =
         "set watch <time [yyyymmddhhmmss]>\n"
         "set totaltime <time [s]>\n"
 		"set circumference <length [m]>\n"
-		"set altitude <altitude [m]>\n"
+		"set altimeteroffset <altitude [m]>\n"
 		"set unit metric|imperial\n"
 		"set stretch <0.8 .. 1.5>\n"
 		"set side left|right\n"

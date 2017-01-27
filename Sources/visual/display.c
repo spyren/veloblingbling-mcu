@@ -2,9 +2,10 @@
  *  @brief
  *  	Write strings to the dot matrix and display columns.
  *
- *      The character height is 16 pixel
- *      There are 100 (64) columns:
+ *      The character height is 16 pixel (max 21 pixel)
+ *      There are 100 columns:
  *        20 chars in 5x12 font,
+ *        16 chars in 6x8 font,
  *        14 chars in 7x12 font,
  *        12 chars in 8x12 font,
  *        8  chars in 12x16 font
@@ -236,6 +237,7 @@ void display_Init() {
 	imageP = (void*) FLASH_BASE_ADR + sizeof(configParameter_s);
 
 	// no Flex NVM EEPROM used, 4 kB RAM starting at 0x14000000
+	// 802 bytes
 	image_bufferP = (void*) FLEX_NVM_RAM_BASE;
 }
 
@@ -334,14 +336,14 @@ void clear_display(surfaceT sur, windowT win) {
  *  	\_     _
  *  	\\     \
  *  	\i<nn> image number 00..49
- *  	\f<nn> font         00..04
+ *  	\f<nn> font         00..06
  *  	\c<nn> color 00..07
  *  	\s<nn> space in columns
  *  	\m<nn> cyclocomputer mode 00..09
  *  @param
  *      s			string
  *  @param
- *  	font		DOS5x12, DOS6x8, DOS7x12, DOS7x12b, DOS8x12, DOS12x16
+ *  	font		DOS5x12, DOS6x8, DOS7x12, DOS7x12b, DOS8x12, DOS12x16, DOS6x8t
  *  @param
  *      color		typeface color
  *  @param
@@ -380,6 +382,8 @@ int put_str(const char *s, fontT font, LED_colorT color, int position, surfaceT 
 			row_height = 12;
 			fontP = &font_5x12[0][0];
 			break;
+		case DOS6x8t:
+			// fall through
 		case DOS6x8:
 			column_length = 6;
 			row_height = 8;
@@ -490,8 +494,16 @@ int put_str(const char *s, fontT font, LED_colorT color, int position, surfaceT 
 				if (char_pattern & (0x01 << row)) {
 					if (win == LOWER) {
 						Set  = (uint64_t)col << (3 * (16-row));
+						if (fo == DOS6x8t) {
+							// upper line
+							Set = Set >> 24;
+						}
 					} else {
 						Set  = (uint64_t)col << (3 * row);
+						if (fo == DOS6x8t) {
+							// upper line
+							Set = Set << 24;
+						}
 					}
 					display[sur][win].dotmatrix[pos] = display[sur][win].dotmatrix[pos] | Set;
 				}

@@ -3,8 +3,8 @@
   <Header>
     <Name>veloblingbling</Name>
     <SavedBy>psi</SavedBy>
-    <ModificationStamp>78</ModificationStamp>
-    <Date>2017-01-06</Date>
+    <ModificationStamp>80</ModificationStamp>
+    <Date>2017-01-27</Date>
     <IDE>Eclipse IDE</IDE>
     <PEversion>1.10.1.RT6_b1444-1070</PEversion>
   </Header>
@@ -8034,7 +8034,7 @@
           <ItemSymbol>C_RomRamSize2</ItemSymbol>
           <ReadOnly>false</ReadOnly>
           <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
-          <Value>150512</Value>
+          <Value>195568</Value>
           <ItemWasNeverEnabledInChgScript>true</ItemWasNeverEnabledInChgScript>
           <Base>HEX</Base>
         </ItemState>
@@ -38032,8 +38032,8 @@
         <UserReadOnly>false</UserReadOnly>
         <PropertyModelIsAutomatic>false</PropertyModelIsAutomatic>
         <TypeSpecNameState>typeClockPhase</TypeSpecNameState>
-        <Index>0</Index>
-        <Value>true</Value>
+        <Index>1</Index>
+        <Value>false</Value>
       </ItemState>
       <ItemState>
         <ItemSymbol>Parity0</ItemSymbol>

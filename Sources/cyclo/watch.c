@@ -52,6 +52,7 @@
 #include "RTC1.h"
 #include "ChargeStat.h"
 #include "BLlink.h"
+#include "UsbSupply.h"
 
 // application include files
 // *************************
@@ -264,8 +265,8 @@ void watch_Synch() {
 		// battery voltage
 		start_BatMeasure();
 
-		if (batteryVoltage < 2.9) {
-			// energy_mode = TRUE;
+		if (batteryVoltage < 2.9 && !UsbSupply_GetVal(NULL)) {
+			// low battery -> save energy
 			clear_leds(TOPSIDE);
 			write_ledColumn(TOPSIDE);
 		}

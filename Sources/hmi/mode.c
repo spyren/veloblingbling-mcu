@@ -45,6 +45,7 @@
 // *************************
 #include "definitions.h"
 #include "visual/led.h"
+#include "visual/oled.h"
 #include "visual/display.h"
 #include "powermgr.h"
 #include "button.h"
@@ -112,17 +113,21 @@ void set_Mode() {
 		ButtonLongPressed = FALSE;
 
 		// toggle low energy mode
-		if (energy_mode) {
-			energy_mode = FALSE;
+		if (energy_mode == ENERGY_LOW || energy_mode == ENERGY_ALWAYS_ON) {
+			if (energy_mode == ENERGY_LOW) {
+				energy_mode = ENERGY_STANDARD;
+			}
 			set_led(TOPSIDE, LED1, WHITE);
 			LEDred_ClrVal();
 			LEDgreen_ClrVal();
 			LEDblue_ClrVal();
+			oled_setState(OLED_ON);
 		} else {
-			energy_mode = TRUE;
+			energy_mode = ENERGY_LOW;
 			set_led(TOPSIDE, LED1, YELLOW);
 			LEDred_ClrVal();
 			LEDgreen_ClrVal();
+			oled_setState(OLED_OFF);
 		}
 		write_ledColumn(TOPSIDE);
 		wait_10ms(100);

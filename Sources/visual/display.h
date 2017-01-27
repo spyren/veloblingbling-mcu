@@ -2,9 +2,8 @@
  *  @brief
  *  	Write strings to the dot matrix and display columns.
  *  	
- *      The character height is 12 pixel (already prepared for 16 pixel)  
- *      There are 64 columns:   
- *      There are 100 (64) columns:   
+ *      The character height is 16 pixel (already prepared for max. 21 pixel)
+ *      There are 100 columns:
  *        20 chars in 5x12 font, 
  *        14 chars in 7x12 font, 
  *        12 chars in 8x12 font, 
@@ -50,7 +49,7 @@
 
 typedef enum {CYCLOCOMPUTER, STRING, IMAGE, LIGHT, BLANK} Display_modeT;
 typedef enum {UPPER, LOWER, BLING} windowT;
-typedef enum {DOS5x12, DOS6x8, DOS7x12, DOS7x12b, DOS8x12, DOS12x16} fontT;
+typedef enum {DOS5x12, DOS6x8, DOS7x12, DOS7x12b, DOS8x12, DOS12x16, DOS6x8t} fontT;
 
 typedef struct image_s {
 	uint16_t length;

@@ -4,24 +4,25 @@
  *  	Save and get patterns (images) and scripts to the flash memory.
  *  	Log parameters to the flash memory (not used yet).
  *  	
- *		The internal FLASH memory is used to save persistently the parameters.
- *		128 KiB are reserved for the parameters.
- *		The standard FLASH memory for the program starts at 0x410 and
- *		end at 0x3FFFF (roughly 256 KiB, size 3FBF0)
- *		Now it ends at 0x24FFF.
+*		The standard FLASH memory for the program starts at 0x410 and
+ *		end at 0x3FFFF (roughly 256 KiB, size 3FBF0).
  *
- *		The FLASH for the parameters starts at 0x25000 and ends at
- *		0x3FFFF (107 kiB). See also in the Kinetis Design Studio:
- *		Processor Expert Components
- *		CPU -> Build Options -> Generate linker file -> MemoryArea2
- *		-> Size 24BF0 [original 3FBF0])
- *		An erasable block has the size of 2 kiB (0x800).
- *
- *		The Flex NVM EEPROM is not used yet. Therefore  the EEPROM buffer RAM can
- *		be used for other purposes. It is used in display module for
- *		image_bufferP buffer. The 64 KiB Flash can be used for other purposes.
+ *		The K22 has also Flex NVM EEPROM. If the EEPROM is not or partly used,
+ *		the Flex NVM Flash can be used for other puposes, without EEPROM there
+ *		are additional 64 KiB flash and can be used for other purposes. T
+ *		he Flex NVM EEPROM buffer RAM (4 KiB) can be used for other purposes too.
+ *		It is used in display module for image_bufferP buffer and for the log buffer.
  *
  *		The Flex NVM 64 KiB Flash block is used for parameters and images now.
+ *
+ *		The program takes about 150 KiB now. That means there are about 106 KiB
+ *		free for logging. To be on the safe side only 64 KiB are used for logging.
+ *		The FLASH for the log starts at 0x30000 and ends at
+ *		0x3FFFF (64 kiB). See also in the Kinetis Design Studio:
+ *		Processor Expert Components
+ *		CPU -> Build Options -> Generate linker file -> MemoryArea2
+ *		-> Size 2FBF0 [original 3FBF0])
+ *		An erasable block has the size of 2 kiB (0x800).
  *
  *  @file
  *      parameter.c

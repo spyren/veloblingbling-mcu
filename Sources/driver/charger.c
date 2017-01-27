@@ -217,6 +217,7 @@ void charger_show_state() {
 #ifdef USB_VOLTAGE_DETECTION
 		if (UsbSupply_GetVal()) {
 			set_led(TOPSIDE, LED13, GREEN);
+			LEDgreen_ClrVal();
 		}
 #endif
 		lastBatteryVoltage = batteryVoltage;
