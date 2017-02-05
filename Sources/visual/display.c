@@ -250,31 +250,62 @@ void display_Init() {
  *  @brief
  *  	Sets all LEDs for a column in the selected window on both sides.
  *  @param
+ *      topFromBeginning		top surface starts from beginning
+ *  @param
  *      win		UPPER or LOWER
  *  @param
  *      col		the column in the dot matrix
  */
 /* ===================================================================*/
-void display_column(windowT win, int col) {
+void display_column(bool topFromBeginning, windowT win, int col) {
+
+	// clear last column
 	if (displayMode[TOPSIDE][win] != BLANK) {
 		if (displayMode[TOPSIDE][UPPER] == LIGHT) {
 			set_ledColumn(TOPSIDE, front ? WHITE_COLUMN : RED_COLUMN);
+			enable_bling[TOPSIDE] = FALSE;
+			write_ledColumn(TOPSIDE);
+			wait_ledColumn();
 		} else {
-			set_ledColumn(TOPSIDE, display[TOPSIDE][win].dotmatrix[col]);
+			if (col >= display[TOPSIDE][win].length) {
+				// window finished
+				enable_bling[TOPSIDE] = TRUE;
+			} else {
+				enable_bling[TOPSIDE] = FALSE;
+				if (topFromBeginning != right) {
+					// != logical XOR
+					set_ledColumn(TOPSIDE, display[TOPSIDE][win].dotmatrix[col]);
+				} else {
+					set_ledColumn(TOPSIDE, display[TOPSIDE][win].dotmatrix[display[TOPSIDE][win].length - col]);
+				}
+				write_ledColumn(TOPSIDE);
+				wait_ledColumn();
+			}
 		}
-		enable_bling[TOPSIDE] = FALSE;
-		write_ledColumn(TOPSIDE);
-		wait_ledColumn();
 	}
+
 	if (displayMode[BOTTOMSIDE][win] != BLANK) {
 		if (displayMode[TOPSIDE][UPPER] == LIGHT) {
 			set_ledColumn(BOTTOMSIDE, front ? WHITE_COLUMN : RED_COLUMN);
+			enable_bling[BOTTOMSIDE] = FALSE;
+			write_ledColumn(BOTTOMSIDE);
+			wait_ledColumn();
 		} else {
-			set_ledColumn(BOTTOMSIDE, display[BOTTOMSIDE][win].dotmatrix[MAX_COLUMN-col-1]);
+			if (col >= display[BOTTOMSIDE][win].length) {
+				// window finished
+				enable_bling[BOTTOMSIDE] = TRUE;
+			} else {
+				enable_bling[BOTTOMSIDE] = FALSE;
+				if (! (topFromBeginning != right)) {
+					// != logical XOR
+					set_ledColumn(BOTTOMSIDE, display[BOTTOMSIDE][win].dotmatrix[col]);
+				} else {
+					set_ledColumn(BOTTOMSIDE, display[BOTTOMSIDE][win].dotmatrix[display[BOTTOMSIDE][win].length - col]);
+				}
+				write_ledColumn(BOTTOMSIDE);
+				wait_ledColumn();
+			}
 		}
-		enable_bling[BOTTOMSIDE] = FALSE;
-		write_ledColumn(BOTTOMSIDE);
-		wait_ledColumn();
 	}
 }
 
@@ -294,14 +325,23 @@ void display_column(windowT win, int col) {
 /* ===================================================================*/
 void display_blingColumn(surfaceT sur, int col) {
 	if (sur == TOPSIDE) {
-		set_ledColumn(TOPSIDE, display[TOPSIDE][BLING].dotmatrix[col]);
+		if (!right) {
+			// left side is default direction
+			set_ledColumn(TOPSIDE, display[TOPSIDE][BLING].dotmatrix[col]);
+		} else {
+			set_ledColumn(TOPSIDE, display[TOPSIDE][BLING].dotmatrix[display[TOPSIDE][BLING].length-col]);
+		}
 		write_ledColumn(TOPSIDE);
-		wait_ledColumn();
 	} else {
-		set_ledColumn(BOTTOMSIDE, display[BOTTOMSIDE][BLING].dotmatrix[display[BOTTOMSIDE][BLING].length-col]);
+		if (!right) {
+			// left side is default direction
+			set_ledColumn(BOTTOMSIDE, display[BOTTOMSIDE][BLING].dotmatrix[display[BOTTOMSIDE][BLING].length-col]);
+		} else {
+			set_ledColumn(BOTTOMSIDE, display[BOTTOMSIDE][BLING].dotmatrix[col]);
+		}
 		write_ledColumn(BOTTOMSIDE);
-		wait_ledColumn();
 	}
+	wait_ledColumn();
 }
 
 

@@ -151,8 +151,6 @@ uint16_t rotTimerCh1;
 static volatile uint8_t timerTurns;			/* Timer overrun after 174.763 ms, about 44 s for overflow */
 
 static volatile int16_t currColumn = 0;
-static volatile int16_t firstColumn;
-static volatile int16_t endColumn;
 
 uint16_t columnPeriodTicks;
 
@@ -320,36 +318,28 @@ void wheel_StartColumn() {
 	bool finished = FALSE;
 	uint16_t periodOffset;
 	
-	windowT window;
+	static windowT window;
+	static bool topFromBeginning;
+
+	surfaceT leftside;
 	
 	switch (wait_mode) {
 	case TO_FIRST:
+		currColumn = 0;
 		if (front) {
-			// front wheel -> top window is first
+			// front wheel -> upper window is first
 			window = UPPER;
-			if (right) {
-				// display from the beginning
-				currColumn = 0;
-				endColumn = display[TOPSIDE][UPPER].length;
-			} else {
-				// display from back
-				currColumn = MAX_COLUMN - 1;
-				firstColumn = currColumn - display[BOTTOMSIDE][UPPER].length;
-			}
+			// left (standard, TOP on left)
+			//  -> display from back (TOP)
+			topFromBeginning = FALSE;  // bottom is vice versa
 		} else {
-			// rear wheel -> bottom window is first
+			// rear wheel -> lower window is first
 			window = LOWER;
-			if (!right) {
-				// display from the beginning
-				currColumn = 0;
-				endColumn = display[BOTTOMSIDE][LOWER].length;
-			} else {
-				// display from back
-				currColumn = MAX_COLUMN - 1;
-				firstColumn = currColumn - display[TOPSIDE][UPPER].length;
-			}
+			// left (standard, TOP on left)
+			//  -> display from the beginning
+			topFromBeginning = TRUE;  // bottom is vice versa
 		}
-		display_column(window, currColumn);	
+		display_column(topFromBeginning, window, currColumn);
 		
 		periodOffset = rotTimerCh0 + columnPeriodTicks;
 		RotTimer_SetOffsetTicks(RotTimerPtr, COLUMN_TIMER_CHANNEL, periodOffset);
@@ -357,36 +347,8 @@ void wheel_StartColumn() {
 		wait_mode = IN_FIRST;
 		break;
 	case IN_FIRST:
-		if (front) {
-			// front wheel -> top window is first 
-			window = UPPER;
-			if (right) {
-				// display from the beginning
-				if (++currColumn >= MAX_COLUMN) {
-					finished = TRUE;
-				}
-			} else {
-				// display from back
-				if (--currColumn < 0 ) {
-					finished = TRUE;
-				}
-			}	
-		} else {
-			// rear wheel -> bottom window is first
-			window = LOWER;
-			if (! right) {
-				// display from the beginning
-				if (++currColumn >= MAX_COLUMN) {
-					finished = TRUE;
-				}
-			} else {
-				// display from back
-				if (--currColumn < 0 ) {
-					finished = TRUE;
-				}
-			}	
-		}
-		if (finished) {
+		if (++currColumn >= MAX_COLUMN) {
+			// window finished
 			// set time (delay between) for the second window
 			if (front) {
 				periodOffset = rotTimerCh0 + (rotationTime * (between_front / 360.0)) / TIMER_TICK;
@@ -409,7 +371,7 @@ void wheel_StartColumn() {
 			enable_bling[BOTTOMSIDE] = TRUE;
 
 		} else {
-			display_column(window, currColumn);	
+			display_column(topFromBeginning, window, currColumn);
 
 			// timeout for the next column
 			periodOffset = rotTimerCh0 + columnPeriodTicks;
@@ -417,28 +379,21 @@ void wheel_StartColumn() {
 		}
 		break;
 	case TO_SECOND:
+		currColumn = 0;
 		if (front) {
 			// front wheel -> bottom window is second
 			window = LOWER;
-			if (! right) {
-				// display from the beginning
-				currColumn = 0;
-			} else {
-				// display from back
-				currColumn = MAX_COLUMN - 1;
-			}
+			// left (standard, TOP on left)
+			//  -> display from the beginning
+			topFromBeginning = TRUE;  // bottom is vice versa
 		} else {
 			// rear wheel -> top window is second
 			window = UPPER;
-			if (right) {
-				// display from the beginning
-				currColumn = 0;
-			} else {
-				// display from back
-				currColumn = MAX_COLUMN - 1;
-			}
+			// left (standard, TOP on left)
+			//  -> display from back (TOP)
+			topFromBeginning = FALSE;  // bottom is vice versa
 		}
-		display_column(window, currColumn);	
+		display_column(topFromBeginning, window, currColumn);
 		
 		// timeout for the next column
 		periodOffset = rotTimerCh0 + columnPeriodTicks;
@@ -447,36 +402,8 @@ void wheel_StartColumn() {
 		wait_mode = IN_SECOND;
 		break;
 	case IN_SECOND:
-		if (front) {
-			// front wheel -> bottom window is second
-			window = LOWER;
-			if (! right) {
-				// display from the beginning
-				if (++currColumn >= MAX_COLUMN) {
-					finished = TRUE;
-				}
-			} else {
-				// display from back
-				if (--currColumn < 0 ) {
-					finished = TRUE;
-				}
-			}	
-		} else {
-			// rear wheel -> top window is second
-			window = UPPER;
-			if (right) {
-				// display from the beginning
-				if (++currColumn >= MAX_COLUMN) {
-					finished = TRUE;
-				}
-			} else {
-				// display from back
-				if (--currColumn < 0 ) {
-					finished = TRUE;
-				}
-			}	
-		}
-		if (finished) {
+		if (++currColumn >= MAX_COLUMN) {
+			// window finished
 			RotTimer_SetOffsetTicks(RotTimerPtr, COLUMN_TIMER_CHANNEL, 0xffff);
 			
 			clear_leds(TOPSIDE);
@@ -490,7 +417,7 @@ void wheel_StartColumn() {
 			enable_bling[TOPSIDE] = TRUE;
 			enable_bling[BOTTOMSIDE] = TRUE;
 		} else {
-			display_column(window, currColumn);		
+			display_column(topFromBeginning, window, currColumn);
 			
 			// timeout for the next column
 			periodOffset = rotTimerCh0 + columnPeriodTicks;

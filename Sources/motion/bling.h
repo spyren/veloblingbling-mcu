@@ -37,6 +37,7 @@
 
 //extern volatile uint8_t blingLength;
 extern volatile bool blingOn[BOTTOMSIDE+1];
+extern int16_t blingStep;
 
 /*
  ** ===================================================================

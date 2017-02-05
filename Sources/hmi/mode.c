@@ -217,7 +217,7 @@ static void time2str(double time, char* str) {
 	minutes = rest / 60;
 	seconds = rest % 60;
 
-	strcpy(str, " ");
+	strcpy(str, "");
 	ltoa(days, s);
 	strcat(str, s);
 	strcat(str, "d ");
@@ -247,7 +247,7 @@ static void realtime2str(char* str) {
 
 	RTC1_GetTime(NULL, &timePtr);
 
-	strcpy(str, "  ");
+	strcpy(str, "");
 	if (imperialUnits) {
 		// imperial units
 		if (timePtr.Hour > 12) {
@@ -289,7 +289,7 @@ static void realdate2str(char* str) {
 
 	RTC1_GetTime(NULL, &timePtr);
 
-	strcpy(str, "  "); 
+	strcpy(str, "");
 	if (imperialUnits) {
 		// imperial units
 		itoa2(timePtr.Month, s);
@@ -326,17 +326,17 @@ static void realdate2str(char* str) {
 static void speed2str(double speed, char* str) {
 	char s[20];
 	
-	strcpy(str, "  "); 
+	strcpy(str, " ");
 	if (imperialUnits) {
 		// imperial units
 		ftoa(currSpeed * 2.236936, 1, s);
 		strcat(str, s);
-		strcat(str, " mph");	
+		strcat(str, " mph ");
 	} else {
 		// metric units
 		ftoa(currSpeed * 3.6, 1, s);
 		strcat(str, s);
-		strcat(str, " km/h");			
+		strcat(str, " km/h ");
 	}
 }
 
@@ -352,7 +352,7 @@ static void speed2str(double speed, char* str) {
 static void distance2str(double distance, char* str) {
 	char s[20];
 	
-	strcpy(str, "  "); 
+	strcpy(str, " ");
 	if (imperialUnits) {
 		// imperial units
 		double foot = distance * 3.2808399;
@@ -363,18 +363,18 @@ static void distance2str(double distance, char* str) {
 		} else {
 			ltoa(foot, s);
 			strcat(str, s);
-			strcat(str, " ft");
+			strcat(str, " ft ");
 		}		
 	} else {
 		// metric units
 		if (distance < 1000.0) {
 			ftoa(distance, 0, s);
 			strcat(str, s);
-			strcat(str, " m");
+			strcat(str, " m ");
 		} else {
 			ftoa(distance / 1000.0, 1, s);
 			strcat(str, s);
-			strcat(str, " km");
+			strcat(str, " km ");
 		}			
 	}
 }
@@ -391,17 +391,17 @@ static void distance2str(double distance, char* str) {
 static void altitude2str(double altitude, char* str) {
 	char s[20];
 	
-	strcpy(str, "  "); 
+	strcpy(str, " ");
 	if (imperialUnits) {
 		// imperial units
 		ltoa(floor(altitude * 3.2808399 + 0.5), s);
 		strcat(str, s); 
-		strcat(str, " ft");
+		strcat(str, " ft ");
 	} else {
 		// metric units
 		ltoa(floor(altitude + 0.5), s);
 		strcat(str, s); 
-		strcat(str, " m");
+		strcat(str, " m ");
 	}
 }
 
@@ -418,17 +418,17 @@ static void altitude2str(double altitude, char* str) {
 static void temperature2str(double temperature, char* str) {
 	char s[20];
 	
-	strcpy(str, "  "); 
+	strcpy(str, " ");
 	if (imperialUnits) {
 		// imperial units
 		ftoa(temperature * (9.0 / 5.0) + 32.0, 1, s);
 		strcat(str, s);
-		strcat(str, " \370F");	
+		strcat(str, " \370F ");
 	} else {
 		// metric units
 		ftoa(temperature, 1, s);
 		strcat(str, s);
-		strcat(str, " \370C");			
+		strcat(str, " \370C ");
 	}
 }
 

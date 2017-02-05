@@ -69,12 +69,12 @@
 // double blingIntervall;
 //volatile uint8_t blingLength;
 volatile bool blingOn[BOTTOMSIDE+1] = {FALSE, FALSE};
+int16_t blingStep = 4;
 
 // Local Variables
 // ***************
 static int16_t blingPosition[BOTTOMSIDE+1] = {0, 0};
 static int16_t blingOffset[BOTTOMSIDE+1] = {0, 0};
-static int16_t blingStep = -4;
 
 // static LDD_TDeviceData* BlingTimerPtr;
 uint16_t periodTicks;
@@ -122,7 +122,7 @@ void bling_StartTimer() {
     // ahead or with lag
 	surfaceT sur;
 	for (sur=TOPSIDE; sur <= BOTTOMSIDE; sur++) {
-		blingOffset[sur] = blingOffset[sur] + blingStep;
+		blingOffset[sur] = blingOffset[sur] - blingStep;
 		if (blingOffset[sur] > display[sur][BLING].length) {
 			blingOffset[sur] = blingOffset[sur] - display[sur][BLING].length;
 		} else if (blingOffset[sur] < 0) {

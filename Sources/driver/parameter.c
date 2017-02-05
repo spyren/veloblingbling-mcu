@@ -75,6 +75,7 @@
 #include "parameter.h"
 #include "powermgr.h"
 #include "motion/wheelsensor.h"
+#include "motion/bling.h"
 #include "cyclo/cyclocomputer.h"
 #include "cyclo/watch.h"
 #include "comm/usb.h"
@@ -175,6 +176,7 @@ void set_config() {
 	right 			= configParameter.right;	
 	front 			= configParameter.front;
 	stretch 		= configParameter.stretch;	
+	blingStep		= configParameter.blingStep;
 	
 	memcpy(&displayMode, 	&configParameter.displayMode, 	sizeof(displayMode));
 	memcpy(&cycloMode, 		&configParameter.cycloMode, 	sizeof(cycloMode));
@@ -227,6 +229,7 @@ void set_params() {
 	configParameter.right 			= right;	
 	configParameter.front 			= front;
 	configParameter.stretch 		= stretch;	
+	configParameter.blingStep		= blingStep;
 	
 	memcpy(&configParameter.displayMode, 	&displayMode, 	sizeof(displayMode));
 	memcpy(&configParameter.cycloMode, 		&cycloMode, 	sizeof(cycloMode));

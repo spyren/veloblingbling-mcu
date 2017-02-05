@@ -81,12 +81,14 @@ void display_Init();
  *  @brief
  *  	Sets all LEDs for a column in the selected window on both sides.
  *  @param
+ *      topFromBeginning		top surface starts from beginning
+ *  @param
  *      win		UPPER or LOWER
  *  @param
  *      col		the column in the dot matrix  	
  */
 /* ===================================================================*/
-void display_column(windowT win, int col);
+void display_column(bool topFromBeginning, windowT win, int col);
 
 /*
  ** ===================================================================

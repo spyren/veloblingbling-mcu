@@ -86,7 +86,7 @@
  *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.7rc2, 2017/01/27
+ *      Version 4.7rc3, 2017/02/05
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -113,7 +113,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 4.7rc2, 2017/01/27, Copyright Peter Schmid\n\n";
+		"Version 4.7rc3, 2017/02/05, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -204,6 +204,8 @@ static const char cliHelpShow[] =
 		"show watch|triptime|totaltime|chronotime\n"
 		"show datalog\n"
 		"show circumference|unit|stretch|side|wheel|logintervall\n"
+		"show frontdelay|reardelay|frontbetween|rearbetween\n"
+		"show stagecoach\n"
 		"show top|lower|bling\n"
 		"show image|string\n"
 		"show script\n"
@@ -228,6 +230,8 @@ static const char cliHelpSet[] =
 		"set stretch <0.8 .. 1.5>\n"
 		"set side left|right\n"
 		"set wheel front|rear\n"
+		"set frontdelay|reardelay|frontbetween|rearbetween <0 .. 100[°]>\n"
+		"set stagecoach <number [pixel/rev]\n>"
 		"set energy low|standard|on\n"
 		"set hallsensor yes|no\n"
 		"set oled yes|no\n"
@@ -386,7 +390,17 @@ static const char script_s[]          = "script";
 static const char sc_s[]              = "sc";
 static const char hallsensor_s[]      = "hallsensor";
 static const char hall_s[]            = "hall";
-static const char oled_s[]              = "oled";
+static const char oled_s[]            = "oled";
+static const char frontdelay_s[]      = "frontdelay";
+static const char fdel_s[]            = "fdel";
+static const char reardelay_s[]       = "reardelay";
+static const char rdel_s[]            = "rdel";
+static const char frontbetween_s[]    = "frontbetween";
+static const char fbet_s[]            = "fbet";
+static const char rearbetween_s[]     = "rearbetween";
+static const char rbet_s[]            = "rbet";
+static const char stagecoach_s[]      = "stagecoach";
+static const char stco_s[]            = "stco";
 
 static const char red_s[]             = "red";
 static const char rd_s[]              = "rd";
@@ -427,9 +441,11 @@ static const char rear_s[]            = "rear";
 static const char m_s_s[]             = "m/s";
 static const char s_s[]               = "s";
 static const char proc_s[]            = "%";
-static const char grad_s[]            = "°C";
+static const char celsius_s[]            = "°C";
+static const char deg_s[]             = "°";
 static const char Min_s[]             = "/Min";
 static const char V_s[]               = "V";
+static const char pixel_s[]           = "pixel";
 
 static const char start_s[]           = "start";
 static const char pause_s[]           = "pause";
@@ -1263,7 +1279,7 @@ static void showAll(channelT ch) {
 	showFloat(totalelevationgain_s, totalElevationGain, m_s, 0, ch);
 	showFloat(incline_s, incline, proc_s, 0, ch);
 	showFloat(altimeteroffset_s, altimeterOffset, m_s, 0, ch);
-	showFloat(temperature_s, temperature, grad_s, 1, ch);
+	showFloat(temperature_s, temperature, celsius_s, 1, ch);
 	showFloat(pedalingcadence_s, cadence, Min_s, 0, ch);
 	showFloat(triptime_s, tripTime, s_s, 0, ch);
 	showFloat(totaltime_s, totalTime, s_s, 0, ch);
@@ -1899,6 +1915,16 @@ int cli_parse(char* line, channelT ch) {
 				setHallsensor(p[1], ch);
 			} else if (! strcmp(p[0], oled_s) ) {
 				setOled(p[1], ch);
+			} else if (! strcmp(p[0], frontdelay_s) || ! strcmp(p[0], fdel_s) ) {
+				delay_front = atof(p[1]);
+			} else if (! strcmp(p[0], reardelay_s) || ! strcmp(p[0], rdel_s) ) {
+				delay_rear = atof(p[1]);
+			} else if (! strcmp(p[0], frontbetween_s) || ! strcmp(p[0], fbet_s) ) {
+				between_front = atof(p[1]);
+			} else if (! strcmp(p[0], rearbetween_s) || ! strcmp(p[0], rbet_s) ) {
+				between_rear = atof(p[1]);
+			} else if (! strcmp(p[0], stagecoach_s) || ! strcmp(p[0], stco_s) ) {
+				blingStep = atof(p[1]);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}
@@ -1934,7 +1960,7 @@ int cli_parse(char* line, channelT ch) {
 			} else if (! strcmp(p[0], altimeteroffset_s) || ! strcmp(p[0], altoff_s) ) {
 				showFloat(altimeteroffset_s, altimeterOffset, m_s, 0, ch);
 			} else if (! strcmp(p[0], temperature_s) || ! strcmp(p[0], temp_s) ) {
-				showFloat(temperature_s, temperature, grad_s, 1, ch);
+				showFloat(temperature_s, temperature, celsius_s, 1, ch);
 			} else if (! strcmp(p[0], pedalingcadence_s) || ! strcmp(p[0], cad_s) ) {
 				showFloat(pedalingcadence_s, cadence, Min_s, 0, ch);
 			} else if (! strcmp(p[0], currenttime_s) || ! strcmp(p[0], watch_s) ) {
@@ -1981,6 +2007,16 @@ int cli_parse(char* line, channelT ch) {
 				showHallsensor(ch);
 			} else if (! strcmp(p[0], oled_s) ) {
 				showOled(ch);
+			} else if (! strcmp(p[0], frontdelay_s) || ! strcmp(p[0], fdel_s) ) {
+				showFloat(frontdelay_s, delay_front,  deg_s, 0, ch);
+			} else if (! strcmp(p[0], reardelay_s) || ! strcmp(p[0], rdel_s) ) {
+				showFloat(reardelay_s, delay_rear,  deg_s, 0, ch);
+			} else if (! strcmp(p[0], frontbetween_s) || ! strcmp(p[0], fbet_s) ) {
+				showFloat(frontbetween_s, between_front,  deg_s, 0, ch);
+			} else if (! strcmp(p[0], rearbetween_s) || ! strcmp(p[0], rbet_s) ) {
+				showFloat(rearbetween_s, between_rear,  deg_s, 0, ch);
+			} else if (! strcmp(p[0], stagecoach_s) || ! strcmp(p[0], stco_s) ) {
+				showFloat(stagecoach_s, blingStep,  pixel_s, 0, ch);
 			} else {
 				puts_ch(syntaxError_s, ch);
 			}

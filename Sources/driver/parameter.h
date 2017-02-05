@@ -83,6 +83,7 @@ typedef struct configParameter_s {
 	bool right;	
 	bool front;
 	double stretch;	
+	int16_t blingStep;
 	
 	Display_modeT displayMode[BOTTOMSIDE+1][BLING+1];
 	Cyclo_modeT cycloMode[BOTTOMSIDE+1][BLING+1];
