@@ -86,7 +86,7 @@
  *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.8, 2017/09/09
+ *      Version 4.7, 2017/09/09
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -113,7 +113,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 4.8, 2017/09/09, Copyright Peter Schmid\n\n";
+		"Version 4.7, 2017/09/09, Copyright Peter Schmid\n\n";
 
 
 // system include files
