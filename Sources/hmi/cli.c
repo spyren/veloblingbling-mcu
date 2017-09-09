@@ -14,7 +14,7 @@
  *      show     incline|inc          float            [%]
  *      show     temperature|temp     float            [°C]
  *      show     pedalingcadence|cad  float            [/Min]
- *      show	 hallsensor           yes|no
+ *      show	 hallsensor|hall      yes|no
  *      show     oled                 yes|no
  *      set|show energy               low|standard|on
  *
@@ -86,7 +86,7 @@
  *  @remark
  *      Language: C, ProcessorExpert, GNU ARM Crosscompiler gcc-v4.2.0
  *  @version
- *      Version 4.7rc3, 2017/02/05
+ *      Version 4.8, 2017/09/09
  *  @copyright
  *      Peter Schmid, Switzerland
  *
@@ -113,7 +113,7 @@ const char helloMessage[] =
 		"\n"
 		"Euler Wheel 32, Velo Bling Bling\n"
 		"--------------------------------\n\n"
-		"Version 4.7rc3, 2017/02/05, Copyright Peter Schmid\n\n";
+		"Version 4.8, 2017/09/09, Copyright Peter Schmid\n\n";
 
 
 // system include files
@@ -538,7 +538,7 @@ void puts_ch(const char *s, channelT ch) {
  */
 /* ===================================================================*/
 static windowT windowStr2Enum(const char *s){
-	if (! strcmp(s, upper_s) || ! strcmp(s, up_s) ) {
+	if (       ! strcmp(s, upper_s) || ! strcmp(s, up_s) ) {
 		return UPPER;
 	} else if (! strcmp(s, lower_s) || ! strcmp(s, lo_s) ) {
 		return LOWER;
@@ -547,24 +547,6 @@ static windowT windowStr2Enum(const char *s){
 	}
 	return -1;
 }
-
-///*  ===================================================================
-// *     Method      :  surfaceStr2Enum
-// */
-///**
-// *  @brief
-// *      scan a string for windowT enum
-// */
-///* ===================================================================*/
-//static surfaceT surfaceStr2Enum(const char *s){
-//	if (! strcmp(s, top_s) ) {
-//		return TOPSIDE;
-//	} else if (! strcmp(s, bottom_s) || ! strcmp(s, bot_s) ) {
-//		return BOTTOMSIDE;
-//	} else {
-//		return -1;
-//	}
-//}
 
 
 /*
@@ -1352,64 +1334,64 @@ static void setColor(char* str, windowT win, channelT ch) {
  *  @brief
  *      set the mode for a window
  *  @param
- *  	mode	upper|lower speed|max|avg|trip|tot|alt|inc|temp|cad|watch|time|stop|string|blk|img|light
+ *  	mode	speed|max|avg|trip|tot|alt|inc|temp|cad|watch|time|stop|string|blk|img|light
  *  @param
- *  	win	UPPER/LOWER
+ *  	win		UPPER/LOWER
  */
 /* ===================================================================*/
 static void setWindowMode(char* mode, windowT win, channelT ch) {
-    if (!        strcmp(mode, speed_s)) {
+    if (       ! strcmp(mode, currentspeed_s)    || ! strcmp(mode, speed_s) ) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   CURRENTSPEED;
-    } else if (! strcmp(mode, max_s)) {
+    } else if (! strcmp(mode, maximumspeed_s)    || ! strcmp(mode, max_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   MAXIMUMSPEED;
-    } else if (! strcmp(mode, avg_s)) {
+    } else if (! strcmp(mode, averagespeed_s)    || ! strcmp(mode, avg_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   AVERAGESPEED;
-    } else if (! strcmp(mode, trip_s)) {
+    } else if (! strcmp(mode, tripdistance_s)    || ! strcmp(mode, trip_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   TRIPDISTANCE;
-    } else if (! strcmp(mode, tot_s)) {
+    } else if (! strcmp(mode, totaldistance_s)   || ! strcmp(mode, tot_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   TOTALDISTANCE;
-    } else if (! strcmp(mode, alt_s)) {
+    } else if (! strcmp(mode, currentaltitude_s) || ! strcmp(mode, alt_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   CURRENTALTITUDE;
-    } else if (! strcmp(mode, inc_s)) {
+    } else if (! strcmp(mode, incline_s)         || ! strcmp(mode, inc_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   INCLINE;
-    } else if (! strcmp(mode, temp_s)) {
+    } else if (! strcmp(mode, temperature_s)     || ! strcmp(mode, temp_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   TEMPERATURE;
-    } else if (! strcmp(mode, cad_s)) {
+    } else if (! strcmp(mode, pedalingcadence_s) || ! strcmp(mode, cad_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   PEDALINGCADENCE;
-    } else if (! strcmp(mode, watch_s)) {
+    } else if (! strcmp(mode, currenttime_s)     || ! strcmp(mode, watch_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   CURRENTTIME;
-    } else if (! strcmp(mode, time_s)) {
+    } else if (! strcmp(mode, triptime_s)        || ! strcmp(mode, time_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   TRIPTIME;
-    } else if (! strcmp(mode, chro_s)) {
+    } else if (! strcmp(mode, chrono_s)          || ! strcmp(mode, chro_s)) {
     	displayMode[surface][win] = CYCLOCOMPUTER;
     	cycloMode[surface][win] =   CHRONOTIME;
-    } else if (! strcmp(mode, string_s)) {
+    } else if (! strcmp(mode, string_s)          || ! strcmp(mode, str_s)) {
     	displayMode[surface][win] = STRING;
     	cycloMode[surface][win] =   NOCYCLO;
-    } else if (! strcmp(mode, blk_s)) {
+    } else if (! strcmp(mode, blank_s)           || ! strcmp(mode, blk_s)) {
     	displayMode[surface][win] = BLANK;
     	if (win == BLING) {
     		blingOn[surface] = FALSE;
     	}
     	cycloMode[surface][win] =   NOCYCLO;
-    } else if (! strcmp(mode, img_s)) {
+    } else if (! strcmp(mode, imag_s)            || ! strcmp(mode, img_s)) {
     	displayMode[surface][win] = IMAGE;
     	if (win == BLING) {
        		blingOn[surface] = TRUE;
        	}
     	cycloMode[surface][win] =   NOCYCLO;
-    } else if (! strcmp(mode, light_s)) {
+    } else if (! strcmp(mode, light_s)           || ! strcmp(mode, li_s)) {
     	// light is for all windows, but stored in TOPSIDE UPPER only
     	displayMode[TOPSIDE][UPPER] = LIGHT;
     	cycloMode[TOPSIDE][UPPER] =   NOCYCLO;
@@ -1595,7 +1577,7 @@ static void setWatch(char* string, channelT ch) {
  */
 /**
  *  @brief
- *      set the surface side to topside ord bottomside to front or rear
+ *      set the surface side to topside or bottomside to front or rear
  *  @param
  *  	string
  */
@@ -1897,7 +1879,7 @@ int cli_parse(char* line, channelT ch) {
 				setWindowMode(p[1], UPPER, ch);
 			} else if (! strcmp(p[0], lower_s) || ! strcmp(p[0], lo_s) ) {
 				setWindowMode(p[1], LOWER, ch);
-			} else if (! strcmp(p[0], bling_s) ) {
+			} else if (! strcmp(p[0], bling_s) || ! strcmp(p[0], bl_s)) {
 				setWindowMode(p[1], BLING, ch);
 			} else if (! strcmp(p[0], surface_s) || ! strcmp(p[0], sur_s) ) {
 				setSurface(p[1], ch);
@@ -1997,7 +1979,7 @@ int cli_parse(char* line, channelT ch) {
 				showWindow(UPPER, ch);
 			} else if (! strcmp(p[0], lower_s) || ! strcmp(p[0], lo_s) ) {
 				showWindow(LOWER, ch);
-			} else if (! strcmp(p[0], bling_s) ) {
+			} else if (! strcmp(p[0], bling_s) || ! strcmp(p[0], bl_s)) {
 				showWindow(BLING, ch);
 			} else if (! strcmp(p[0], all_s) ) {
 				showAll(ch);

@@ -220,6 +220,24 @@ static const uint64_t meander_pattern[8] = {
     01010111110100000
 };
 
+static const uint64_t zurich_pattern[16] = {
+	04444444444444444,
+	07444444444444444,
+	07744444444444444,
+	07774444444444444,
+	07777444444444444,
+	07777744444444444,
+	07777774444444444,
+	07777777444444444,
+	07777777744444444,
+	07777777774444444,
+	07777777777444444,
+	07777777777744444,
+	07777777777774444,
+	07777777777777444,
+	07777777777777744,
+	07777777777777774
+};
 
 /*
  ** ===================================================================
@@ -237,7 +255,7 @@ void display_Init() {
 	imageP = (void*) FLASH_BASE_ADR + sizeof(configParameter_s);
 
 	// no Flex NVM EEPROM used, 4 kB RAM starting at 0x14000000
-	// 802 bytes
+	// 402 bytes
 	image_bufferP = (void*) FLEX_NVM_RAM_BASE;
 }
 
@@ -847,6 +865,40 @@ int put_Square(int position, const LED_colorT front_color, const uint8_t side, c
 	return pos;
 }
 
+/*
+ ** ===================================================================
+ **  Method      :  put_Zurich
+ */
+/**
+ *  @brief
+ *  	Puts a Zurich in the display. The character is 16x16.
+ *  @param
+ *      position	the column where the string start
+  *  @param
+ *      sur			surface TOPSIDE or BOTTOMSIDE
+ *  @param
+ *      win			UPPER, LOWER, or BLING
+ *  @return
+ *  	the next position (column)
+ */
+/* ===================================================================*/
+int put_Zurich(int position, surfaceT sur, windowT win) {
+	int 	pos;         // current position (column) in dotmatrix
+	int 	column;
+
+	pos = position;
+	for (column=0; column < 16; column++) {
+		/* next column (there are 12 columns) */
+		if (pos >= MAX_COLUMN) {
+			/* overflow, string is to long */
+			return pos;
+		}
+		display[sur][win].dotmatrix[pos]  = zurich_pattern[column];
+		pos++;
+	}
+	display[sur][win].length = pos;
+	return pos;
+}
 
 
 /*
@@ -988,6 +1040,13 @@ void images_Init() {
 	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
 	save_Image(6);
 
+	// 7: zurich
+	clear_display(TOPSIDE, BLING);
+	position = put_Zurich(0, TOPSIDE, BLING);
+	image_bufferP->length = position + 2;
+	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
+	save_Image(7);
+
 	// 10: heart
 	clear_display(TOPSIDE, BLING);
 	position = put_heart(0, RED, TOPSIDE, BLING);
@@ -1091,6 +1150,24 @@ void images_Init() {
 	image_bufferP->length = position + 2;
 	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
 	save_Image(27);
+
+	// 28: RVZ 1893
+	clear_display(TOPSIDE, BLING);
+	position = put_Image(0, 0, TOPSIDE, BLING); // Switzerland
+	position = put_str("RVZ 1893", DOS7x12, WHITE, position, TOPSIDE, BLING);
+	position = put_Image(7, position+2, TOPSIDE, BLING); // Zurich
+	image_bufferP->length = position + 2;
+	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
+	save_Image(28);
+
+	// 29: RVZ Zürich
+	clear_display(TOPSIDE, BLING);
+	position = put_Image(0, 0, TOPSIDE, BLING); // Switzerland
+	position = put_str("RV\\s03Z\201rich", DOS7x12, WHITE, position, TOPSIDE, BLING);
+	position = put_Image(7, position+2, TOPSIDE, BLING); // Zurich
+	image_bufferP->length = position + 2;
+	memcpy(&image_bufferP->dotmatrix, &display[TOPSIDE][BLING].dotmatrix, sizeof(image_bufferP->dotmatrix));
+	save_Image(29);
 
 //	while (FlashMem_Busy(NULL)) {
 //		// busy wait
